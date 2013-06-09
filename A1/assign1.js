@@ -28,16 +28,10 @@ window.onload = function() {
 };
 
 function AddLine(event){
-    this.x = event.pageX- canvas.offsetLeft;
-    this.y = event.pageY- canvas.offsetTop;
-
-
-
-
+    this.x = event.pageX - canvas.offsetLeft;
+    this.y = event.pageY - canvas.offsetTop;
 
 }
-
-
 
 function AddCircle(event){
     this.check = false;
@@ -47,7 +41,6 @@ function AddCircle(event){
     var y1 = event.pageY- canvas.offsetTop;
     this.radius = pow(this.x-x1, 2) + pow(this.y - y1, 2);
     this.colour = "white";
-
 
 
     /*this.border = border;*/
