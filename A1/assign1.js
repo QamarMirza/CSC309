@@ -1,11 +1,8 @@
-/*assign1 javascript file*/
 /*
 
-function AddRectangle() {}
-function ClearCanvas(){}
-function CircleTest () {} 
-function LineTest () {} 
-function RectangleTest () {}  
+function circleTest () {}
+function lineTest () {}
+function rectangleTest () {}
 
 */
 
@@ -17,44 +14,38 @@ function drawShapes() {
   context.clearRect(0, 0, canvas.width, canvas.height);
 
   // Go through all the shapes.
-  for(var i=0; i<shapes.length; i++) {
+  for (var i=0; i<shapes.length; i++) {
     var shape = shapes[i];
     shape.draw();
   }
 }
 
-  function writeMessage(canvas, message) {
-    var context = canvas.getContext('2d');
-    context.clearRect(0, 0, canvas.width, canvas.height);
+function writeMessage(canvas, message) {
+   	var context = canvas.getContext('2d');
+	context.clearRect(0, 0, canvas.width, canvas.height);
     context.font = '18pt Calibri';
     context.fillStyle = 'black';
     context.fillText(message, 10, 25);
-  }
-  function getMousePos(canvas, evt) {
-    var rect = canvas.getBoundingClientRect();
-    return {
-      x: evt.clientX - rect.left,
-      y: evt.clientY - rect.top
-    };
-  }
+}
 
 window.onload = function() {
     canvas = document.getElementById("drawingCanvas");
     context = canvas.getContext("2d");
-    canvas.addEventListener('click', function(evt) {
-		var mousePos = getMousePos(canvas, evt);
-	    var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
+    canvas.addEventListener('click', function(event) {
+		var clickX = event.pageX - canvas.offsetLeft;
+   		var clickY = event.pageY - canvas.offsetTop;
+	    var message = 'Mouse position: ' + clickX + ',' + clickY;
 	    writeMessage(canvas, message);
 	}, false);
 };
 
-function AddLine(event){
+function addLine(event) {
 	console.log(event);
     this.x = event.pageX - canvas.offsetLeft;
     this.y = event.pageY - canvas.offsetTop;
 }
 
-function AddCircle(event){
+function addCircle(event) {
     this.check = false;
     this.x = event.pageX- canvas.offsetLeft;
     this.y = event.pageY- canvas.offsetTop;
@@ -85,11 +76,11 @@ function AddCircle(event){
     };
 }
 
-function AddRectangle(event){
+function addRectangle(event) {
 	//FIXME: implement this method
 }
 
-function ClearCanvas(event){
+function clearCanvas(event) {
 	//FIXME: implement this method
 }
 
