@@ -26,11 +26,28 @@ function drawShapes() {
   	}
 }
 
-function addLine(event) {
-	console.log(event);
-    this.x = event.pageX - canvas.offsetLeft;
+function Line(){
+    /* this.x = event.pageX - canvas.offsetLeft;
     this.y = event.pageY - canvas.offsetTop;
+    this.x1 = this.x + 10;
+    this.y1 = this.y + 10;
+    */
+    this.colour = "#ff0000"; // RED
+    this.draw = function (){
+        context.beginPath()
+        context.moveTo(100, 150);
+            context.lineTo(450, 50);
+            canvas.strokeStyle = "#ff0000"; // FIXME: COLOUR DOESN'T CHANGE
+            context.stroke();
+    };
 }
+
+function addLine(event) {
+    var line = new Line();
+    shapes.push(line);
+    drawShapes();
+}
+
 
 function addCircle(event) {
     this.check = false;
