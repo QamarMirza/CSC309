@@ -8,6 +8,7 @@ function LineTest () {}
 function RectangleTest () {}  
 
 */
+
 var previousSelectedShape;
 var shapes = [];
 
@@ -22,15 +23,35 @@ function drawShapes() {
   }
 }
 
+  function writeMessage(canvas, message) {
+    var context = canvas.getContext('2d');
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.font = '18pt Calibri';
+    context.fillStyle = 'black';
+    context.fillText(message, 10, 25);
+  }
+  function getMousePos(canvas, evt) {
+    var rect = canvas.getBoundingClientRect();
+    return {
+      x: evt.clientX - rect.left,
+      y: evt.clientY - rect.top
+    };
+  }
+
 window.onload = function() {
-    var canvas = document.getElementById("drawingCanvas");
-    var context = canvas.getContext("2d");
+    canvas = document.getElementById("drawingCanvas");
+    context = canvas.getContext("2d");
+    canvas.addEventListener('click', function(evt) {
+		var mousePos = getMousePos(canvas, evt);
+	    var message = 'Mouse position: ' + mousePos.x + ',' + mousePos.y;
+	    writeMessage(canvas, message);
+	}, false);
 };
 
 function AddLine(event){
+	console.log(event);
     this.x = event.pageX - canvas.offsetLeft;
     this.y = event.pageY - canvas.offsetTop;
-
 }
 
 function AddCircle(event){
@@ -39,11 +60,10 @@ function AddCircle(event){
     this.y = event.pageY- canvas.offsetTop;
     var x1 = event.pageX- canvas.offsetLeft;
     var y1 = event.pageY- canvas.offsetTop;
-    this.radius = pow(this.x-x1, 2) + pow(this.y - y1, 2);
-    this.colour = "white";
-
-
-    /*this.border = border;*/
+    this.radius = Math.pow(this.x-x1, 2) + Math.pow(this.y - y1, 2);
+    this.color = "black";
+    this.fill = "yellow";
+    
     this.context = canvas.getContext("2d");
     this.draw = function () {
         // Draw the circle.
@@ -51,9 +71,8 @@ function AddCircle(event){
         this.context.globalAlpha = 0.85; /*transparency level */
         this.context.beginPath();
         this.context.arc(this.x, this.y, this.radius, 0, Math.PI*2);
-        this.context.fillStyle = this.color;
-        
-        /*this.context.strokeStyle = "black";
+        this.context.fillStyle = this.fill;
+        this.context.strokeStyle = this.color;
 
         if (this.isSelected) {
           this.context.lineWidth = 5;
@@ -62,10 +81,17 @@ function AddCircle(event){
           this.context.lineWidth = 1;
         }
         this.context.fill();
-        this.context.stroke(); */
+        this.context.stroke();
     };
 }
 
+function AddRectangle(event){
+	//FIXME: implement this method
+}
+
+function ClearCanvas(event){
+	//FIXME: implement this method
+}
 
 function canvasClick(event) {
     // Get the canvas click coordinates.
