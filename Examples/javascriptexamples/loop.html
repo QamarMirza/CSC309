@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="eng">
+	<head> 
+		<title>Factorial</title>
+		<meta charset="utf-8">
+	
+		<script>
+			var theNumber = Number(prompt("Factorial of?"));
+			var count = 1;
+			var factorial = 1;
+			while (!isNaN(theNumber) && count <= theNumber) {
+				factorial *= count++;
+				console.log(factorial);
+			}
+		</script>
+	</head> 
+</html>

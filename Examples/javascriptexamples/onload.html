@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>DHTML Event Model - onload</title>
+      <script type = "text/javascript">
+
+         var seconds = 0;
+
+         function startTimer() {
+            // 1000 milliseconds = 1 second
+            window.setInterval( "updateTime()", 1000 );
+         }
+
+         function updateTime() {
+            seconds++;
+            var soFar = document.getElementById("soFar");
+            soFar.innerHTML = seconds;   
+            // soFar.innerText = seconds;  // IE version   
+         }
+
+      </script>
+   </head>
+
+   <body onload = "startTimer()">
+
+      <p>Seconds you have spent viewing this page so far:
+      <strong id = "soFar">0</strong></p>
+
+   </body>
+</html>
+

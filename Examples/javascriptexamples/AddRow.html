@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Append Child Node Example</title>
+    <script type="text/javascript">
+      function addNewRow(){
+ 
+        //Get new row data.
+        var newFirstName = document.getElementById("newFirstName").value;
+        var newLastName = document.getElementById("newLastName").value;
+ 
+        //Create new table row elements.
+        var newTR = document.createElement("tr");
+        var newTD1 = document.createElement("td");
+        var newTD2 = document.createElement("td");
+        var newText1 = document.createTextNode(newFirstName);
+        var newText2 = document.createTextNode(newLastName);
+ 
+        //Connect the new row elements.
+        newTD1.appendChild(newText1);
+        newTD2.appendChild(newText2);
+        newTR.appendChild(newTD1);
+        newTR.appendChild(newTD2);
+
+
+        //Get tbody element of dbRowsTable.
+        var table = document.getElementById("dbRowsTable");
+
+        //Insert new row at end of list.
+        table.appendChild(newTR);
+      }
+    </script>
+  </head>
+
+
+  <body>
+    <h1>User Database Table</h1>
+
+    Add a new row:
+    <table>
+      <tr><td>First Name:</td><td><input type="text" id="newFirstName"></td></tr>
+      <tr><td>Last Name:</td><td><input type="text" id="newLastName"></td></tr>
+    </table>
+    <button onclick="addNewRow()">Add To Bottom</button>
+
+    <br /><hr /><br />
+
+    <table id="dbRowsTable" border="1">
+      <tr>
+	<th>FIRST NAME</th>
+	<th>LAST NAME</th>	
+      </tr>
+    </table>
+  </body>
+</html>
+
+
+
+
+
+
+
+
+

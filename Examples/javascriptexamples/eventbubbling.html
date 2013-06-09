@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>
+         DHTML Event Model - onmouseover and onmouseout
+      </title>
+      <script type = "text/javascript">
+         function mOver(event) {
+            // If the element which triggered onmouseover has 
+            // an id, change its color to its id.
+            if ( event.target.id ) {
+                 event.target.style.color = event.target.id;
+              event.target.innerHTML = event.target.id;
+            }
+         }
+         document.onmouseover = mOver;
+      </script>
+   </head>
+
+   <body style = "background-color: wheat">
+
+      <h1>Guess the Hex Code's Actual Color</h1>
+      <p>Can you tell a color from its hexadecimal RGB code 
+      value? Look at the hex code, guess the color. To see 
+      what color it corresponds to, move the mouse over the 
+      hex code. Moving the mouse out will display the color 
+      name.</p>
+
+      <table style = "width: 50%; border-style: groove; 
+         text-align: center; font-family: monospace; 
+         font-weight: bold">
+ 
+         <caption>
+            <img src = "caption1.gif" alt = "Table Caption" />
+         </caption>
+         <tr>
+            <td id = "Green" onmouseover="event.target.style.fontSize='25pt'; event.cancelBubble=true;">#008000</td> 
+            <td id = "Lime"  onmouseover="event.target.style.fontSize='25pt';">#00FF00</td> 
+            <td id = "Maroon">#800000</td>
+            <td id = "Navy">#000080</td> 
+         </tr>
+         <tr>
+            <td id = "Olive">#808000</td> 
+            <td id = "Purple">#800080</td>
+            <td id = "Red">#FF0000</td>
+            <td id = "Silver">#C0C0C0</td> 
+         </tr>
+         <tr>
+            <td id = "Cyan">#00FFFF</td>
+            <td id = "Teal">#008080</td>
+            <td id = "Yellow">#FFFF00</td> 
+            <td id = "White">#FFFFFF</td> 
+         </tr>
+      </table>
+
+   </body>
+</html>
+

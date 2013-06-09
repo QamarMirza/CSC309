@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Towers of Hanoi</title>
+    <script type="text/javascript" src="hanoi.js"></script>
+    <link rel="Stylesheet" type="text/css" href="hanoi.css" />
+  </head>
+  <body>
+   <h1>Towers of Hanoi</h1>
+   <img id="limbo">
+   <table border=0>
+      <tr>
+	<td><img src="Block.bmp" id="c00" width="60px"></td>
+	<td><img src="" id="c10"></td>
+	<td><img src="" id="c20"></td>
+      </tr>
+      <tr>
+	<td><img src="Block.bmp" id="c01" width="90px"></td>
+	<td><img src="" id="c11"></td>
+	<td><img src="" id="c21"></td>
+      </tr>
+      <tr>
+	<td><img src="Block.bmp" id="c02" width="120px"></td>
+	<td><img src="" id="c12"></td>
+	<td><img src="" id="c22"></td>
+      </tr>
+      <tr>
+	<td><img src="Block.bmp" id="c03" width="150px"></td>
+	<td><img src="" id="c13"></td>
+	<td><img src="" id="c23"></td>
+      </tr>
+      <tr>
+	<td><img src="Pod.bmp" id="c04" width="200px" onclick="moveSlice(0);"></td>
+	<td><img src="Pod.bmp" id="c14" width="200px" onclick="moveSlice(1);"></td>
+	<td><img src="Pod.bmp" id="c24" width="200px" onclick="moveSlice(2);"></td>
+      </tr>
+   </table>
+  </body>
+</html>

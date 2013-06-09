@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Navigating Child Nodes</title>
+<script type"text/javascript">
+
+function showDOM() {
+   
+   var accumulator = "<table border='1'>";      
+
+   accumulator += getTreeInfo(document.documentElement,0);
+   
+   accumulator += "</table>";
+
+   document.getElementById("result").innerHTML = accumulator;
+
+}
+
+//Get the next node in the tree
+function getTreeInfo(currentNode,level)
+{
+  //Display information about current node
+  var info = getNodeInfo(currentNode,level);
+
+  //Loop through children of currentNode
+  var children = currentNode.childNodes;
+  for(var i=0; i<children.length; i++)
+    info += getTreeInfo(children.item(i),(level+1));
+
+  return info;
+}
+
+//Display the tag name and type and any text that it contains
+function getNodeInfo(aNode,level)
+{     
+  var info = "<tr>";
+
+  if (level>0) 
+    info += "<td colspan='" + level + "'>&nbsp; </td>";
+
+  info += "<td>" + aNode.nodeName + "</td>";
+  
+  info += "</tr>"; 
+
+  return info;
+}
+</script>
+</head>
+
+
+<body>
+<h1>A Nice Table</h1>
+
+<table id="multiplicationTable" border="1">
+  <tr><td>1</td><td>2</td></tr>
+  <tr><td>3</td><td>4</td></tr>
+</table>
+
+
+<form>
+  <input type="button" onclick="showDOM()" value="Press to Print DOM" />
+</form>
+
+
+<h2>DOM Structure</h2>
+
+<div id="result"></div>
+
+
+</body>
+</html>
+
+
+
+
+

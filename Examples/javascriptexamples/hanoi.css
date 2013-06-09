@@ -1,0 +1,23 @@
+h1 {
+	color:blue;
+}
+
+img {
+        height:30px;
+}
+
+h1,td {
+        text-align:center;
+}
+
+table {
+
+        position:absolute;
+        bottom:5px;
+}
+
+img#limbo {
+        display: block;
+	margin-left: auto;
+	margin-right: auto; 
+}

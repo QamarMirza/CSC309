@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head> 
+    <script type="text/javascript"> 
+      var mov=false;	 /*global variable */
+      function updateMouseCoordinates(event)  { 
+          var coordinates = document.getElementById("c01");
+          coordinates.innerHTML = event.target.tagName + " (" + event.pageX + ", " + event.pageY + ")";
+ 	  if (mov) 
+            move(event);  
+      }/* end of updateMouseCoordinates*/ 
+      function move(event) { 
+          var gp = document.getElementById("pic01");
+          gp.style.left=event.pageX + "px";
+	      gp.style.top=event.pageY + "px";	
+      }/* end of move*/ 
+    </script>
+  </head>
+  <body onmousemove="updateMouseCoordinates(event)"> 
+    <div style="height: 700px;  width: 900px; background: lightgreen;">
+    <span id="c01">HTML (533, 274)</span><br /> 
+    <p>left click to pick up the ball. left click again to drop the ball</p>
+    <img src="ball.jpg" id="pic01" style="position: absolute;" onclick="mov=!mov;" />
+    </div>
+    
+  </body>
+</html>  

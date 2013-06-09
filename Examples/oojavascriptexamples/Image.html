@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Lines</title>
+
+  <style>
+	canvas {
+	  border: 1px dashed black;
+	}
+  </style>
+
+  <script>
+ 
+	window.onload = function() {
+	  var canvas = document.getElementById("drawingCanvas");
+	  var context = canvas.getContext("2d");
+
+	  var img = new Image();
+	  
+	  img.onload = function () {context.drawImage(img, 0, 0);}
+	  
+	  img.src = "uoft.png";
+	  
+	};
+
+  </script>
+</head>
+
+<body>
+  <canvas id="drawingCanvas" width="500" height="300"></canvas>
+</body>
+</html>
