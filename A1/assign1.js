@@ -9,35 +9,22 @@ function rectangleTest () {}
 var previousSelectedShape;
 var shapes = [];
 
-function drawShapes() {
-  // Clear the canvas.
-  context.clearRect(0, 0, canvas.width, canvas.height);
-
-  // Go through all the shapes.
-  for (var i=0; i<shapes.length; i++) {
-    var shape = shapes[i];
-    shape.draw();
-  }
-}
-
-function writeMessage(canvas, message) {
-   	var context = canvas.getContext('2d');
-	context.clearRect(0, 0, canvas.width, canvas.height);
-    context.font = '18pt Calibri';
-    context.fillStyle = 'black';
-    context.fillText(message, 10, 25);
-}
-
 window.onload = function() {
     canvas = document.getElementById("drawingCanvas");
     context = canvas.getContext("2d");
-    canvas.addEventListener('click', function(event) {
-		var clickX = event.pageX - canvas.offsetLeft;
-   		var clickY = event.pageY - canvas.offsetTop;
-	    var message = 'Mouse position: ' + clickX + ',' + clickY;
-	    writeMessage(canvas, message);
-	}, false);
+    canvas.addEventListener('click', canvasClick);
 };
+
+function drawShapes() {
+  	// Clear the canvas.
+  	context.clearRect(0, 0, canvas.width, canvas.height);
+
+ 	// Go through all the shapes.
+  	for (var i=0; i<shapes.length; i++) {
+    	var shape = shapes[i];
+    	shape.draw();
+  	}
+}
 
 function addLine(event) {
 	console.log(event);
@@ -84,23 +71,34 @@ function clearCanvas(event) {
 	//FIXME: implement this method
 }
 
+function writeMessage(canvas, message) {
+	context.clearRect(0, 0, canvas.width, canvas.height);
+    context.font = '18pt Calibri';
+    context.fillStyle = 'black';
+    context.fillText(message, 10, 25);
+}
+
 function canvasClick(event) {
     // Get the canvas click coordinates.
-   var clickX = event.pageX - canvas.offsetLeft;
-   var clickY = event.pageY - canvas.offsetTop;
-   if (this.check == true) { /* means we're drawing the circle first, not selecting */}
-   // Look for the clicked circle.
-   for(var i=shapes.length-1; i>=0; i--) {
-      var shape = shapes[i];
+   	var clickX = event.pageX - canvas.offsetLeft;
+   	var clickY = event.pageY - canvas.offsetTop;
+    var message = 'Mouse position: ' + clickX + ',' + clickY;
+    writeMessage(canvas, message);
+	
+	/*
+    // Look for the clicked circle.
+    for(var i=shapes.length-1; i>=0; i--) {
+    	var shape = shapes[i];
 
-   if (shape.testHit(clickX,clickY)) {
-      if (previousSelectedShape != null){ 
-          previousSelectedShape.setSelected(false);
-      }
-      previousSelectedShape = shape;
-      shape.setSelected(true);
-      drawShapes();
-      return;
-    }
-  }
+	    if (shape.testHit(clickX,clickY)) {
+	    	if (previousSelectedShape != null){ 
+	          	previousSelectedShape.setSelected(false);
+	      	}
+		    previousSelectedShape = shape;
+	        shape.setSelected(true);
+		    drawShapes();
+		    return;
+		}
+  	}
+  	*/
 }
