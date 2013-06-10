@@ -32,13 +32,16 @@ function Line(){
     this.x1 = this.x + 10;
     this.y1 = this.y + 10;
     */
+    this.context = canvas.getContext("2d");
     this.colour = "#ff0000"; // RED
     this.draw = function (){
-        context.beginPath()
-        context.moveTo(100, 150);
-            context.lineTo(450, 50);
-            canvas.strokeStyle = "#ff0000"; // FIXME: COLOUR DOESN'T CHANGE
-            context.stroke();
+        this.context.beginPath()
+        this.context.lineWidth = 1;
+
+        this.context.moveTo(100, 150);
+            this.context.lineTo(450, 50);
+            this.context.strokeStyle = "#ff0000"; // FIXME: COLOUR DOESN'T CHANGE
+            this.context.stroke();
     };
 }
 
@@ -48,40 +51,69 @@ function addLine(event) {
     drawShapes();
 }
 
-
-function addCircle(event) {
-    this.check = false;
+function Circle(event) {
+    /*this.check = false;
     this.x = event.pageX- canvas.offsetLeft;
     this.y = event.pageY- canvas.offsetTop;
     var x1 = event.pageX- canvas.offsetLeft;
     var y1 = event.pageY- canvas.offsetTop;
-    this.radius = Math.pow(this.x-x1, 2) + Math.pow(this.y - y1, 2);
+    */
+        this.context = canvas.getContext("2d");
+
+    this.radius = 10; //Math.pow(this.x-x1, 2) + Math.pow(this.y - y1, 2);
     this.color = "black";
     this.fill = "yellow";
     
-    this.context = canvas.getContext("2d");
     this.draw = function () {
         // Draw the circle.
         this.check = true;
         this.context.globalAlpha = 0.85; /*transparency level */
         this.context.beginPath();
-        this.context.arc(this.x, this.y, this.radius, 0, Math.PI*2);
+        this.context.arc(100, 100, this.radius, 0, Math.PI*2);
         this.context.fillStyle = this.fill;
         this.context.strokeStyle = this.color;
+        this.context.lineWidth = 1;
 
+/*
         if (this.isSelected) {
           this.context.lineWidth = 5;
         }
         else {
           this.context.lineWidth = 1;
-        }
+        }*/
         this.context.fill();
         this.context.stroke();
     };
+
 }
 
+function addCircle(event) {
+    var circle = new Circle();
+    console.log(circle);
+    shapes.push(circle);
+    drawShapes();
+}
+function Rectangle() {
+    this.color = "blue";
+    this.fillStyle = "yellow";
+    this.lineWidth = "7";
+        this.context = canvas.getContext("2d");
+  
+    this.draw = function() {
+        this.context.beginPath();
+        this.context.rect(188, 50, 200, 100);
+        this.context.fillStyle = 'yellow';
+        this.context.fill();
+        this.context.lineWidth = 7;
+        this.context.strokeStyle = 'black';
+        this.context.stroke();
+    };
+}
 function addRectangle(event) {
-	//FIXME: implement this method
+    var rectangle = new Rectangle();
+     console.log(rectangle);
+    shapes.push(rectangle);
+    drawShapes();
 }
 
 function clearCanvas(event) {
