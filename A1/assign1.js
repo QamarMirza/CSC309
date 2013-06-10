@@ -26,7 +26,7 @@ function drawShapes() {
   	}
 }
 
-function Line(){
+function Line() {
     /* this.x = event.pageX - canvas.offsetLeft;
     this.y = event.pageY - canvas.offsetTop;
     this.x1 = this.x + 10;
@@ -34,14 +34,14 @@ function Line(){
     */
     this.context = canvas.getContext("2d");
     this.colour = "#ff0000"; // RED
-    this.draw = function (){
+    this.draw = function () {
         this.context.beginPath()
         this.context.lineWidth = 1;
 
         this.context.moveTo(100, 150);
-            this.context.lineTo(450, 50);
-            this.context.strokeStyle = "#ff0000"; // FIXME: COLOUR DOESN'T CHANGE
-            this.context.stroke();
+        this.context.lineTo(450, 50);
+        this.context.strokeStyle = "#ff0000"; // FIXME: COLOUR DOESN'T CHANGE
+        this.context.stroke();
     };
 }
 
@@ -58,7 +58,7 @@ function Circle(event) {
     var x1 = event.pageX- canvas.offsetLeft;
     var y1 = event.pageY- canvas.offsetTop;
     */
-        this.context = canvas.getContext("2d");
+    this.context = canvas.getContext("2d");
 
     this.radius = 10; //Math.pow(this.x-x1, 2) + Math.pow(this.y - y1, 2);
     this.color = "black";
@@ -93,11 +93,12 @@ function addCircle(event) {
     shapes.push(circle);
     drawShapes();
 }
+
 function Rectangle() {
     this.color = "blue";
     this.fillStyle = "yellow";
     this.lineWidth = "7";
-        this.context = canvas.getContext("2d");
+    this.context = canvas.getContext("2d");
   
     this.draw = function() {
         this.context.beginPath();
@@ -109,6 +110,7 @@ function Rectangle() {
         this.context.stroke();
     };
 }
+
 function addRectangle(event) {
     var rectangle = new Rectangle();
      console.log(rectangle);
@@ -117,7 +119,11 @@ function addRectangle(event) {
 }
 
 function clearCanvas(event) {
-	//FIXME: implement this method
+  	// Remove all the circles.
+  	shapes = [];
+
+  	// Update the display.
+  	drawShapes();
 }
 
 function writeMessage(canvas, message) {
