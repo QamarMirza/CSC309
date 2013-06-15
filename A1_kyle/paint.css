@@ -1,0 +1,23 @@
+body {
+	  font-family: Verdana;
+	  font-size: small;
+	}
+    
+canvas {
+  cursor: pointer;
+  border: 1px solid black;
+}
+
+form {
+    float:left;
+}
+
+button {
+    float:left;
+    margin-right:5px;
+}
+
+#selectdiv {
+    float:left;
+    margin-right:5px;
+}
