@@ -6,14 +6,18 @@
 	<script type="text/javascript" src="assign1.js"></script>
 </head>
 <body>
-	<canvas id="drawingCanvas" width="600px" height="600px"></canvas>
 
-    <button onclick="addLine(event)">Line</button>
-	<br>
-	<button onclick="addCircle(event)">Circle</button>
-    <br>
-    <button onclick="addRectangle(event)">Rectangle</button>
-	<br>
-	<button onclick="clearCanvas()" align="right">Clear Canvas</button>
+	<canvas id="drawingCanvas" width="600px" height="600px"></canvas>
+ 	<br />
+    <div id="selectdiv">
+        Shape
+        <select id="shapes">
+        <option value="line" >Line</option>
+        <option value="box" >Box</option>
+        <option value="circle">Circle</option>
+        </select>
+    </div>
+		<button onclick="clearCanvas()" >Clear Canvas</button>
+		<button onclick="eraseShape()" > Erase Shape </button>
 </body>
 </html>
