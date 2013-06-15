@@ -1,6 +1,6 @@
-var previousSelectedShape;
+var previousSelectedShape; // keep track of previously selected shape
 var shapes = []; // array to keep track of all shapes
-var isActive = false;
+var isActive = false; // keep track of whether we're drawing
 
 window.onload = function() {
 	// get reference to shapes select dropdown
@@ -10,46 +10,49 @@ window.onload = function() {
 	canvas = document.getElementById("drawingCanvas");
 	context = canvas.getContext("2d");
 	canvas.onmousedown = canvasMouseDown;
-	canvas.onmouseup = canvasMouseUp;
+	canvas.onmouseup = canvasMouseUpOut;
+	canvas.onmouseout = canvasMouseUpOut;
 	canvas.onmousemove = canvasMouseMove
 };
-function canvasMouseUp(event) {
+
+function canvasMouseUpOut(event) {
 	isActive = false;
 }
+
 function canvasMouseMove(event) {
 	var clickX = event.pageX - canvas.offsetLeft;
 	var clickY = event.pageY - canvas.offsetTop;
+	//var shape = shapes[shapes.length-1];
 	if (isActive) {
+		//shape.update(shape.x1, shape.x2, clickX, clickY);
 		shapes[shapes.length-1].update(shapes[shapes.length-1].x1, shapes[shapes.length-1].y1, clickX, clickY);
 	}
 	drawShapes();
-		
 }
 
 function canvasMouseDown(event) {
 	isActive = true;
+
 	// Get the canvas click coordinates.
 	var clickX = event.pageX - canvas.offsetLeft;
 	var clickY = event.pageY - canvas.offsetTop;
 	addShape(clickX, clickY);
 	drawShapes();
-		
+	
 	/*
-	// Look for the clicked circle.
-	for(var i=shapes.length-1; i>=0; i--) {
+	// Look for the clicked shape
+	for (var i=shapes.length-1; i>=0; i--) {
 		var shape = shapes[i];
-
 		if (shape.testHit(clickX,clickY)) {
 			if (previousSelectedShape != null) { 
-				previousSelectedShape.setSelected(false);
+				previousSelectedShape.isSelected = false;
 			}
+			shape.isSelected = true;
 			previousSelectedShape = shape;
-			shape.setSelected(true);
 			drawShapes();
 			return;
 		}
-	}
-	*/
+	}*/
 }
 
 function addShape(x, y) {
@@ -58,10 +61,11 @@ function addShape(x, y) {
 	if (shape === "line") {
 		// make line object at initial mousedown position
 		var line = new Line(x, y, x, y);
-		console.log(line instanceof Line);
 		shapes.push(line);
+		console.log(line instanceof Line);
 	} else if (shape === "rectangle") {
-		//make 
+		// make rectangle at initial mousedown position
+		
 	} else { //circle
 		
 	}
@@ -79,12 +83,12 @@ function Line(x1, y1, x2, y2) {
 		context.stroke();
 	};
 }
-Line.prototype.update = function (x1, y1, x2, y2){
-	console.log("hi");
-		this.x1 = x1;
-		this.y1 = y1;
-		this.x2 = x2;
-		this.y2 = y2;
+
+Line.prototype.update = function (x1, y1, x2, y2) {
+	this.x1 = x1;
+	this.y1 = y1;
+	this.x2 = x2;
+	this.y2 = y2;
 };
 
 function drawShapes() {
