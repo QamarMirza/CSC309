@@ -1,5 +1,6 @@
 var previousSelectedShape;
 var shapes = []; // array to keep track of all shapes
+var isActive = false;
 
 window.onload = function() {
 	// get reference to shapes select dropdown
@@ -9,24 +10,24 @@ window.onload = function() {
 	canvas = document.getElementById("drawingCanvas");
 	context = canvas.getContext("2d");
 	canvas.onmousedown = canvasMouseDown;
-	//canvas.onmouseup = canvasMouseUp;
-	//canvas.onmousemove = canvasMouseMove
+	canvas.onmouseup = canvasMouseUp;
+	canvas.onmousemove = canvasMouseMove
 };
-
-/*function canvasMouseMove(event) {
+function canvasMouseUp(event) {
+	isActive = false;
+}
+function canvasMouseMove(event) {
 	var clickX = event.pageX - canvas.offsetLeft;
 	var clickY = event.pageY - canvas.offsetTop;
-	for(var i = 0; i<shapes.length; i++) {
-		if (shapes[i].setSelected(false)) {
-
-
-
-		}
-
+	if (isActive) {
+		shapes[shapes.length-1].update(shapes[shapes.length-1].x1, shapes[shapes.length-1].y1, clickX, clickY);
 	}
-}*/
+	drawShapes();
+		
+}
 
 function canvasMouseDown(event) {
+	isActive = true;
 	// Get the canvas click coordinates.
 	var clickX = event.pageX - canvas.offsetLeft;
 	var clickY = event.pageY - canvas.offsetTop;
@@ -71,13 +72,14 @@ function Line(x1, y1, x2, y2) {
 	this.draw = function () {
 		context.beginPath()
 		context.lineWidth = 2;
-		context.moveTo(x1, y1);
-		context.lineTo(x2+2, y2+2);
+		context.moveTo(this.x1, this.y1);
+		context.lineTo(this.x2, this.y2);
 		context.strokeStyle = this.colour;
 		context.stroke();
 	};
 }
 Line.prototype.update = function (x1, y1, x2, y2){
+	console.log("hi");
 		this.x1 = x1;
 		this.y1 = y1;
 		this.x2 = x2;
