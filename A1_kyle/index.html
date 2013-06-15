@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Shape Canvas</title>
+
+	<link rel="Stylesheet" type="text/css" href="paint.css" />
+	<script src="paint.js"></script>
+</head>	
+
+<body>
+
+	<canvas id="canvas" width="700" height="400" >
+	</canvas>
+    <br>
+
+    <div id="selectdiv">
+        Shape
+        <select id="shapes">
+        <option value="line" >Line</option>
+        <option value="box" >Box</option>
+        <option value="circle">Circle</option>
+        </select>
+    </div>
+    <!--
+    <form action="">
+        Border Width
+        <input type="text" name="borderwidth">
+    </form>
+    <button>Copy Shape</button>
+    <button>Paste Shape</button>
+    -->
+    <button onclick="clearCanvas()">Clear Canvas</button>
+    <button onclick="eraseShape()">Erase Shape</button>
+
+
+</body>
+</html>
