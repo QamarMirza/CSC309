@@ -9,15 +9,22 @@ window.onload = function() {
 	canvas = document.getElementById("drawingCanvas");
 	context = canvas.getContext("2d");
 	canvas.onmousedown = canvasMouseDown;
+	//canvas.onmouseup = canvasMouseUp;
+	//canvas.onmousemove = canvasMouseMove
 };
 
-function canvasMouseDown(event) {
-	// Get the canvas click coordinates.
+/*function canvasMouseMove(event) {
 	var clickX = event.pageX - canvas.offsetLeft;
 	var clickY = event.pageY - canvas.offsetTop;
-	addShape(clickX, clickY);
-	drawShapes();
-}
+	for(var i = 0; i<shapes.length; i++) {
+		if (shapes[i].setSelected(false)) {
+
+
+
+		}
+
+	}
+}*/
 
 function canvasMouseDown(event) {
 	// Get the canvas click coordinates.
@@ -25,8 +32,7 @@ function canvasMouseDown(event) {
 	var clickY = event.pageY - canvas.offsetTop;
 	addShape(clickX, clickY);
 	drawShapes();
-	
-	
+		
 	/*
 	// Look for the clicked circle.
 	for(var i=shapes.length-1; i>=0; i--) {
@@ -51,6 +57,7 @@ function addShape(x, y) {
 	if (shape === "line") {
 		// make line object at initial mousedown position
 		var line = new Line(x, y, x, y);
+		console.log(line instanceof Line);
 		shapes.push(line);
 	} else if (shape === "rectangle") {
 		//make 
@@ -65,11 +72,17 @@ function Line(x1, y1, x2, y2) {
 		context.beginPath()
 		context.lineWidth = 2;
 		context.moveTo(x1, y1);
-		context.lineTo(x2, x2);
+		context.lineTo(x2+2, y2+2);
 		context.strokeStyle = this.colour;
 		context.stroke();
 	};
 }
+Line.prototype.update = function (x1, y1, x2, y2){
+		this.x1 = x1;
+		this.y1 = y1;
+		this.x2 = x2;
+		this.y2 = y2;
+};
 
 function drawShapes() {
 	// Clear the canvas.
