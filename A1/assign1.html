@@ -1,37 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title> Paint? </title>
+	<title> CSC309 - Assignment 1 </title>
 	<link rel="stylesheet" type="text/css" href="assign1.css">
 	<script type="text/javascript" src="assign1.js"></script>
 </head>
 <body>
-
 	<canvas id="drawingCanvas" width="600px" height="600px"></canvas>
- 	<br />
-    <div id="selectdiv">
-        Shape:
-        <select id="shapes">
-        <option value="line" >Line</option>
-        <option value="box" >Box</option>
-        <option value="circle">Circle</option>
-        </select>
-    <div id="selectColour">
-        Colours:
-        <select id="Colours">
-        <option value="red" >red</option>
-        <option value="blue" >blue</option>
-        <option value="green">green</option>
-        <option value="black">black</option>
-        <option value="yellow">yellow</option>
-        <option value="orange">orange</option>
-        <option value="brown">brown</option>
-        <option value="white">white</option>
-    </select>
-
-
-    </div>
-		<button onclick="clearCanvas()" >Clear Canvas</button>
-		<button onclick="eraseShape()" > Erase Shape </button>
+	<br />
+	<div id="selectdiv">Select a shape:
+		<select id="shapes">
+			<option value="line" >Line</option>
+			<option value="rectangle" >Rectangle</option>
+			<option value="circle">Circle</option>
+		</select>
+	</div>
+	<div id="selectColour">Colours:
+		<select id="Colours">
+			<option value="red" >red</option>
+			<option value="blue" >blue</option>
+			<option value="green">green</option>
+			<option value="black">black</option>
+			<option value="yellow">yellow</option>
+			<option value="orange">orange</option>
+			<option value="brown">brown</option>
+			<option value="white">white</option>
+		</select>
+	</div>
+	<button onclick="clearCanvas()" >Clear Canvas</button>
+	<button onclick="eraseShape()" >Erase Shape</button>
 </body>
 </html>

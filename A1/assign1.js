@@ -1,159 +1,91 @@
-/*
-
-function circleTest () {}
-function lineTest () {}
-function rectangleTest () {}
-
-*/
-
 var previousSelectedShape;
-var shapes = [];
+var shapes = []; // array to keep track of all shapes
 
 window.onload = function() {
-    canvas = document.getElementById("drawingCanvas");
-    context = canvas.getContext("2d");
-    canvas.addEventListener('click', canvasClick);
+	// get reference to shapes select dropdown
+	shapeSelect = document.getElementById("shapes");
+	
+	// setup canvas
+	canvas = document.getElementById("drawingCanvas");
+	context = canvas.getContext("2d");
+	canvas.onmousedown = canvasMouseDown;
 };
 
+function canvasMouseDown(event) {
+	// Get the canvas click coordinates.
+	var clickX = event.pageX - canvas.offsetLeft;
+	var clickY = event.pageY - canvas.offsetTop;
+	addShape(clickX, clickY);
+	drawShapes();
+}
+
+function canvasMouseDown(event) {
+	// Get the canvas click coordinates.
+	var clickX = event.pageX - canvas.offsetLeft;
+	var clickY = event.pageY - canvas.offsetTop;
+	addShape(clickX, clickY);
+	drawShapes();
+	
+	
+	/*
+	// Look for the clicked circle.
+	for(var i=shapes.length-1; i>=0; i--) {
+		var shape = shapes[i];
+
+		if (shape.testHit(clickX,clickY)) {
+			if (previousSelectedShape != null) { 
+				previousSelectedShape.setSelected(false);
+			}
+			previousSelectedShape = shape;
+			shape.setSelected(true);
+			drawShapes();
+			return;
+		}
+	}
+	*/
+}
+
+function addShape(x, y) {
+	var shape = shapeSelect.value;
+	console.log(shape);
+	if (shape === "line") {
+		// make line object at initial mousedown position
+		var line = new Line(x, y, x, y);
+		shapes.push(line);
+	} else if (shape === "rectangle") {
+		//make 
+	} else { //circle
+		
+	}
+}
+
+function Line(x1, y1, x2, y2) {
+	this.colour = "#ff0000"; // RED
+	this.draw = function () {
+		context.beginPath()
+		context.lineWidth = 2;
+		context.moveTo(x1, y1);
+		context.lineTo(x2, x2);
+		context.strokeStyle = this.colour;
+		context.stroke();
+	};
+}
+
 function drawShapes() {
-  	// Clear the canvas.
-  	context.clearRect(0, 0, canvas.width, canvas.height);
+	// Clear the canvas.
+	context.clearRect(0, 0, canvas.width, canvas.height);
 
- 	// Go through all the shapes.
-  	for (var i=0; i<shapes.length; i++) {
-    	var shape = shapes[i];
-    	shape.draw();
-  	}
-}
-
-function Line() {
-    /* this.x = event.pageX - canvas.offsetLeft;
-    this.y = event.pageY - canvas.offsetTop;
-    this.x1 = this.x + 10;
-    this.y1 = this.y + 10;
-    */
-    this.context = canvas.getContext("2d");
-    this.colour = "#ff0000"; // RED
-    this.draw = function () {
-        this.context.beginPath()
-        this.context.lineWidth = 1;
-
-        this.context.moveTo(100, 150);
-        this.context.lineTo(450, 50);
-        this.context.strokeStyle = "#ff0000"; // FIXME: COLOUR DOESN'T CHANGE
-        this.context.stroke();
-    };
-}
-
-function addLine(event) {
-    var line = new Line();
-    shapes.push(line);
-    drawShapes();
-}
-
-function Circle(event) {
-    /*this.check = false;
-    this.x = event.pageX- canvas.offsetLeft;
-    this.y = event.pageY- canvas.offsetTop;
-    var x1 = event.pageX- canvas.offsetLeft;
-    var y1 = event.pageY- canvas.offsetTop;
-    */
-    this.context = canvas.getContext("2d");
-
-    this.radius = 10; //Math.pow(this.x-x1, 2) + Math.pow(this.y - y1, 2);
-    this.color = "black";
-    this.fill = "yellow";
-    
-    this.draw = function () {
-        // Draw the circle.
-        this.check = true;
-        this.context.globalAlpha = 0.85; /*transparency level */
-        this.context.beginPath();
-        this.context.arc(100, 100, this.radius, 0, Math.PI*2);
-        this.context.fillStyle = this.fill;
-        this.context.strokeStyle = this.color;
-        this.context.lineWidth = 1;
-
-/*
-        if (this.isSelected) {
-          this.context.lineWidth = 5;
-        }
-        else {
-          this.context.lineWidth = 1;
-        }*/
-        this.context.fill();
-        this.context.stroke();
-    };
-
-}
-
-function addCircle(event) {
-    var circle = new Circle();
-    console.log(circle);
-    shapes.push(circle);
-    drawShapes();
-}
-
-function Rectangle() {
-    this.color = "blue";
-    this.fillStyle = "yellow";
-    this.lineWidth = "7";
-    this.context = canvas.getContext("2d");
-  
-    this.draw = function() {
-        this.context.beginPath();
-        this.context.rect(188, 50, 200, 100);
-        this.context.fillStyle = 'yellow';
-        this.context.fill();
-        this.context.lineWidth = 7;
-        this.context.strokeStyle = 'black';
-        this.context.stroke();
-    };
-}
-
-function addRectangle(event) {
-    var rectangle = new Rectangle();
-     console.log(rectangle);
-    shapes.push(rectangle);
-    drawShapes();
+	// Go through all the shapes.
+	for (var i=0; i<shapes.length; i++) {
+		var shape = shapes[i];
+		shape.draw();
+	}
 }
 
 function clearCanvas(event) {
-  	// Remove all the circles.
-  	shapes = [];
+	// Remove all the shapes.
+	shapes = [];
 
-  	// Update the display.
-  	drawShapes();
-}
-
-function writeMessage(canvas, message) {
-	context.clearRect(0, 0, canvas.width, canvas.height);
-    context.font = '18pt Calibri';
-    context.fillStyle = 'black';
-    context.fillText(message, 10, 25);
-}
-
-function canvasClick(event) {
-    // Get the canvas click coordinates.
-   	var clickX = event.pageX - canvas.offsetLeft;
-   	var clickY = event.pageY - canvas.offsetTop;
-    var message = 'Mouse position: ' + clickX + ',' + clickY;
-    writeMessage(canvas, message);
-	
-	/*
-    // Look for the clicked circle.
-    for(var i=shapes.length-1; i>=0; i--) {
-    	var shape = shapes[i];
-
-	    if (shape.testHit(clickX,clickY)) {
-	    	if (previousSelectedShape != null){ 
-	          	previousSelectedShape.setSelected(false);
-	      	}
-		    previousSelectedShape = shape;
-	        shape.setSelected(true);
-		    drawShapes();
-		    return;
-		}
-  	}
-  	*/
+	// Update the display.
+	drawShapes();
 }
