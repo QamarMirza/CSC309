@@ -4,7 +4,8 @@ var isActive = false; // keep track of whether we're drawing
 
 window.onload = function() {
 	// get reference to shapes select dropdown
-	shapeSelect = document.getElementById("shapes");
+	shapeSelect = document.getElementById("shapeSelect");
+	colourSelect = document.getElementById("colourSelect")
 	
 	// setup canvas
 	canvas = document.getElementById("drawingCanvas");
@@ -72,7 +73,7 @@ function addShape(x, y) {
 }
 
 function Line(x1, y1, x2, y2) {
-	this.colour = "#ff0000"; // RED
+	this.colour = getColour();
 	this.update(x1, y1, x2, y2);
 	this.draw = function () {
 		context.beginPath()
@@ -108,4 +109,8 @@ function clearCanvas(event) {
 
 	// Update the display.
 	drawShapes();
+}
+
+function getColour() {
+	return colourSelect.value;
 }
