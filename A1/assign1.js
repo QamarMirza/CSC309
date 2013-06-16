@@ -5,8 +5,8 @@ var select = false; // keep track of whether any shape has been selected or not
 window.onload = function() {
 	// get reference to shapes select dropdown
 	shapeSelect = document.getElementById("shapeSelect");
-	colourSelect = document.getElementById("colourSelect")
-	
+	colourSelect = document.getElementById("colourSelect");
+	outlineSelect = document.getElementById("colourOutline");
 	// setup canvas
 	canvas = document.getElementById("drawingCanvas");
 	context = canvas.getContext("2d");
@@ -15,6 +15,7 @@ window.onload = function() {
 	canvas.onmouseout = canvasMouseUpOut;
 	canvas.onmousemove = canvasMouseMove
 	colourSelect.onchange = changeColour;
+	outlineSelect.onchange = changeColour;
 };
 
 function canvasMouseUpOut(event) {
@@ -28,6 +29,7 @@ if (select){
 		var shape = shapes[i];
 			if (shape.isSelected){
 				shape.colour = getColour();
+				shape.strokeStyle = getOutline();
 				drawShapes();
 				return;
 			}
@@ -143,6 +145,7 @@ Circle.prototype.update = function(x1,y1, x2, y2) {
 function Rectangle(x1, y1, x2, y2) {
 	this.colour = getColour();
 	this.update(x1, y1, x2, y2);
+	context.strokeStyle = "black";
 	this.isSelected =false;
 	this.draw = function () {
     // Draw the circle.
@@ -150,8 +153,6 @@ function Rectangle(x1, y1, x2, y2) {
     	context.beginPath();
     	context.rect(this.x1, this.y1, this.x2, this.y2);
     	context.fillStyle = this.colour;
-    	context.strokeStyle = "black";
-
    		if (this.isSelected) {
     		context.lineWidth = 5;
     	}
@@ -219,4 +220,8 @@ function eraseShape(){
 
 function getColour() {
 	return colourSelect.value;
+}
+
+function getOutline(){
+	return outlineSelect.value;
 }
