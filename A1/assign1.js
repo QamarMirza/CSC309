@@ -142,15 +142,18 @@ Line.prototype.update = function (x1, y1, x2, y2) {
 
 function Rectangle(x1, y1, x2, y2) {
 	this.colour = getColour();
+	this.outlineColour = getOutline();
 	this.update(x1, y1, x2, y2);
 	this.isSelected = false;
+
 	this.draw = function() {
 		// Draw the rectangle.
 		context.globalAlpha = 0.85;
 		context.beginPath();
 		context.rect(this.x1, this.y1, this.x2, this.y2);
 		context.fillStyle = this.colour;
-		context.strokeStyle = "black";
+		context.strokeStyle = this.outlineColour;
+
 		if (this.isSelected) {
 			context.lineWidth = 5;
 		} else {
@@ -162,9 +165,36 @@ function Rectangle(x1, y1, x2, y2) {
 }
 
 Rectangle.prototype.testHit = function(x,y) {
-	if (this.x1 < x && this.x1+this.x2 > x && this.y1 < y && this.y1+this.y2 > y) 
-		return true;
-	return false;
+	//done
+	if (this.x2 < 0){
+		if (this.y2 < 0){ // if box is drawn bottom right to top left
+			if (this.y2 < 0){ // box is drawn bototom left to top right
+				if (this.x1 > x && this.x1+this.x2 < x && this.y1 > y && this.y1+this.y2 < y){ 
+						return true;
+				}
+				return false;
+			}
+		} else { // x >0, box is drawn top right to bottom left
+			if (this.y2 > 0){ // box is drawn bototom left to top right
+				if (this.x1 > x && this.x1+this.x2 < x && this.y1 < y && this.y1+this.y2 > y) {
+						return true;
+				}
+				return false;
+			}
+		}
+	} else { // x > 0
+		if (this.y2 < 0){ // box is drawn bototom left to top right
+			if (this.x1 < x && this.x1+this.x2 > x && this.y1 > y && this.y1+this.y2 < y) {
+					return true;
+			}
+			return false;
+		} else { // y > 0, box is drawn top left to bottom right 
+			if (this.x1 < x && this.x1+this.x2 > x && this.y1 < y && this.y1+this.y2 > y) {
+				return true;
+			}
+			return false;
+		}
+	}
 };
 
 Rectangle.prototype.update = function (x1, y1, x2, y2) {
@@ -176,15 +206,18 @@ Rectangle.prototype.update = function (x1, y1, x2, y2) {
 
 function Circle(x1,y1, x2, y2) {
 	this.colour = getColour();
+	this.outlineColour = getOutline();
 	this.update(x1, y1, x2, y2);
 	this.isSelected = false;
+
 	this.draw = function() {
 		// Draw the circle.
 		context.globalAlpha = 0.85;
 		context.beginPath();
 		context.arc(this.x1, this.y1, this.radius, 0, Math.PI*2);
 		context.fillStyle = this.colour;
-		context.strokeStyle = "black";
+		context.strokeStyle = this.outlineColour;
+
 		if (this.isSelected) {
 			context.lineWidth = 5;
 		} else {
@@ -243,7 +276,7 @@ function changeColour() {
 		var shape = shapes[i];
 			if (shape.isSelected) {
 				shape.colour = getColour();
-				shape.strokeStyle = getOutline();
+				shape.outlineColour = getOutline();
 				drawShapes();
 				return;
 			}
