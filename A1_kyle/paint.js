@@ -9,16 +9,27 @@ var previousSelectedShape;
 //representing the canvas element and the canvas context
 var canvas;
 var context;
-//select element for shapes
+//select elements
 var shapeSelect;
-var colour = "blue";
+var colourSelect;
+//holds of copy of a selected shape
+var copiedShape;
+
+colours = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'black']
 
 window.onload = function() {
-    canvas = document.getElementById("canvas");
-    context = canvas.getContext("2d");
-    shapeSelect = document.getElementById("shapes");
-    console.log(shapeSelect.innerHTML);
-    
+
+	//fill in color dropdown list
+	colourSelect = document.getElementById('fill');
+	for (var i = 0; i < colours.length; i ++) {
+		var option = document.createElement('option');
+		option.text = colours[i]
+		colourSelect.add(option);
+	}
+		
+    canvas = document.getElementById('canvas');
+    context = canvas.getContext('2d');
+    shapeSelect = document.getElementById('shapes');    
     
     canvas.onmousedown = canvasMouseDown;
     canvas.onmouseup = canvasMouseUp
@@ -42,10 +53,10 @@ Line.prototype.draw = function () {
     context.lineTo(this.x2, this.y2);
     context.strokeStyle=this.colour;
     context.closePath();
+	
     if (this.isSelected) {
     	context.lineWidth = 5;
-    }
-    else {
+    } else {
     	context.lineWidth = 1;
     }
     context.stroke();
@@ -61,7 +72,7 @@ Line.prototype.update = function (x1, y1, x2, y2) {
 Line.prototype.testHit = function (x, y) { 
 
     //mouse pointer can be off by this many pixels
-    var pad = 3;
+    var pad = 5;
     
     var minY = Math.min(this.y1, this.y2);
     var maxY = Math.max(this.y1, this.y2);
@@ -73,9 +84,11 @@ Line.prototype.testHit = function (x, y) {
     var m = (this.y2 - this.y1) / (this.x2 - this.x1);
     var b = this.y1 - (m * this.x1);
     
-    console.log("\nline function: y=" + m + "x + " + b);
-    console.log("testing hit at (" + x + ", " + y + ") between (" + this.x1 + ", " + this.y1 + ") and (" + this.x2 + ", " + this.y2 + ")" );
-    console.log("mx + b = " + (x * m + b));
+    console.log('\nline function: y=' + m + 'x + ' + b);
+    console.log('testing hit at (' + x + ', ' + y + ') between (' +
+					 this.x1 + ', ' + this.y1 + ') and (' + 
+					 this.x2 + ', ' + this.y2 + ')' );
+    console.log('mx + b = ' + (x * m + b));
     
     //test if (x,y) lies on the line
     return (Math.abs(y - (x * m + b)) < pad) && (y > minY) && (y < maxY);
@@ -90,19 +103,20 @@ function Box(canvas, x1, y1, x2, y2, colour) {
 }
 
 Box.prototype.draw = function () {
-    context.globalAlpha = 0.85;
     context.beginPath();
     context.moveTo(this.x1, this.y1);
     context.lineTo(this.x1, this.y2);
     context.lineTo(this.x2, this.y2);
     context.lineTo(this.x2, this.y1);
     context.closePath();
+	
+    context.globalAlpha = 0.85;
     context.fillStyle = this.colour;
+	context.strokeStyle = 'black';
     context.fill();
     if (this.isSelected) {
     	context.lineWidth = 5;
-    }
-    else {
+    } else {
     	context.lineWidth = 1;
     }
     context.stroke();
@@ -132,17 +146,16 @@ function Circle(canvas,x, y, radius, colour) {
 }
 
 Circle.prototype.draw = function () {
-    // Draw the circle.
-    context.globalAlpha = 0.85;
     context.beginPath();
     context.arc(this.x, this.y, this.radius, 0, Math.PI*2);
+	
+	context.globalAlpha = 0.85;
     context.fillStyle = this.colour;
-    context.strokeStyle = "black";
+    context.strokeStyle = 'black';
 
     if (this.isSelected) {
     	context.lineWidth = 5;
-    }
-    else {
+    } else {
     	context.lineWidth = 1;
     }
     context.fill();
@@ -157,22 +170,24 @@ Circle.prototype.update = function (x, y, radius) {
 }
 
 Circle.prototype.testHit = function(testX,testY) {
-    var distanceFromCenter = Math.sqrt(Math.pow(this.x - testX, 2) + Math.pow(this.y - testY, 2));
+    var distanceFromCenter =
+		Math.sqrt(Math.pow(this.x - testX, 2) +Math.pow(this.y - testY, 2));
     if (distanceFromCenter <= this.radius) 
         return true;
     return false;
 }
 
+
 //creates a starting shape and adds it to shape array
 function addShape(baseX, baseY) {
     var shape = shapeSelect.options[shapeSelect.selectedIndex].value;
-    if (shape === "line") {
+	var colour = colourSelect.options[colourSelect.selectedIndex].value;
+	
+    if (shape === 'line') {
         shapes.push(new Line(canvas, baseX, baseY, baseX, baseY, colour));
-    }
-    else if (shape === "box") {
+    }  else if (shape === 'box') {
         shapes.push(new Box(canvas, baseX, baseY, baseX, baseY, colour));
-    }
-    else {
+    } else {
         shapes.push(new Circle(canvas, baseX, baseY, 0, colour));
     }
 }
@@ -191,13 +206,21 @@ function drawShapes() {
 
 //delete every shape and erase them from the canvas
 function clearCanvas() {
-    // Remove all the circles.
+    // Remove all the shapes.
     shapes = [];
 
     currentShape = -1;
    
     // Update the display.
     drawShapes();
+}
+
+function copyShape() {
+	copiedShape = previousSelectedShape;
+}
+
+function pasteShape() {
+	
 }
 
 //remove selected shape from canvas
@@ -218,7 +241,7 @@ function canvasMouseDown(event) {
     for(var i=shapes.length-1; i>=0; i--) {
         var shape = shapes[i];
         if (shape.testHit(clickX,clickY)) {
-            if (previousSelectedShape != null) 
+            if (previousSelectedShape) 
                 previousSelectedShape.isSelected = false;
             previousSelectedShape = shape;
             shape.isSelected = true;
@@ -249,11 +272,11 @@ function canvasMouseMove(event) {
     var newX = event.pageX - canvas.offsetLeft;
     var newY = event.pageY - canvas.offsetTop;
     
-    if (shapeSelect.options[shapeSelect.selectedIndex].value == "circle") {
-        var newRad = Math.sqrt(Math.pow(shape.x - newX, 2) + Math.pow(shape.y - newY, 2));
+    if (shapeSelect.options[shapeSelect.selectedIndex].value == 'circle') {
+        var newRad =
+			Math.sqrt(Math.pow(shape.x - newX, 2) + Math.pow(shape.y - newY, 2));
         shape.update(shape.x, shape.y, newRad);
-    }
-    else {
+    } else {
         shape.update(shape.x1, shape.y1, newX, newY);
    }
     

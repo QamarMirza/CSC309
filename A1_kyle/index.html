@@ -14,7 +14,7 @@
 	</canvas>
     <br>
 
-    <div id="selectdiv">
+    <div class="selectdiv">
         Shape
         <select id="shapes">
         <option value="line" >Line</option>
@@ -22,14 +22,20 @@
         <option value="circle">Circle</option>
         </select>
     </div>
+	<div class="selectdiv">
+		Fill Colour
+		<select id="fill">
+		<!-- filled in by paint.js-->
+		</select>
+	</div>
     <!--
     <form action="">
         Border Width
         <input type="text" name="borderwidth">
     </form>
-    <button>Copy Shape</button>
-    <button>Paste Shape</button>
-    -->
+	-->
+    <button onclick="copyShape()">Copy Shape</button>
+    <button onclick="pasteShape()">Paste Shape</button>
     <button onclick="clearCanvas()">Clear Canvas</button>
     <button onclick="eraseShape()">Erase Shape</button>
 
