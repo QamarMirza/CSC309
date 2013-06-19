@@ -2,45 +2,33 @@
 <html lang="en">
 <head>
 	<title> CSC309 - Assignment 1 </title>
-	<link rel="stylesheet" type="text/css" href="assign1.css">
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+	<script src="jQuery/jquery-1.10.1.js" type="text/javascript"></script>
+	<script src="jQuery/spectrum/spectrum.js" type="text/javascript"></script>
 	<script type="text/javascript" src="assign1.js"></script>
+	<link rel="stylesheet" href="jQuery/spectrum/spectrum.css">
+	<link rel="stylesheet" type="text/css" href="assign1.css">
 </head>
 <body>
 	<canvas id="drawingCanvas" width="400px" height="400px"></canvas>
 	<br />
-	<div id="selectDiv">Select a shape:
+	
+	<div class="select">Select a shape:
 		<select id="shapeSelect">
 			<option value="line" >Line</option>
 			<option value="rectangle" >Rectangle</option>
 			<option value="circle">Circle</option>
 		</select>
 	</div>
-	<div id="colourDiv">Fill Colours:
-		<select id="colourSelect">
-			<option value="red" >Red</option>
-			<option value="blue" >Blue</option>
-			<option value="green">Green</option>
-			<option value="black">Black</option>
-			<option value="yellow">Yellow</option>
-			<option value="orange">Orange</option>
-			<option value="brown">Brown</option>
-			<option value="white">White</option>
-		</select>
-	</div>
-	<div id="outlineDiv">Outline Colours:
-		<select id="colourOutline">
-			<option value="red" >Red</option>
-			<option value="blue" >Blue</option>
-			<option value="green">Green</option>
-			<option value="black">Black</option>
-			<option value="yellow">Yellow</option>
-			<option value="orange">Orange</option>
-			<option value="brown">Brown</option>
-			<option value="white">White</option>
-		</select>
-	</div>	
+	
 	<button onclick="clearCanvas()" >Clear Canvas</button>
-	<button onclick="eraseShape()" >Erase Shape</button>
+	<button onclick="eraseShape()" id="eraseShape" >Erase Shape</button>
+	<br />
+
+	<div class="select" >Fill Colour:
+		<input type='text' id="fillSelect" value="red"/>
+	</div>
+	<div class="select" >Outline Colour:
+		<input type='text' id="outlineSelect" value="black"/>
+	</div>
 </body>
 </html>
