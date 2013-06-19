@@ -2,13 +2,16 @@ canvas {
 	border: 2px solid black;
 }
 
-div {
-	display:inline;
+button {
+	margin-bottom: 10px;
+}
+
+div.select {
 	float: bottom;
+	display: inline;
 	margin-right: 10px;
 }
 
-button {
-	float: absolute: right;
-	margin-right: 10px;
+.colour-spectrum .sp-palette {
+	max-width: 200px;
 }
