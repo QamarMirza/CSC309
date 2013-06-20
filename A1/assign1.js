@@ -99,6 +99,10 @@ function canvasMouseDown(event) {
 			return;
 		}
 	}
+	for (var i=shapes.length-1; i>=0; i--) {
+		var shape = shapes[i];
+		shape.isSelected = false;
+	}
 	select = false;
 	mouseDown = true;
 }
