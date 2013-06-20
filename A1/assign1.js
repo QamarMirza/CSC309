@@ -2,7 +2,9 @@ var previousSelectedShape; // keep track of previously selected shape
 var shapes = []; // array to keep track of all shapes
 var mouseDown = false; // keep track of whether the mouse is down
 var anySelected = false; // keep track of whether any shape has been selected or not
-
+var copy = false;
+var newShape;
+var defaultOutline=2;
 $(function() {
 	// setup canvas
 	canvas = $("#drawingCanvas"); // this returns a jQuery object
@@ -77,7 +79,7 @@ function canvasMouseDown(event) {
 	// Get the canvas click coordinates.
 	var clickX = event.pageX - canvasElement.offsetLeft;
 	var clickY = event.pageY - canvasElement.offsetTop;
-	
+	copy = false;
 	anySelected = false;
 	
 	// Look for the clicked shape
@@ -155,9 +157,9 @@ function Line(x1, y1, x2, y2) {
 		context.lineTo(this.x2, this.y2);
 		context.strokeStyle = this.fillColour;
 		if (this.isSelected) {
-			context.lineWidth = 5;
+			context.lineWidth = this.outline+3;
 		} else {
-			context.lineWidth = 2;
+			context.lineWidth = this.outline;
 		}
 		context.stroke();
 	};
@@ -194,6 +196,7 @@ function Rectangle(x1, y1, x2, y2) {
 	this.fillColour = getFillColour();
 	this.outlineColour = getOutlineColour();
 	this.update(x1, y1, x2, y2);
+	this.outline = defaultOutline;
 	this.isSelected = false;
 	this.draw = function() {
 		// Draw the rectangle.
@@ -202,10 +205,11 @@ function Rectangle(x1, y1, x2, y2) {
 		context.rect(this.x1, this.y1, this.x2, this.y2);
 		context.fillStyle = this.fillColour;
 		context.strokeStyle = this.outlineColour;
+		console.log(this.outline);
 		if (this.isSelected) {
-			context.lineWidth = 5;
+			context.lineWidth = this.outline+3;
 		} else {
-			context.lineWidth = 2;
+			context.lineWidth = this.outline;
 		}
 		context.fill();
 		context.stroke();
@@ -257,6 +261,7 @@ function Circle(x1,y1, x2, y2) {
 	this.outlineColour = getOutlineColour();
 	this.update(x1, y1, x2, y2);
 	this.isSelected = false;
+	this.outline = defaultOutline;
 	this.draw = function() {
 		// Draw the circle.
 		context.globalAlpha = 0.85;
@@ -265,9 +270,9 @@ function Circle(x1,y1, x2, y2) {
 		context.fillStyle = this.fillColour;
 		context.strokeStyle = this.outlineColour;
 		if (this.isSelected) {
-			context.lineWidth = 5;
+			context.lineWidth = this.outline + 3;
 		} else {
-			context.lineWidth = 2;
+			context.lineWidth = this.outline;
 		} 
 		context.fill();
 		context.stroke(); 
@@ -284,7 +289,11 @@ Circle.prototype.testHit = function(x,y) {
 Circle.prototype.update = function(x1, y1, x2, y2) {
 	this.x1 = x1;
 	this.y1 = y1;
-	this.radius = Math.sqrt(Math.pow(x2 - this.x1, 2) + Math.pow(y2-this.y1, 2));
+	if ((copy)){
+		this.radius = x2; // x2=y2=radius then
+	} else{
+		this.radius = Math.sqrt(Math.pow(x2 - this.x1, 2) + Math.pow(y2-this.y1, 2));
+	}
 };
 
 function drawShapes() {
@@ -335,4 +344,78 @@ function getFillColour() {
 
 function getOutlineColour() {
 	return outlineSelect.value;
+}
+
+function copyShape(){
+	if (anySelected){
+		copy = true;
+		for (var i=shapes.length-1; i>=0; i--) {
+			var shape = shapes[i];
+			if (shape.isSelected){
+				if (shape instanceof Circle){
+					//this.radius = Math.sqrt(Math.pow(x2 - this.x1, 2) + Math.pow(y2-this.y1, 2));
+					// how the radius is calculated
+					newShape = new Circle(shape.x1, shape.y1, shape.radius , shape.radius);
+					newShape.fillColour = shape.fillColour;
+					newShape.outlineColour = shape.outlineColour;
+				} else if (shape instanceof Rectangle){ // this one works
+					newShape = new Rectangle(shape.x1, shape.y1, shape.x2+shape.x1, shape.y2+shape.y1);
+					newShape.outlineColour = shape.outlineColour;
+					newShape.fillColour = shape.fillColour;
+				} else{
+					newShape = new Line(shape.x1, shape.y1, shape.x2, shape.y2);
+					newShape.fillColour = shape.fillColour;
+					newShape.outlineColour = shape.outlineColour;
+				}
+			}
+		}
+	}
+}
+
+function pasteShape() {
+	if (!(newShape === undefined)){
+		for (var i=shapes.length-1; i>=0; i--) {
+			var shape = shapes[i];
+			if (shape.isSelected){
+				shapes.push(newShape);
+				console.log(newShape);
+				shapes[shapes.length-1].x1 += 100;
+				shape.isSelected = false;
+				copy = false;
+				drawShapes();
+				return;
+			}
+		}
+	}
+}
+
+function increaseOutline (){
+	if(anySelected){
+		for (var i=shapes.length-1; i>=0; i--) {
+			var shape = shapes[i];
+			if (shape.isSelected){
+				shape.outline += 1
+				drawShapes();
+				return;
+			}		
+		}
+	}
+}
+
+function decreaseOutline(){
+	if(anySelected){
+		for (var i=shapes.length-1; i>=0; i--) {
+			var shape = shapes[i];
+			if (shape.isSelected) {
+				if (shape.lineWidth > 0){
+					alert ("Can't have linewidth of 0!");
+				}	 
+				else {
+					shape.outline += -1;
+					drawShapes();
+				}
+				return;		
+			}
+		}
+	}
 }
