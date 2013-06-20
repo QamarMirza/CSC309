@@ -1,7 +1,7 @@
 var previousSelectedShape; // keep track of previously selected shape
 var shapes = []; // array to keep track of all shapes
 var mouseDown = false; // keep track of whether the mouse is down
-var select = false; // keep track of whether any shape has been selected or not
+var anySelected = false; // keep track of whether any shape has been selected or not
 
 $(function() {
 	// setup canvas
@@ -74,15 +74,11 @@ $(function() {
 });
 
 function canvasMouseDown(event) {
-	if (event.button === 0) {
-		$(canvas).bind('mousemove', function(event) {
-			canvasMouseMove(event);
-		});
-	}
-	
 	// Get the canvas click coordinates.
 	var clickX = event.pageX - canvasElement.offsetLeft;
 	var clickY = event.pageY - canvasElement.offsetTop;
+	
+	anySelected = false;
 	
 	// Look for the clicked shape
 	for (var i=shapes.length-1; i>=0; i--) {
@@ -92,19 +88,23 @@ function canvasMouseDown(event) {
 				previousSelectedShape.isSelected = false;
 			}
 			shape.isSelected = true;
+			anySelected = true;
 			console.log("hit");
 			previousSelectedShape = shape;
 			drawShapes();
-			select = true;
 			return;
+		} else {
+			shape.isSelected = false;
 		}
 	}
-	for (var i=shapes.length-1; i>=0; i--) {
-		var shape = shapes[i];
-		shape.isSelected = false;
-	}
-	select = false;
+	
 	mouseDown = true;
+	if (event.button === 0) {
+		$(canvas).bind('mousemove', function(event) {
+			canvasMouseMove(event);
+		});
+	}
+
 }
 
 function canvasMouseMove(event) {
@@ -114,7 +114,7 @@ function canvasMouseMove(event) {
 		console.log("adding shape");
 		addShape(clickX, clickY);
 		mouseDown = false;
-	} else if (!select) {
+	} else if (!anySelected) {
 		//console.log("updating shape");
 		var shape = shapes[shapes.length-1];
 		shape.update(shape.x1, shape.y1, clickX, clickY);
@@ -307,18 +307,18 @@ function clearCanvas(event) {
 }
 
 function eraseShape() {
-	if (select){
+	if (anySelected){
 		shapes.splice(shapes.indexOf(previousSelectedShape),1);
 		previousSelectedShape = null;
 		drawShapes();
-		select = false;
+		anySelected = false;
 	}
 }
 
 function changeColour() {
-	if (select) {
+	if (anySelected) {
 		for (var i=shapes.length-1; i>=0; i--) {
-		var shape = shapes[i];
+			var shape = shapes[i];
 			if (shape.isSelected) {
 				shape.fillColour = getFillColour();
 				shape.outlineColour = getOutlineColour();
