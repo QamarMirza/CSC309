@@ -407,8 +407,8 @@ function decreaseOutline(){
 		for (var i=shapes.length-1; i>=0; i--) {
 			var shape = shapes[i];
 			if (shape.isSelected) {
-				if (shape.lineWidth > 0){
-					alert ("Can't have linewidth of 0!");
+				if (shape.outline < 1){
+					alert ("Can't have linewidth of -1!");
 				}	 
 				else {
 					shape.outline += -1;
