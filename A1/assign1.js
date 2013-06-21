@@ -5,6 +5,7 @@ var anySelected = false; // keep track of whether any shape has been selected or
 var copy = false;
 var newShape;
 var defaultOutlineWidth = 3;
+var tags = ["CANVAS", "BUTTON", "INPUT"];
 
 $(function() {
 	// setup canvas
@@ -18,12 +19,23 @@ $(function() {
 	canvasElement = canvas[0] // canvas[0] is the actual HTML DOM element for our drawing canvas
 	context = canvasElement.getContext("2d");
 	
-	// attach mouseup event to entire document as well
+	// attach mouse events to entire document as well
 	$(window).mouseup(function(event) {
 		mouseUpOut(event);
 	});
 
-	// set a colour palettes for fill and outline using spectrum, a jQuery plugin
+	$(window).mousedown(function(event) {
+		// check for what we clicked, ignore if we clicked any element that matches a value in tags
+		if ($.inArray(event.target.tagName, tags) === -1) {
+			anySelected = false;
+			if (previousSelectedShape) {
+				previousSelectedShape.isSelected = false;
+			}
+			drawShapes();
+		}
+	});
+
+	// set a colour palette for fill and outline using spectrum, a jQuery plugin
 	$("#fillSelect").spectrum({
 		color: "red",
 		showInput: true,
@@ -102,7 +114,7 @@ function canvasMouseDown(event) {
 			shape.isSelected = false;
 		}
 	}
-	
+	drawShapes();
 	mouseDown = true;
 	if (event.button === 0) {
 		$(canvas).bind('mousemove', function(event) {
@@ -208,7 +220,6 @@ function Rectangle(x1, y1, x2, y2) {
 		context.rect(this.x1, this.y1, this.x2, this.y2);
 		context.fillStyle = this.fillColour;
 		context.strokeStyle = this.outlineColour;
-		console.log(this.outline);
 		if (this.isSelected) {
 			context.lineWidth = this.outlineWidth + 3;
 		} else {
@@ -397,7 +408,7 @@ function increaseOutline() {
 		for (var i=shapes.length-1; i>=0; i--) {
 			var shape = shapes[i];
 			if (shape.isSelected) {
-				shape.outline += 1;
+				shape.outlineWidth += 1;
 				drawShapes();
 				return;
 			}		
@@ -410,11 +421,12 @@ function decreaseOutline() {
 		for (var i=shapes.length-1; i>=0; i--) {
 			var shape = shapes[i];
 			if (shape.isSelected) {
-				if (shape.outline < 1) {
-					//FIXME: 0 or -1?
+				if (shape.outlineWidth < 1) {
+					//FIXME: 0 or 1?
+					//TODO: disable button instead of alert.
 					alert ("Can't have linewidth of -1!");
 				} else {
-					shape.outline += -1;
+					shape.outlineWidth += -1;
 					drawShapes();
 				}
 				return;		
