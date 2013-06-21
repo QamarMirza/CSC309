@@ -4,7 +4,8 @@ var mouseDown = false; // keep track of whether the mouse is down
 var anySelected = false; // keep track of whether any shape has been selected or not
 var copy = false;
 var newShape;
-var defaultOutline=2;
+var defaultOutlineWidth = 3;
+
 $(function() {
 	// setup canvas
 	canvas = $("#drawingCanvas"); // this returns a jQuery object
@@ -12,14 +13,16 @@ $(function() {
 		canvasMouseDown(event);
 	});
 	canvas.mouseup(function(event) {
-		canvasMouseUpOut(event);
-	});
-	canvas.mouseout(function(event) {
-		canvasMouseUpOut(event);
+		mouseUpOut(event);
 	});
 	canvasElement = canvas[0] // canvas[0] is the actual HTML DOM element for our drawing canvas
 	context = canvasElement.getContext("2d");
 	
+	// attach mouseup event to entire document as well
+	$(window).mouseup(function(event) {
+		mouseUpOut(event);
+	});
+
 	// set a colour palettes for fill and outline using spectrum, a jQuery plugin
 	$("#fillSelect").spectrum({
 		color: "red",
@@ -106,7 +109,6 @@ function canvasMouseDown(event) {
 			canvasMouseMove(event);
 		});
 	}
-
 }
 
 function canvasMouseMove(event) {
@@ -124,7 +126,7 @@ function canvasMouseMove(event) {
 	drawShapes();
 }
 
-function canvasMouseUpOut(event) {
+function mouseUpOut(event) {
 	$(canvas).unbind('mousemove');
 }
 
@@ -149,7 +151,7 @@ function Line(x1, y1, x2, y2) {
 	this.fillColour = getFillColour();
 	this.update(x1, y1, x2, y2);
 	this.isSelected = false; // initially false
-	this.lineWidth = 10;
+	this.outlineWidth = defaultOutlineWidth;
 	this.draw = function() {
 		context.beginPath();
 		context.lineWidth = this.lineWidth;
@@ -157,9 +159,9 @@ function Line(x1, y1, x2, y2) {
 		context.lineTo(this.x2, this.y2);
 		context.strokeStyle = this.fillColour;
 		if (this.isSelected) {
-			context.lineWidth = this.outline+3;
+			context.lineWidth = this.outlineWidth + 3;
 		} else {
-			context.lineWidth = this.outline;
+			context.lineWidth = this.outlineWidth;
 		}
 		context.stroke();
 	};
@@ -176,13 +178,14 @@ Line.prototype.testHit = function(x, y) {
 	} else {
 		var minY = this.y2, maxY = this.y1;
 	}
-	var precision = this.lineWidth / 2;
-	var checkX = (x >= minX - precision) && (x <= maxX + precision); // check if x-coor within bound 
-	var checkY = (y >= minY - precision) && (y <= maxY + precision); // check if y-coor within bound
-	var m = -1 * (this.y2 - this.y1) / (this.x2 - this.x1);	// slope is reversed since y is reversed
+	var xPrecision = this.outlineWidth / 2;
+	var yPrecision = this.outlineWidth;
+	var checkX = (x >= minX - xPrecision) && (x <= maxX + xPrecision); // check if x-coor within bound 
+	var checkY = (y >= minY - yPrecision) && (y <= maxY + yPrecision); // check if y-coor within bound
+	var m = (this.y2 - this.y1) / (this.x2 - this.x1);
 	var b = this.y1 - m * this.x1;	// y-intercept
 	// returns true iff point within bounds and satisfies line eq with += precision
-	return (checkX && checkY && Math.abs(y - m * x - b) <= precision);
+	return (checkX && checkY && Math.abs(y - m * x - b) <= yPrecision * 2);
 };
 
 Line.prototype.update = function (x1, y1, x2, y2) {
@@ -196,7 +199,7 @@ function Rectangle(x1, y1, x2, y2) {
 	this.fillColour = getFillColour();
 	this.outlineColour = getOutlineColour();
 	this.update(x1, y1, x2, y2);
-	this.outline = defaultOutline;
+	this.outlineWidth = defaultOutlineWidth;
 	this.isSelected = false;
 	this.draw = function() {
 		// Draw the rectangle.
@@ -207,9 +210,9 @@ function Rectangle(x1, y1, x2, y2) {
 		context.strokeStyle = this.outlineColour;
 		console.log(this.outline);
 		if (this.isSelected) {
-			context.lineWidth = this.outline+3;
+			context.lineWidth = this.outlineWidth + 3;
 		} else {
-			context.lineWidth = this.outline;
+			context.lineWidth = this.outlineWidth;
 		}
 		context.fill();
 		context.stroke();
@@ -261,7 +264,7 @@ function Circle(x1,y1, x2, y2) {
 	this.outlineColour = getOutlineColour();
 	this.update(x1, y1, x2, y2);
 	this.isSelected = false;
-	this.outline = defaultOutline;
+	this.outlineWidth = defaultOutlineWidth;
 	this.draw = function() {
 		// Draw the circle.
 		context.globalAlpha = 0.85;
@@ -270,9 +273,9 @@ function Circle(x1,y1, x2, y2) {
 		context.fillStyle = this.fillColour;
 		context.strokeStyle = this.outlineColour;
 		if (this.isSelected) {
-			context.lineWidth = this.outline + 3;
+			context.lineWidth = this.outlineWidth + 3;
 		} else {
-			context.lineWidth = this.outline;
+			context.lineWidth = this.outlineWidth;
 		} 
 		context.fill();
 		context.stroke(); 
@@ -289,7 +292,7 @@ Circle.prototype.testHit = function(x,y) {
 Circle.prototype.update = function(x1, y1, x2, y2) {
 	this.x1 = x1;
 	this.y1 = y1;
-	if ((copy)){
+	if ((copy)) {
 		this.radius = x2; // x2=y2=radius then
 	} else{
 		this.radius = Math.sqrt(Math.pow(x2 - this.x1, 2) + Math.pow(y2-this.y1, 2));
@@ -316,8 +319,8 @@ function clearCanvas(event) {
 }
 
 function eraseShape() {
-	if (anySelected){
-		shapes.splice(shapes.indexOf(previousSelectedShape),1);
+	if (anySelected) {
+		shapes.splice(shapes.indexOf(previousSelectedShape), 1);
 		previousSelectedShape = null;
 		drawShapes();
 		anySelected = false;
@@ -346,13 +349,13 @@ function getOutlineColour() {
 	return outlineSelect.value;
 }
 
-function copyShape(){
-	if (anySelected){
+function copyShape() {
+	if (anySelected) {
 		copy = true;
 		for (var i=shapes.length-1; i>=0; i--) {
 			var shape = shapes[i];
 			if (shape.isSelected){
-				if (shape instanceof Circle){
+				if (shape instanceof Circle) {
 					//this.radius = Math.sqrt(Math.pow(x2 - this.x1, 2) + Math.pow(y2-this.y1, 2));
 					// how the radius is calculated
 					newShape = new Circle(shape.x1, shape.y1, shape.radius , shape.radius);
@@ -362,7 +365,7 @@ function copyShape(){
 					newShape = new Rectangle(shape.x1, shape.y1, shape.x2+shape.x1, shape.y2+shape.y1);
 					newShape.outlineColour = shape.outlineColour;
 					newShape.fillColour = shape.fillColour;
-				} else{
+				} else {
 					newShape = new Line(shape.x1, shape.y1, shape.x2, shape.y2);
 					newShape.fillColour = shape.fillColour;
 					newShape.outlineColour = shape.outlineColour;
@@ -373,10 +376,10 @@ function copyShape(){
 }
 
 function pasteShape() {
-	if (!(newShape === undefined)){
+	if (!(newShape === undefined)) {
 		for (var i=shapes.length-1; i>=0; i--) {
 			var shape = shapes[i];
-			if (shape.isSelected){
+			if (shape.isSelected) {
 				shapes.push(newShape);
 				console.log(newShape);
 				shapes[shapes.length-1].x1 += 100;
@@ -389,12 +392,12 @@ function pasteShape() {
 	}
 }
 
-function increaseOutline (){
-	if(anySelected){
+function increaseOutline() {
+	if (anySelected) {
 		for (var i=shapes.length-1; i>=0; i--) {
 			var shape = shapes[i];
-			if (shape.isSelected){
-				shape.outline += 1
+			if (shape.isSelected) {
+				shape.outline += 1;
 				drawShapes();
 				return;
 			}		
@@ -402,15 +405,15 @@ function increaseOutline (){
 	}
 }
 
-function decreaseOutline(){
-	if(anySelected){
+function decreaseOutline() {
+	if (anySelected) {
 		for (var i=shapes.length-1; i>=0; i--) {
 			var shape = shapes[i];
 			if (shape.isSelected) {
-				if (shape.outline < 1){
+				if (shape.outline < 1) {
+					//FIXME: 0 or -1?
 					alert ("Can't have linewidth of -1!");
-				}	 
-				else {
+				} else {
 					shape.outline += -1;
 					drawShapes();
 				}
@@ -420,8 +423,6 @@ function decreaseOutline(){
 	}
 }
 
-function move(){
-
-
+function move() {
 	
 }
