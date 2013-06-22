@@ -35,6 +35,23 @@ $(function() {
 			drawShapes();
 		}
 	});
+ function updateWidth(w){
+ 	if (anySelected){
+		for (var i=shapes.length-1; i>=0; i--) {
+			var shape = shapes[i];
+			if (shape.isSelected){
+				shape.outlineWidth = w;
+				drawShapes();
+				break;
+			}
+ 		}
+ 	}
+ }
+$("[data-slider]")
+  .bind("slider:ready slider:changed", function (event, data) {
+    updateWidth(data.value);
+  });
+
 
 	// set a colour palette for fill and outline using spectrum, a jQuery plugin
 	$("#fillSelect").spectrum({
@@ -374,22 +391,37 @@ function copyShape() {
 					newShape.fillColour = shape.fillColour;
 					newShape.outlineColour = shape.outlineColour;
 					newShape.outlineWidth = shape.outlineWidth;
+					newShape.isSelected = false;
+					shapes[shapes.length-1].x1 = 200;
+					shapes[shapes.length-1].y1 = 200;
 				} else if (shape instanceof Rectangle){ // this one works
 					newShape = new Rectangle(shape.x1, shape.y1, shape.x2+shape.x1, shape.y2+shape.y1);
 					newShape.outlineColour = shape.outlineColour;
 					newShape.fillColour = shape.fillColour;
 					newShape.outlineWidth = shape.outlineWidth;
+					shapes[shapes.length-1].x1 = 200;
+					shapes[shapes.length-1].y1 = 200;
+					newShape.isSelected = false;
 
 				} else {
 					newShape = new Line(shape.x1, shape.y1, shape.x2, shape.y2);
 					newShape.fillColour = shape.fillColour;
 					newShape.outlineColour = shape.outlineColour;
 					newShape.outlineWidth = shape.outlineWidth;
+					newShape.isSelected = false;
+
+					var changex = shapes[shapes.length-1].x2 - shapes[shapes.length-1].x1;
+					var changey = shapes[shapes.length-1].y2 - shapes[shapes.length-1].y1;
+					shapes[shapes.length-1].x1 = 200;
+					shapes[shapes.length-1].y1 = 200;
+					shapes[shapes.length-1].x2 = shapes[shapes.length-1].x1 + changex;
+					shapes[shapes.length-1].y2 = shapes[shapes.length-1].y1 + changey;
+
 				}
 				shapes.push(newShape);
 				console.log(newShape);
-				shapes[shapes.length-1].x1 += 100;
 				shape.isSelected = false;
+
 				copy = false;
 				drawShapes();
 				return;
@@ -397,7 +429,6 @@ function copyShape() {
 		}
 	}
 }
-
 
 function increaseOutline() {
 	if (anySelected) {
