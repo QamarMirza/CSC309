@@ -373,25 +373,19 @@ function copyShape() {
 					newShape = new Circle(shape.x1, shape.y1, shape.radius , shape.radius);
 					newShape.fillColour = shape.fillColour;
 					newShape.outlineColour = shape.outlineColour;
+					newShape.outlineWidth = shape.outlineWidth;
 				} else if (shape instanceof Rectangle){ // this one works
 					newShape = new Rectangle(shape.x1, shape.y1, shape.x2+shape.x1, shape.y2+shape.y1);
 					newShape.outlineColour = shape.outlineColour;
 					newShape.fillColour = shape.fillColour;
+					newShape.outlineWidth = shape.outlineWidth;
+
 				} else {
 					newShape = new Line(shape.x1, shape.y1, shape.x2, shape.y2);
 					newShape.fillColour = shape.fillColour;
 					newShape.outlineColour = shape.outlineColour;
+					newShape.outlineWidth = shape.outlineWidth;
 				}
-			}
-		}
-	}
-}
-
-function pasteShape() {
-	if (!(newShape === undefined)) {
-		for (var i=shapes.length-1; i>=0; i--) {
-			var shape = shapes[i];
-			if (shape.isSelected) {
 				shapes.push(newShape);
 				console.log(newShape);
 				shapes[shapes.length-1].x1 += 100;
@@ -403,6 +397,7 @@ function pasteShape() {
 		}
 	}
 }
+
 
 function increaseOutline() {
 	if (anySelected) {
