@@ -6,6 +6,7 @@ var copy = false;
 var newShape;
 var defaultOutlineWidth = 3;
 var tags = ["CANVAS", "BUTTON", "DIV", "INPUT", "SPAN"];
+var resize = false;
 
 $(function() {
 	// setup canvas
@@ -47,10 +48,7 @@ $(function() {
  		}
  	}
  }
-$("[data-slider]")
-  .bind("slider:ready slider:changed", function (event, data) {
-    updateWidth(data.value);
-  });
+	$("[data-slider]").bind("slider:ready slider:changed", function (event, data) { updateWidth(data.value); });
 
 
 	// set a colour palette for fill and outline using spectrum, a jQuery plugin
@@ -153,11 +151,16 @@ function canvasMouseMove(event) {
 		var shape = shapes[shapes.length-1];
 		shape.update(shape.x1, shape.y1, clickX, clickY);
 	}
+	if (resize){
+		console.log("hera");
+		shape.update(shape.x1, shape.y1, clickX, clickY);
+	}
 	drawShapes();
 }
 
 function mouseUpOut(event) {
 	$(canvas).unbind('mousemove');
+	resize = false;
 }
 
 function addShape(x, y) {
@@ -430,38 +433,7 @@ function copyShape() {
 	}
 }
 
-function increaseOutline() {
-	if (anySelected) {
-		for (var i=shapes.length-1; i>=0; i--) {
-			var shape = shapes[i];
-			if (shape.isSelected) {
-				shape.outlineWidth += 1;
-				drawShapes();
-				return;
-			}		
-		}
-	}
-}
-
-function decreaseOutline() {
-	if (anySelected) {
-		for (var i=shapes.length-1; i>=0; i--) {
-			var shape = shapes[i];
-			if (shape.isSelected) {
-				if (shape.outlineWidth < 1) {
-					//FIXME: 0 or 1?
-					//TODO: disable button instead of alert.
-					alert ("Can't have linewidth of -1!");
-				} else {
-					shape.outlineWidth += -1;
-					drawShapes();
-				}
-				return;		
-			}
-		}
-	}
-}
-
-function move() {
+function resizeShape() {
+	resize = true;
 	
 }
