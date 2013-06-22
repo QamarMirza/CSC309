@@ -5,8 +5,12 @@
 	<script src="jQuery/jquery-1.10.1.js" type="text/javascript"></script>
 	<script src="jQuery/spectrum/spectrum.js" type="text/javascript"></script>
 	<script type="text/javascript" src="assign1.js"></script>
+	<script src="jQuery/simple-slider/js/simple-slider.js" type="text/javascript"></script>	
 	<link rel="stylesheet" href="jQuery/spectrum/spectrum.css">
 	<link rel="stylesheet" type="text/css" href="assign1.css">
+	<link rel="stylesheet" typer="text/css" href="jQuery/simple-slider/css/simple-slider.css">
+	<link rel="stylesheet" typer="text/css" href="jQuery/simple-slider/css/simple-slider-volume.css">
+
 </head>
 <body>
 	<canvas id="drawingCanvas" width="400px" height="400px"></canvas>
@@ -22,14 +26,16 @@
 	<button onclick="move()" >Move</button>
 	<button onclick="clearCanvas()" >Clear Canvas</button>
 	<button onclick="eraseShape()" id="eraseShape" >Erase Shape</button>
-	<button onClick="copyShape()" id="copy">Copy</button>
-	<button onClick="increaseOutline()" id="increaseOutline">Increase Outline</button>
-	<button onClick="decreaseOutline()" id="decreaseOutline">Decrease Outline</button>
+	<button onClick="copyShape()" id="copy/paste">Copy</button>
 	<br />
-
 	<p class="select" >Fill Colour:</p>
 	<input type='text' id="fillSelect" value="red"/>
 	<p class="select" >Outline Colour:</p>
 	<input type='text' id="outlineSelect" value="black"/>
+	<br />
+	Outline Width: 
+	<input type="text" data-slider="true" data-slider-range="1,50" data-slider-step="1" data-slider-snap="true" data-slider highlight="true" />
+
+	
 </body>
 </html>

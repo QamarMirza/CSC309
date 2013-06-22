@@ -10,8 +10,10 @@ p.select {
 	float: bottom;
 	display: inline;
 	margin-right: 10px;
+	margin-top: 10px;
 }
 
 .colour-spectrum .sp-palette {
 	max-width: 200px;
+	margin-top: 10px;
 }
