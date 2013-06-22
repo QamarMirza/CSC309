@@ -5,7 +5,7 @@ var anySelected = false; // keep track of whether any shape has been selected or
 var copy = false;
 var newShape;
 var defaultOutlineWidth = 3;
-var tags = ["CANVAS", "BUTTON", "INPUT"];
+var tags = ["CANVAS", "BUTTON", "DIV", "INPUT", "SPAN"];
 
 $(function() {
 	// setup canvas
@@ -25,6 +25,7 @@ $(function() {
 	});
 
 	$(window).mousedown(function(event) {
+		console.log(event.target);
 		// check for what we clicked, ignore if we clicked any element that matches a value in tags
 		if ($.inArray(event.target.tagName, tags) === -1) {
 			anySelected = false;
