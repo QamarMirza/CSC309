@@ -12,13 +12,13 @@
 	<canvas id="drawingCanvas" width="400px" height="400px"></canvas>
 	<br />
 	
-	<div class="select">Select a shape:
-		<select id="shapeSelect">
-			<option value="line" >Line</option>
-			<option value="rectangle" >Rectangle</option>
-			<option value="circle">Circle</option>
-		</select>
-	</div>
+	<p class="select">Select a shape:</p>
+	<select id="shapeSelect">
+		<option value="line" >Line</option>
+		<option value="rectangle" >Rectangle</option>
+		<option value="circle">Circle</option>
+	</select>
+
 	<button onclick="move()" >Move</button>
 	<button onclick="clearCanvas()" >Clear Canvas</button>
 	<button onclick="eraseShape()" id="eraseShape" >Erase Shape</button>
@@ -28,11 +28,9 @@
 	<button onClick="decreaseOutline()" id="decreaseOutline">Decrease Outline</button>
 	<br />
 
-	<div class="select" >Fill Colour:
-		<input type='text' id="fillSelect" value="red"/>
-	</div>
-	<div class="select" >Outline Colour:
-		<input type='text' id="outlineSelect" value="black"/>
-	</div>
+	<p class="select" >Fill Colour:</p>
+	<input type='text' id="fillSelect" value="red"/>
+	<p class="select" >Outline Colour:</p>
+	<input type='text' id="outlineSelect" value="black"/>
 </body>
 </html>
