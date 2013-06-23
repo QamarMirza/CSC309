@@ -243,7 +243,7 @@ function copyShape() {
 			newShape.outlineColour = shape.outlineColour;
 			newShape.outlineWidth = shape.outlineWidth;
 			newShape.isSelected = false;
-			newShape.x1 = 200;
+			newShape.x1 = 250;
 			newShape.y1 = 200;
 		} else if (shape instanceof Rectangle) {
 			newShape = new Rectangle(shape.x1, shape.y1, shape.x2 + shape.x1, shape.y2 + shape.y1);
@@ -251,7 +251,7 @@ function copyShape() {
 			newShape.fillColour = shape.fillColour;
 			newShape.outlineWidth = shape.outlineWidth;
 			newShape.isSelected = false;
-			newShape.x1 = 200;
+			newShape.x1 = 250;
 			newShape.y1 = 200;
 		} else {
 			newShape = new Line(shape.x1, shape.y1, shape.x2, shape.y2);
@@ -262,7 +262,7 @@ function copyShape() {
 
 			var diffX = shape.x2 - shape.x1;
 			var diffY = shape.y2 - shape.y1;
-			newShape.x1 = 200;
+			newShape.x1 = 250;
 			newShape.y1 = 200;
 			newShape.x2 = newShape.x1 + diffX;
 			newShape.y2 = newShape.y1 + diffY;
@@ -315,7 +315,6 @@ function updateWidth(w) {
 		var shape = previousSelectedShape;
 		shape.outlineWidth = w;
 		drawShapes();
-		console.log(w);
 	}
 }
 
@@ -481,7 +480,7 @@ Rectangle.prototype.testHit = function(x,y) {
 				return false;
 			}
 		} else { // x >0, box is drawn top right to bottom left
-			if (this.y2 > 0){ 
+			if (this.y2 > 0) { 
 				if (this.x1 +precision > x && this.x1+this.x2  - precision< x && this.y1  - precision< y && this.y1+this.y2 + precision > y) {
 					return true;
 				}
