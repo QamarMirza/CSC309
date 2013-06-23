@@ -3,7 +3,8 @@ canvas {
 }
 
 button {
-	margin-bottom: 10px;
+	margin-top: 10px;
+	margin-right: 5px;
 }
 
 p {
@@ -13,10 +14,14 @@ p {
 }
 
 #slider {
-	float: right;
-	display: inline;
+	margin-left:10;
+}
+td {
+
+	padding-right:10px;
+	padding-bottom:10px;
 }
 .colour-spectrum .sp-palette {
 	max-width: 200px;
-	margin-top: 10px;
+	margin-top: 20px;
 }
