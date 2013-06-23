@@ -9,6 +9,7 @@ var tags = ["CANVAS", "BUTTON", "DIV", "INPUT", "SPAN"];
 var resize = false;
 var offsetX, offsetY // used for moving shapes
 var resizeChange = false;
+
 $(function() {
 	// setup canvas
 	canvas = $("#drawingCanvas"); // this returns a jQuery object
@@ -36,6 +37,7 @@ $(function() {
 			anySelected = false;
 			if (previousSelectedShape) {
 				previousSelectedShape.isSelected = false;
+				previousSelectedShape = null;
 			}
 			drawShapes();
 		}
@@ -66,7 +68,8 @@ $(function() {
 			["#5b0f00", "#660000", "#783f04", "#7f6000", "#274e13", "#0c343d", "#1c4587", "#073763", "#20124d", "#4c1130"]
 		]
 	});
-		// jQuery colour pallet for selecting the colouroutline
+	
+	// jQuery plugin colour pallet for selecting the colourOutline
 	$("#outlineSelect").spectrum({
 		color: "black",
 		showInput: true,
@@ -98,6 +101,7 @@ $(function() {
 	fillSelect.onchange = changeColour;
 	outlineSelect.onchange = changeColour;
 });
+
 /*
 	function for mouselistener for onmousedown.
 */
@@ -108,6 +112,7 @@ function canvasMouseDown(event) {
 	copy = false;
 	resize = false;
 	anySelected = false;
+	
 	mouseDown = true;
 	if (event.button === 0) {
 		$(canvas).bind('mousemove', function(event) {
@@ -158,7 +163,6 @@ function canvasMouseMove(event) {
 			shape.update(shape.x1, shape.y1, mouseX, mouseY);
 			drawShapes();
 			resizeChange = true;
-
 		}
 	} else if ((!anySelected && !resize) || resizeChange) {
 		// update shape
@@ -177,6 +181,7 @@ function canvasMouseMove(event) {
 function mouseUpOut(event) {
 	$(canvas).unbind('mousemove');
 }
+
 /*
 	when the mouse clicks on a fresh peice of canvas and moves the mouse we
 	intiate a shape being created depending on where the drop down label is 
@@ -193,7 +198,7 @@ function addShape(x, y) {
 		// make rectangle object at initial mousedown position
 		var rectangle = new Rectangle(x, y, x, y);
 		shapes.push(rectangle);
-	} else {
+	} else if (shape === "circle") {
 		// make circle object at initial mousedown position
 		var circle = new Circle(x, y, x, y);
 		shapes.push(circle);
@@ -219,6 +224,7 @@ function moveShape(x, y) {
 	}
 	drawShapes();		
 }
+
 /*
 	when a shape is selected and the copy/paste button is pressed this function gets called.
 	depending on which type of shape is selected and needs to be copied, need to create a 
@@ -289,9 +295,11 @@ function clearCanvas(event) {
 	drawShapes();
 }
 
-// if a shape is selected, this function gets called and erases that shape
-// from the shapes array and redraws
-function eraseShape() { 
+/*
+	if a shape is selected, this function gets called 
+	and erases that shape from the shapes array and redraws
+*/
+function eraseShape() {
 	if (anySelected) {
 		shapes.splice(shapes.indexOf(previousSelectedShape), 1);
 		previousSelectedShape = null;
@@ -299,9 +307,11 @@ function eraseShape() {
 		anySelected = false;
 	}
 }
-// function get's called when slider value changes on which ever shape is selected
+/*
+	function get's called when slider value changes on which ever shape is selected
+*/
 function updateWidth(w) {
-	if (anySelected) { 
+	if (anySelected) {
 		var shape = previousSelectedShape;
 		shape.outlineWidth = w;
 		drawShapes();
@@ -326,10 +336,9 @@ function getOutlineColour() {
 }
 
 /*
-	Function used to create the shape of the line object. Initialize fill colour, update it's coordinates, 
+	function used to create the shape of the line object. Initialize fill colour, update it's coordinates, 
 	set object details to a default value and create a custom draw function.
 */
-
 function Line(x1, y1, x2, y2) {
 	this.fillColour = getFillColour();
 	this.update(x1, y1, x2, y2);
@@ -365,15 +374,57 @@ Line.prototype.testHit = function(x, y) {
 	}
 	var xPrecision = this.outlineWidth / 2;
 	var yPrecision = this.outlineWidth;
-	var checkX = (x >= minX - xPrecision) && (x <= maxX + xPrecision); // check if x-coor within bound 
-	var checkY = (y >= minY - yPrecision) && (y <= maxY + yPrecision); // check if y-coor within bound
+	var checkX = (x >= minX - xPrecision) && (x <= maxX + xPrecision); // check if x-coor within bound += some precision
+	var checkY = (y >= minY - yPrecision) && (y <= maxY + yPrecision); // check if y-coor within bound += some precision
+	if (this.x1 === this.x2 || this.y1 === this.y2) { // case for if lines are completely horizontal or vertical
+		return checkX && checkY;
+	}
+	
 	var m = (this.y2 - this.y1) / (this.x2 - this.x1);
 	var b = this.y1 - m * this.x1;	// y-intercept
-	// returns true iff point within bounds and satisfies line eq with += precision
-	return (checkX && checkY && Math.abs(y - m * x - b) <= yPrecision * 2);
+	
+	// returns true iff point within bounds and satisfies line eq with += some precision, need diff cases depending on slope
+	var invertM = 1/m;
+	var value = y - m * x - b;
+	var vPrecision = this.outlineWidth / 2;
+	if (invertM < 0) {
+		if (invertM <= -0.5) {
+			return (checkX && checkY && (0.5 - vPrecision <= value) && (value <= 5 + vPrecision));
+		} else if (invertM <= -0.4) {
+			return (checkX && checkY && (-0.5 - vPrecision <= value) && (value <= 11 + vPrecision));
+		} else if (invertM <= -0.3) {
+			return (checkX && checkY && (-1 - vPrecision <= value) && (value <= 13 + vPrecision));
+		} else if (invertM <= -0.2) {
+			return (checkX && checkY && (-4 - vPrecision <= value) && (value <= 15 + vPrecision));
+		} else if (invertM <= -0.1) {
+			return (checkX && checkY && (-8 - vPrecision <= value) && (value <= 48 + vPrecision));
+		} else if (invertM <= -0.05) {
+			return (checkX && checkY && (-12 - vPrecision <= value) && (value <= 150 + vPrecision));
+		} else {
+			return (checkX && checkY && (-20 - vPrecision <= value) && (value <= 275 + vPrecision));
+		}
+	} else {
+		if (invertM >= 0.5) {
+			return (checkX && checkY && (-0.3 - vPrecision <= value) && (value <= 2 + vPrecision));
+		} else if (invertM >= 0.4) {
+			return (checkX && checkY && (-6 - vPrecision <= value) && (value <= 3 + vPrecision));
+		} else if (invertM >= 0.3) {
+			return (checkX && checkY && (-10 - vPrecision <= value) && (value <= 4.5 + vPrecision));
+		} else if (invertM >= 0.2) {
+			return (checkX && checkY && (-13 - vPrecision <= value) && (value <= 6 + vPrecision));
+		} else if (invertM >= 0.1) {
+			return (checkX && checkY && (-25 - vPrecision <= value) && (value <= 8 + vPrecision));
+		} else if (invertM >= 0.05) {
+			return (checkX && checkY && (-55 - vPrecision <= value) && (value <= 12 + vPrecision));
+		} else {
+			return (checkX && checkY && (-150 - vPrecision <= value) && (value <= 25 + vPrecision));
+		}
+	}
 };
 
-// update the two end points of the line object
+/*
+	update the two end points of the line object
+*/
 Line.prototype.update = function (x1, y1, x2, y2) {
 	this.x1 = x1;
 	this.y1 = y1;
@@ -382,8 +433,8 @@ Line.prototype.update = function (x1, y1, x2, y2) {
 };
 
 /*
- This is the object created for the rectangle shape. we define it's point of origin and then offset values
- as well as it's initial colour outline and width and fill colour.
+	This is the object created for the rectangle shape. we define it's point of origin and then offset values
+	as well as it's initial colour outline and width and fill colour.
 */
 function Rectangle(x1, y1, x2, y2) {
 	this.fillColour = getFillColour();
@@ -418,7 +469,7 @@ Rectangle.prototype.testHit = function(x,y) {
 				return false;
 			}
 		} else { // x >0, box is drawn top right to bottom left
-			if (this.y2 > 0){ // box is drawn bototom left to top right
+			if (this.y2 > 0) { // box is drawn bototom left to top right
 				if (this.x1 > x && this.x1+this.x2 < x && this.y1 < y && this.y1+this.y2 > y) {
 					return true;
 				}
@@ -471,7 +522,14 @@ function Circle(x1, y1, x2, y2) {
 }
 
 Circle.prototype.testHit = function(x,y) { // check if mouse click is within radius distance of circle center
-	if (Math.sqrt(Math.pow(this.x1 - x, 2) + Math.pow(this.y1 -y, 2)) <= this.radius){
+	if (this.outlineWidth <= 5) {
+		var precision = this.outlineWidth;
+	} else if (this.outlineWidth <= 15) {
+		var precision = this.outlineWidth / 1.25;
+	} else {
+		var precision = this.outlineWidth / 1.75;
+	}
+	if (Math.sqrt(Math.pow(this.x1 - x, 2) + Math.pow(this.y1 -y, 2)) <= this.radius + precision) {
 		return true;
 	}
 	return false;
@@ -483,17 +541,18 @@ Circle.prototype.update = function(x1, y1, x2, y2) {
 	if (copy) { // if copy/paste button has been pressed
 		this.radius = x2; // x2=y2=radius then
 	} else{
-		this.radius = Math.sqrt(Math.pow(x2 - this.x1, 2) + Math.pow(y2-this.y1, 2)); // first time drawing shape, update according 
-																						// to mouse position
+		 // first time drawing shape, update according to mouse position
+		this.radius = Math.sqrt(Math.pow(x2 - this.x1, 2) + Math.pow(y2-this.y1, 2));
 	}
 };
 
 function resizeShape() {
 	resize = true; // to know that the resize button is clicked
-	resizeChange = false; // variable used for boolean check in canvasdraw so that it only snaps to the mouse when the mouse
-							// is near the shape. ie: when mouse comes back onto canvas, selected shape doesn't snap right to it
-							// immediately 
+	resizeChange = false;	// used as a check in canvasdraw so that it only snaps to the mouse when the mouse
+						 	// is near the shape. ie: when mouse comes back onto canvas, selected shape doesn't 
+							// snap right to it immediately
 	$(canvas).bind('mousemove', function(event) {
 		canvasMouseMove(event);
 	});
+
 }
