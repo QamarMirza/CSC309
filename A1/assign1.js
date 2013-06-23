@@ -315,6 +315,7 @@ function updateWidth(w) {
 		var shape = previousSelectedShape;
 		shape.outlineWidth = w;
 		drawShapes();
+		console.log(w);
 	}
 }
 
@@ -459,15 +460,18 @@ function Rectangle(x1, y1, x2, y2) {
 	};
 }
 
-ectangle.prototype.testHit = function(x,y) {
+Rectangle.prototype.testHit = function(x,y) {
 	var precision;
 		if (this.outlineWidth <= 5) {
-		var precision = this.outlineWidth;
-	} else if (this.outlineWidth <= 15) {
-		var precision = this.outlineWidth / 1.25;
-	} else {
-		var precision = this.outlineWidth / 1.75;
-	}
+		var precision = this.outlineWidth + 2;
+	} else if (this.outlineWidth <= 10) {
+		var precision = this.outlineWidth / 1.15;
+	} else if  (this.outlineWidth <= 15) {
+		var precision = this.outlineWidth / 1.5;
+	} else{
+		var precision = this.outlineWidth /1.8;
+	} 
+
 	if (this.x2 < 0) {
 		if (this.y2 < 0) { // if box is drawn bottom right to top left
 			if (this.y2 < 0) { 
@@ -491,7 +495,7 @@ ectangle.prototype.testHit = function(x,y) {
 			}
 			return false;
 		} else { // y > 0, box is drawn top left to bottom right 
-			if (this.x1 - precision < x && this.x1+this.x2  - precision> x && this.y1 + precision < y && this.y1+this.y2 + precision > y) {
+			if (this.x1 - precision < x && this.x1+this.x2  + precision> x && this.y1 - precision < y && this.y1+this.y2 + precision > y) {
 				return true;
 			}
 			return false;
