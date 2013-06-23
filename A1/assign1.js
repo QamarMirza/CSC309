@@ -7,6 +7,7 @@ var newShape;
 var defaultOutlineWidth = 3;
 var tags = ["CANVAS", "BUTTON", "DIV", "INPUT", "SPAN"];
 var resize = false;
+var offsetX, offsetY // used for moving shapes
 
 $(function() {
 	// setup canvas
@@ -30,7 +31,6 @@ $(function() {
 	});
 
 	$(window).mousedown(function(event) {
-		console.log(event.target);
 		// check for what we clicked, ignore if we clicked any element that matches a value in tags
 		if ($.inArray(event.target.tagName, tags) === -1) {
 			anySelected = false;
@@ -40,22 +40,9 @@ $(function() {
 			drawShapes();
 		}
 	});
-
- function updateWidth(w){
- 	if (anySelected){
-		for (var i=shapes.length-1; i>=0; i--) {
-			var shape = shapes[i];
-			if (shape.isSelected){
-				shape.outlineWidth = w;
-				drawShapes();
-				break;
-			}
- 		}
- 	}
- }
+	
 	$("[data-slider]").bind("slider:ready slider:changed", function (event, data) { updateWidth(data.value); });
-
-
+		
 	// set a colour palette for fill and outline using spectrum, a jQuery plugin
 	$("#fillSelect").spectrum({
 		color: "red",
@@ -78,7 +65,7 @@ $(function() {
 			["#5b0f00", "#660000", "#783f04", "#7f6000", "#274e13", "#0c343d", "#1c4587", "#073763", "#20124d", "#4c1130"]
 		]
 	});
-	
+		
 	$("#outlineSelect").spectrum({
 		color: "black",
 		showInput: true,
@@ -109,19 +96,26 @@ $(function() {
 	// attach onchange events to the selectors
 	fillSelect.onchange = changeColour;
 	outlineSelect.onchange = changeColour;
-	});
+});
 
 function canvasMouseDown(event) {
 	// Get the canvas click coordinates.
-	var clickX = event.pageX - canvasElement.offsetLeft;
-	var clickY = event.pageY - canvasElement.offsetTop;
+	var mouseX = event.pageX - canvasElement.offsetLeft;
+	var mouseY = event.pageY - canvasElement.offsetTop;
 	copy = false;
+	resize = false;
 	anySelected = false;
+	mouseDown = true;
+	if (event.button === 0) {
+		$(canvas).bind('mousemove', function(event) {
+			canvasMouseMove(event);
+		});
+	}
 	
 	// Look for the clicked shape
 	for (var i=shapes.length-1; i>=0; i--) {
 		var shape = shapes[i];
-		if (shape.testHit(clickX,clickY)) {
+		if (shape.testHit(mouseX,mouseY)) {
 			if (previousSelectedShape != null) { 
 				previousSelectedShape.isSelected = false;
 			}
@@ -129,6 +123,8 @@ function canvasMouseDown(event) {
 			anySelected = true;
 			console.log("hit");
 			previousSelectedShape = shape;
+			offsetX = mouseX - shape.x1;
+			offsetY = mouseY - shape.y1;
 			drawShapes();
 			return;
 		} else {
@@ -136,44 +132,31 @@ function canvasMouseDown(event) {
 		}
 	}
 	drawShapes();
-	mouseDown = true;
-	resize =false;
-	if (event.button === 0 ) {
-		$(canvas).bind('mousemove', function(event) {
-			canvasMouseMove(event);
-		});
-	}
 }
 
 function canvasMouseMove(event) {
-	console.log('movinggg');
-	console.log(anySelected + "   any selected");
-	var clickX = event.pageX - canvas[0].offsetLeft;
-	var clickY = event.pageY - canvas[0].offsetTop;
-	if (mouseDown) {
-		console.log("adding shape");
-		addShape(clickX, clickY);
+	var mouseX = event.pageX - canvas[0].offsetLeft;
+	var mouseY = event.pageY - canvas[0].offsetTop;
+	if (mouseDown && anySelected && !resize) {
+		// move shape
+		moveShape(mouseX, mouseY);
+	} else if (mouseDown && !resize) {
+		// add shape
+		addShape(mouseX, mouseY);
 		mouseDown = false;
-	} else if (anySelected && resize){
-		for (var i=shapes.length-1; i>=0; i--) {
-			var shape = shapes[i];
-			console.log(i + " shapes: " + shape.isSelected);
-			if (shape.isSelected){
-				if (shape.testHit(clickX+10, clickY+10) || shape.testHit(clickX+10, clickY-10) || shape.testHit(clickX-10, clickY+10) || shape.testHit(clickX-10, clickY-10)){		
-				console.log("hera");
-				shape.update(shape.x1, shape.y1, clickX, clickY);	
-				drawShapes();
-				break;
-			}
+	} else if (anySelected && resize) {
+		// resize shape
+		var shape = previousSelectedShape;
+		if (shape.testHit(mouseX+10, mouseY+10) || shape.testHit(mouseX+10, mouseY-10) || shape.testHit(mouseX-10, mouseY+10) || shape.testHit(mouseX-10, mouseY-10)) {
+			console.log("hear");
+			shape.update(shape.x1, shape.y1, mouseX, mouseY);
+			drawShapes();
 		}
-	}
-		
 	} else if (!anySelected && !resize) {
-		//console.log("updating shape");
+		// update shape
 		var shape = shapes[shapes.length-1];
-		if (shape){
-			console.log('updatinggg');
-			shape.update(shape.x1, shape.y1, clickX, clickY);
+		if (shape) {
+			shape.update(shape.x1, shape.y1, mouseX, mouseY);
 		}
 	}
 	drawShapes();
@@ -195,9 +178,123 @@ function addShape(x, y) {
 		shapes.push(rectangle);
 	} else {
 		// make circle object at initial mousedown position
-		var circle = new Circle(x,y, x, y);
+		var circle = new Circle(x, y, x, y);
 		shapes.push(circle);
-	}		
+	}
+}
+
+function moveShape(x, y) {
+	var shape = previousSelectedShape;
+	if (shape instanceof Circle || shape instanceof Rectangle) {
+		shape.x1 = x - offsetX;
+		shape.y1 = y - offsetY;
+	} else {
+		var diffX = shape.x2 - shape.x1;
+		var diffY = shape.y2 - shape.y1;
+		shape.x1 = x - offsetX;
+		shape.y1 = y - offsetY;
+		shape.x2 = shape.x1 + diffX;
+		shape.y2 = shape.y1 + diffY;
+	}
+	drawShapes();		
+}
+
+function copyShape() {
+	if (anySelected) {
+		copy = true;
+		var shape = previousSelectedShape;
+		if (shape instanceof Circle) {
+			//this.radius = Math.sqrt(Math.pow(x2 - this.x1, 2) + Math.pow(y2-this.y1, 2));
+			// how the radius is calculated
+			newShape = new Circle(shape.x1, shape.y1, shape.radius , shape.radius);
+			newShape.fillColour = shape.fillColour;
+			newShape.outlineColour = shape.outlineColour;
+			newShape.outlineWidth = shape.outlineWidth;
+			newShape.isSelected = false;
+			newShape.x1 = 200;
+			newShape.y1 = 200;
+		} else if (shape instanceof Rectangle) {
+			newShape = new Rectangle(shape.x1, shape.y1, shape.x2 + shape.x1, shape.y2 + shape.y1);
+			newShape.outlineColour = shape.outlineColour;
+			newShape.fillColour = shape.fillColour;
+			newShape.outlineWidth = shape.outlineWidth;
+			newShape.isSelected = false;
+			newShape.x1 = 200;
+			newShape.y1 = 200;
+		} else {
+			newShape = new Line(shape.x1, shape.y1, shape.x2, shape.y2);
+			newShape.fillColour = shape.fillColour;
+			newShape.outlineColour = shape.outlineColour;
+			newShape.outlineWidth = shape.outlineWidth;
+			newShape.isSelected = false;
+
+			var diffX = shape.x2 - shape.x1;
+			var diffY = shape.y2 - shape.y1;
+			newShape.x1 = 200;
+			newShape.y1 = 200;
+			newShape.x2 = newShape.x1 + diffX;
+			newShape.y2 = newShape.y1 + diffY;
+		}
+		shapes.push(newShape);
+		shape.isSelected = false;
+		previousSelectedShape = null;
+		anySelected = false;
+		copy = false;
+		drawShapes();
+	}
+}
+
+function drawShapes() {
+	// Clear the canvasElement.
+	context.clearRect(0, 0, canvasElement.width, canvasElement.height);
+
+	// Go through all the shapes.
+	for (var i=0; i<shapes.length; i++) {
+		var shape = shapes[i];
+		shape.draw();
+	}
+}
+
+function clearCanvas(event) {
+	// Remove all the shapes.
+	shapes = [];
+
+	// Update the display.
+	drawShapes();
+}
+
+function eraseShape() {
+	if (anySelected) {
+		shapes.splice(shapes.indexOf(previousSelectedShape), 1);
+		previousSelectedShape = null;
+		drawShapes();
+		anySelected = false;
+	}
+}
+
+function updateWidth(w) {
+	if (anySelected) {
+		var shape = previousSelectedShape;
+		shape.outlineWidth = w;
+		drawShapes();
+	}
+}
+
+function changeColour() {
+	if (anySelected) {
+		var shape = previousSelectedShape;
+		shape.fillColour = getFillColour();
+		shape.outlineColour = getOutlineColour();
+		drawShapes();
+	}
+}
+
+function getFillColour() {
+	return fillSelect.value;
+}
+
+function getOutlineColour() {
+	return outlineSelect.value;
 }
 
 function Line(x1, y1, x2, y2) {
@@ -274,27 +371,26 @@ function Rectangle(x1, y1, x2, y2) {
 }
 
 Rectangle.prototype.testHit = function(x,y) {
-	//done
-	if (this.x2 < 0){
-		if (this.y2 < 0){ // if box is drawn bottom right to top left
-			if (this.y2 < 0){ // box is drawn bototom left to top right
-				if (this.x1 > x && this.x1+this.x2 < x && this.y1 > y && this.y1+this.y2 < y){ 
-						return true;
+	if (this.x2 < 0) {
+		if (this.y2 < 0) { // if box is drawn bottom right to top left
+			if (this.y2 < 0) { // box is drawn bototom left to top right
+				if (this.x1 > x && this.x1+this.x2 < x && this.y1 > y && this.y1+this.y2 < y) { 
+					return true;
 				}
 				return false;
 			}
 		} else { // x >0, box is drawn top right to bottom left
 			if (this.y2 > 0){ // box is drawn bototom left to top right
 				if (this.x1 > x && this.x1+this.x2 < x && this.y1 < y && this.y1+this.y2 > y) {
-						return true;
+					return true;
 				}
 				return false;
 			}
 		}
 	} else { // x > 0
-		if (this.y2 < 0){ // box is drawn bototom left to top right
+		if (this.y2 < 0) { // box is drawn bototom left to top right
 			if (this.x1 < x && this.x1+this.x2 > x && this.y1 > y && this.y1+this.y2 < y) {
-					return true;
+				return true;
 			}
 			return false;
 		} else { // y > 0, box is drawn top left to bottom right 
@@ -310,10 +406,10 @@ Rectangle.prototype.update = function (x1, y1, x2, y2) {
 	this.x1 = x1;
 	this.y1 = y1;
 	this.x2 = x2-this.x1;
-	this.y2 = y2-this.y1 ;
+	this.y2 = y2-this.y1;
 };
 
-function Circle(x1,y1, x2, y2) {
+function Circle(x1, y1, x2, y2) {
 	this.fillColour = getFillColour();
 	this.outlineColour = getOutlineColour();
 	this.update(x1, y1, x2, y2);
@@ -337,7 +433,7 @@ function Circle(x1,y1, x2, y2) {
 }
 
 Circle.prototype.testHit = function(x,y) {
-	if (Math.sqrt(Math.pow(this.x1 - x,2) + Math.pow(this.y1 -y,2)) <= this.radius){
+	if (Math.sqrt(Math.pow(this.x1 - x, 2) + Math.pow(this.y1 -y, 2)) <= this.radius){
 		return true;
 	}
 	return false;
@@ -352,108 +448,6 @@ Circle.prototype.update = function(x1, y1, x2, y2) {
 		this.radius = Math.sqrt(Math.pow(x2 - this.x1, 2) + Math.pow(y2-this.y1, 2));
 	}
 };
-
-function drawShapes() {
-	// Clear the canvasElement.
-	context.clearRect(0, 0, canvasElement.width, canvasElement.height);
-
-	// Go through all the shapes.
-	for (var i=0; i<shapes.length; i++) {
-		var shape = shapes[i];
-		shape.draw();
-	}
-}
-
-function clearCanvas(event) {
-	// Remove all the shapes.
-	shapes = [];
-
-	// Update the display.
-	drawShapes();
-}
-
-function eraseShape() {
-	if (anySelected) {
-		shapes.splice(shapes.indexOf(previousSelectedShape), 1);
-		previousSelectedShape = null;
-		drawShapes();
-		anySelected = false;
-	}
-}
-
-function changeColour() {
-	if (anySelected) {
-		for (var i=shapes.length-1; i>=0; i--) {
-			var shape = shapes[i];
-			if (shape.isSelected) {
-				shape.fillColour = getFillColour();
-				shape.outlineColour = getOutlineColour();
-				drawShapes();
-				return;
-			}
-		}
-	}
-}
-
-function getFillColour() {
-	return fillSelect.value;
-}
-
-function getOutlineColour() {
-	return outlineSelect.value;
-}
-
-function copyShape() {
-	if (anySelected) {
-		copy = true;
-		for (var i=shapes.length-1; i>=0; i--) {
-			var shape = shapes[i];
-			if (shape.isSelected){
-				if (shape instanceof Circle) {
-					//this.radius = Math.sqrt(Math.pow(x2 - this.x1, 2) + Math.pow(y2-this.y1, 2));
-					// how the radius is calculated
-					newShape = new Circle(shape.x1, shape.y1, shape.radius , shape.radius);
-					newShape.fillColour = shape.fillColour;
-					newShape.outlineColour = shape.outlineColour;
-					newShape.outlineWidth = shape.outlineWidth;
-					newShape.isSelected = false;
-					shapes[shapes.length-1].x1 = 200;
-					shapes[shapes.length-1].y1 = 200;
-				} else if (shape instanceof Rectangle){ // this one works
-					newShape = new Rectangle(shape.x1, shape.y1, shape.x2+shape.x1, shape.y2+shape.y1);
-					newShape.outlineColour = shape.outlineColour;
-					newShape.fillColour = shape.fillColour;
-					newShape.outlineWidth = shape.outlineWidth;
-					shapes[shapes.length-1].x1 = 200;
-					shapes[shapes.length-1].y1 = 200;
-					newShape.isSelected = false;
-
-				} else {
-					newShape = new Line(shape.x1, shape.y1, shape.x2, shape.y2);
-					newShape.fillColour = shape.fillColour;
-					newShape.outlineColour = shape.outlineColour;
-					newShape.outlineWidth = shape.outlineWidth;
-					newShape.isSelected = false;
-
-					var changex = shapes[shapes.length-1].x2 - shapes[shapes.length-1].x1;
-					var changey = shapes[shapes.length-1].y2 - shapes[shapes.length-1].y1;
-					shapes[shapes.length-1].x1 = 200;
-					shapes[shapes.length-1].y1 = 200;
-					shapes[shapes.length-1].x2 = shapes[shapes.length-1].x1 + changex;
-					shapes[shapes.length-1].y2 = shapes[shapes.length-1].y1 + changey;
-
-				}
-				shapes.push(newShape);
-				console.log(newShape);
-				shape.isSelected = false;
-
-				copy = false;
-				drawShapes();
-				return;
-			}
-		}
-	}
-}
 
 function resizeShape() {
 	resize = true;
