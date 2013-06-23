@@ -17,6 +17,10 @@ $(function() {
 	canvas.mouseup(function(event) {
 		mouseUpOut(event);
 	});
+	canvas.mousemove(function(event) {
+		canvasMouseMove(event);
+	});
+
 	canvasElement = canvas[0] // canvas[0] is the actual HTML DOM element for our drawing canvas
 	context = canvasElement.getContext("2d");
 	
@@ -36,6 +40,7 @@ $(function() {
 			drawShapes();
 		}
 	});
+
  function updateWidth(w){
  	if (anySelected){
 		for (var i=shapes.length-1; i>=0; i--) {
@@ -104,7 +109,7 @@ $(function() {
 	// attach onchange events to the selectors
 	fillSelect.onchange = changeColour;
 	outlineSelect.onchange = changeColour;
-});
+	});
 
 function canvasMouseDown(event) {
 	// Get the canvas click coordinates.
@@ -132,7 +137,8 @@ function canvasMouseDown(event) {
 	}
 	drawShapes();
 	mouseDown = true;
-	if (event.button === 0) {
+	resize =false;
+	if (event.button === 0 ) {
 		$(canvas).bind('mousemove', function(event) {
 			canvasMouseMove(event);
 		});
@@ -140,27 +146,41 @@ function canvasMouseDown(event) {
 }
 
 function canvasMouseMove(event) {
+	console.log('movinggg');
+	console.log(anySelected + "   any selected");
 	var clickX = event.pageX - canvas[0].offsetLeft;
 	var clickY = event.pageY - canvas[0].offsetTop;
 	if (mouseDown) {
 		console.log("adding shape");
 		addShape(clickX, clickY);
 		mouseDown = false;
-	} else if (!anySelected) {
+	} else if (anySelected && resize){
+		for (var i=shapes.length-1; i>=0; i--) {
+			var shape = shapes[i];
+			console.log(i + " shapes: " + shape.isSelected);
+			if (shape.isSelected){
+				if (shape.testHit(clickX+10, clickY+10) || shape.testHit(clickX+10, clickY-10) || shape.testHit(clickX-10, clickY+10) || shape.testHit(clickX-10, clickY-10)){		
+				console.log("hera");
+				shape.update(shape.x1, shape.y1, clickX, clickY);	
+				drawShapes();
+				break;
+			}
+		}
+	}
+		
+	} else if (!anySelected && !resize) {
 		//console.log("updating shape");
 		var shape = shapes[shapes.length-1];
-		shape.update(shape.x1, shape.y1, clickX, clickY);
-	}
-	if (resize){
-		console.log("hera");
-		shape.update(shape.x1, shape.y1, clickX, clickY);
+		if (shape){
+			console.log('updatinggg');
+			shape.update(shape.x1, shape.y1, clickX, clickY);
+		}
 	}
 	drawShapes();
 }
 
 function mouseUpOut(event) {
 	$(canvas).unbind('mousemove');
-	resize = false;
 }
 
 function addShape(x, y) {
@@ -185,12 +205,14 @@ function Line(x1, y1, x2, y2) {
 	this.update(x1, y1, x2, y2);
 	this.isSelected = false; // initially false
 	this.outlineWidth = defaultOutlineWidth;
+	this.outlineColour = getOutlineColour();
+
 	this.draw = function() {
 		context.beginPath();
 		context.lineWidth = this.lineWidth;
 		context.moveTo(this.x1, this.y1);
 		context.lineTo(this.x2, this.y2);
-		context.strokeStyle = this.fillColour;
+		context.strokeStyle = this.outlineColour;
 		if (this.isSelected) {
 			context.lineWidth = this.outlineWidth + 3;
 		} else {
@@ -435,5 +457,9 @@ function copyShape() {
 
 function resizeShape() {
 	resize = true;
-	
+	console.log("resize shapping");
+	$(canvas).bind('mousemove', function(event) {
+		canvasMouseMove(event);
+	});
+
 }
