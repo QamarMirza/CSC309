@@ -459,31 +459,39 @@ function Rectangle(x1, y1, x2, y2) {
 	};
 }
 
-Rectangle.prototype.testHit = function(x,y) {
+ectangle.prototype.testHit = function(x,y) {
+	var precision;
+		if (this.outlineWidth <= 5) {
+		var precision = this.outlineWidth;
+	} else if (this.outlineWidth <= 15) {
+		var precision = this.outlineWidth / 1.25;
+	} else {
+		var precision = this.outlineWidth / 1.75;
+	}
 	if (this.x2 < 0) {
 		if (this.y2 < 0) { // if box is drawn bottom right to top left
-			if (this.y2 < 0) { // box is drawn bototom left to top right
-				if (this.x1 > x && this.x1+this.x2 < x && this.y1 > y && this.y1+this.y2 < y) { 
+			if (this.y2 < 0) { 
+				if (this.x1  + precision> x && this.x1+this.x2 - precision < x && this.y1 + precision > y && this.y1+this.y2 - precision < y) { 
 					return true;
 				}
 				return false;
 			}
 		} else { // x >0, box is drawn top right to bottom left
-			if (this.y2 > 0) { // box is drawn bototom left to top right
-				if (this.x1 > x && this.x1+this.x2 < x && this.y1 < y && this.y1+this.y2 > y) {
+			if (this.y2 > 0){ 
+				if (this.x1 +precision > x && this.x1+this.x2  - precision< x && this.y1  - precision< y && this.y1+this.y2 + precision > y) {
 					return true;
 				}
 				return false;
 			}
 		}
 	} else { // x > 0
-		if (this.y2 < 0) { // box is drawn bototom left to top right
-			if (this.x1 < x && this.x1+this.x2 > x && this.y1 > y && this.y1+this.y2 < y) {
+		if (this.y2 < 0) { // box is drawn bottom left to top right
+			if (this.x1 - precision< x && this.x1+this.x2 +precision> x && this.y1  + precision> y && this.y1+this.y2 - precision< y) {
 				return true;
 			}
 			return false;
 		} else { // y > 0, box is drawn top left to bottom right 
-			if (this.x1 < x && this.x1+this.x2 > x && this.y1 < y && this.y1+this.y2 > y) {
+			if (this.x1 - precision < x && this.x1+this.x2  - precision> x && this.y1 + precision < y && this.y1+this.y2 + precision > y) {
 				return true;
 			}
 			return false;

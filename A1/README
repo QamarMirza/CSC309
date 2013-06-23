@@ -1,0 +1,35 @@
+README
+
+
+		A1 PARTNERS
+|------------------------|
+|    NAME    : STUDENT # |
+|------------------------|		
+|SHICHU LIN  : 997684625 |
+|QAMAR MIRZA : 997728384 |
+|------------------------|
+
+Documentation for your Web site. Include a brief explanations of how it all works, e.g., list of main user-defined objects, and datastructures.
+
+We have 3 sets of objects: line, circle and a rectangle. The only datastructure we used was an array that holds a set of shape objects.
+
+HOW IT WORKS:
+
+* Erase the shape *
+	- When shape is selected by a mouse click on the canvas over a shape object that has already been created, you then click the button below the canvas called "erase shape". The selected shape will be erased from the canvas.
+
+* Move the shape to a new position on the canvas *
+	- When a shape object that has already been created, click on it to select it then while the left click of the mouse is held down over the shape and the mouse is moving the shape will follow the mouse.
+
+* Resize the shape *
+	- resizing the shape is similar but different for all 3 shapes. First you select a shape that has already been drawn on the canvas, then you go to the resize button on the bottom of the canvas and click on it. Here is where it is different for all 3 shapes.
+	If the shape is a circle then go to any part of the circumference of it and it will snap onto your mouse, when you are happy with resize left click the mouse and the resizing will be finished. If the shape is a line then you need to move the mouse to where the line was finished drawing (the (x2, y2) coordinates) and again when you are close to it, that end of the line segment will attach to your mouse, and you are free to move/resize it how ever you like. When you are done resizing the line again press the mouse down and it will finish the resize.
+
+* Change the shape's: colour, fill, and outline width *
+	- To change the colour outline and the fill colour for a shape you first select the shape you wish to change the values for then go down to the jQuery plugin we used called Spectrum which gives us a nice pallet of colours to choose from. You then click on it and will give you a nice dropdown selctions of colour to use, click on whichever colour and it will be applied to the shape (note that the line object has no fill colour only outline). To change the width of the outline of the object we used a jQuery plugin called Simple-Slider which gave us a slider to give the user a range of values to select from. First you click on the drawn shape object then while you adjust the slider the width changes accordingly. When an object is drawn for the first time it is given a default line width to begin with.
+
+* Copy and paste *
+	- To copy and paste a shape object you first select it on the canvas, then go down to the copy & paste button and click it. The shape will now be duplicated on top of all other shapes and centred in the middle of the canvas.
+
+* Clear the canvas *
+	- Click the "clear canvas" button and all the shapes that were drawn on the canvas are erased.
