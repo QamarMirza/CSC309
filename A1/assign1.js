@@ -8,7 +8,7 @@ var defaultOutlineWidth = 3;
 var tags = ["CANVAS", "BUTTON", "DIV", "INPUT", "SPAN"];
 var resize = false;
 var offsetX, offsetY // used for moving shapes
-
+var resizeChange = false;
 $(function() {
 	// setup canvas
 	canvas = $("#drawingCanvas"); // this returns a jQuery object
@@ -41,6 +41,7 @@ $(function() {
 		}
 	});
 	
+	// when the simple slider changes update shape width if any is selected
 	$("[data-slider]").bind("slider:ready slider:changed", function (event, data) { updateWidth(data.value); });
 		
 	// set a colour palette for fill and outline using spectrum, a jQuery plugin
@@ -65,7 +66,7 @@ $(function() {
 			["#5b0f00", "#660000", "#783f04", "#7f6000", "#274e13", "#0c343d", "#1c4587", "#073763", "#20124d", "#4c1130"]
 		]
 	});
-		
+		// jQuery colour pallet for selecting the colouroutline
 	$("#outlineSelect").spectrum({
 		color: "black",
 		showInput: true,
@@ -97,7 +98,9 @@ $(function() {
 	fillSelect.onchange = changeColour;
 	outlineSelect.onchange = changeColour;
 });
-
+/*
+	function for mouselistener for onmousedown.
+*/
 function canvasMouseDown(event) {
 	// Get the canvas click coordinates.
 	var mouseX = event.pageX - canvasElement.offsetLeft;
@@ -121,7 +124,6 @@ function canvasMouseDown(event) {
 			}
 			shape.isSelected = true;
 			anySelected = true;
-			console.log("hit");
 			previousSelectedShape = shape;
 			offsetX = mouseX - shape.x1;
 			offsetY = mouseY - shape.y1;
@@ -134,6 +136,11 @@ function canvasMouseDown(event) {
 	drawShapes();
 }
 
+/*	
+	function for the mousemove listener for the canvas.
+	depending on which state the website is in (ie. resizeing a shape or intial drawing of a shape)
+	it will update shapes accordingly
+*/
 function canvasMouseMove(event) {
 	var mouseX = event.pageX - canvas[0].offsetLeft;
 	var mouseY = event.pageY - canvas[0].offsetTop;
@@ -144,17 +151,22 @@ function canvasMouseMove(event) {
 		// add shape
 		addShape(mouseX, mouseY);
 		mouseDown = false;
-	} else if (anySelected && resize) {
+	} else if (anySelected && resize && !resizeChange) {
 		// resize shape
 		var shape = previousSelectedShape;
 		if (shape.testHit(mouseX+10, mouseY+10) || shape.testHit(mouseX+10, mouseY-10) || shape.testHit(mouseX-10, mouseY+10) || shape.testHit(mouseX-10, mouseY-10)) {
-			console.log("hear");
 			shape.update(shape.x1, shape.y1, mouseX, mouseY);
 			drawShapes();
+			resizeChange = true;
+
 		}
-	} else if (!anySelected && !resize) {
+	} else if ((!anySelected && !resize) || resizeChange) {
 		// update shape
-		var shape = shapes[shapes.length-1];
+		if (resizeChange){
+			var shape = previousSelectedShape;
+		} else {
+			var shape = shapes[shapes.length-1];
+		}
 		if (shape) {
 			shape.update(shape.x1, shape.y1, mouseX, mouseY);
 		}
@@ -165,9 +177,14 @@ function canvasMouseMove(event) {
 function mouseUpOut(event) {
 	$(canvas).unbind('mousemove');
 }
-
+/*
+	when the mouse clicks on a fresh peice of canvas and moves the mouse we
+	intiate a shape being created depending on where the drop down label is 
+	selected to, then push it onto the shape stack
+*/
 function addShape(x, y) {
 	var shape = shapeSelect.value;
+	resizeChange = false;
 	if (shape === "line") {
 		// make line object at initial mousedown position
 		var line = new Line(x, y, x, y);
@@ -183,6 +200,10 @@ function addShape(x, y) {
 	}
 }
 
+/*
+	when a shape that is selected and is clicked on and drag we call this function
+	to update where it is moved to by calculating the offset from the mouse	
+*/
 function moveShape(x, y) {
 	var shape = previousSelectedShape;
 	if (shape instanceof Circle || shape instanceof Rectangle) {
@@ -198,7 +219,12 @@ function moveShape(x, y) {
 	}
 	drawShapes();		
 }
-
+/*
+	when a shape is selected and the copy/paste button is pressed this function gets called.
+	depending on which type of shape is selected and needs to be copied, need to create a 
+	new object and set it's values to the same as the shape selected and then reposition it
+	in the centre of the canvas.
+*/
 function copyShape() {
 	if (anySelected) {
 		copy = true;
@@ -263,7 +289,9 @@ function clearCanvas(event) {
 	drawShapes();
 }
 
-function eraseShape() {
+// if a shape is selected, this function gets called and erases that shape
+// from the shapes array and redraws
+function eraseShape() { 
 	if (anySelected) {
 		shapes.splice(shapes.indexOf(previousSelectedShape), 1);
 		previousSelectedShape = null;
@@ -271,9 +299,9 @@ function eraseShape() {
 		anySelected = false;
 	}
 }
-
+// function get's called when slider value changes on which ever shape is selected
 function updateWidth(w) {
-	if (anySelected) {
+	if (anySelected) { 
 		var shape = previousSelectedShape;
 		shape.outlineWidth = w;
 		drawShapes();
@@ -281,7 +309,7 @@ function updateWidth(w) {
 }
 
 function changeColour() {
-	if (anySelected) {
+	if (anySelected) { // if a shape is selected then change it's values
 		var shape = previousSelectedShape;
 		shape.fillColour = getFillColour();
 		shape.outlineColour = getOutlineColour();
@@ -296,6 +324,11 @@ function getFillColour() {
 function getOutlineColour() {
 	return outlineSelect.value;
 }
+
+/*
+	Function used to create the shape of the line object. Initialize fill colour, update it's coordinates, 
+	set object details to a default value and create a custom draw function.
+*/
 
 function Line(x1, y1, x2, y2) {
 	this.fillColour = getFillColour();
@@ -340,6 +373,7 @@ Line.prototype.testHit = function(x, y) {
 	return (checkX && checkY && Math.abs(y - m * x - b) <= yPrecision * 2);
 };
 
+// update the two end points of the line object
 Line.prototype.update = function (x1, y1, x2, y2) {
 	this.x1 = x1;
 	this.y1 = y1;
@@ -347,6 +381,10 @@ Line.prototype.update = function (x1, y1, x2, y2) {
 	this.y2 = y2;
 };
 
+/*
+ This is the object created for the rectangle shape. we define it's point of origin and then offset values
+ as well as it's initial colour outline and width and fill colour.
+*/
 function Rectangle(x1, y1, x2, y2) {
 	this.fillColour = getFillColour();
 	this.outlineColour = getOutlineColour();
@@ -405,7 +443,7 @@ Rectangle.prototype.testHit = function(x,y) {
 Rectangle.prototype.update = function (x1, y1, x2, y2) {
 	this.x1 = x1;
 	this.y1 = y1;
-	this.x2 = x2-this.x1;
+	this.x2 = x2-this.x1; // offset value. distance between where shape begins and where mouse is
 	this.y2 = y2-this.y1;
 };
 
@@ -432,7 +470,7 @@ function Circle(x1, y1, x2, y2) {
 	};
 }
 
-Circle.prototype.testHit = function(x,y) {
+Circle.prototype.testHit = function(x,y) { // check if mouse click is within radius distance of circle center
 	if (Math.sqrt(Math.pow(this.x1 - x, 2) + Math.pow(this.y1 -y, 2)) <= this.radius){
 		return true;
 	}
@@ -442,18 +480,20 @@ Circle.prototype.testHit = function(x,y) {
 Circle.prototype.update = function(x1, y1, x2, y2) {
 	this.x1 = x1;
 	this.y1 = y1;
-	if ((copy)) {
+	if (copy) { // if copy/paste button has been pressed
 		this.radius = x2; // x2=y2=radius then
 	} else{
-		this.radius = Math.sqrt(Math.pow(x2 - this.x1, 2) + Math.pow(y2-this.y1, 2));
+		this.radius = Math.sqrt(Math.pow(x2 - this.x1, 2) + Math.pow(y2-this.y1, 2)); // first time drawing shape, update according 
+																						// to mouse position
 	}
 };
 
 function resizeShape() {
-	resize = true;
-	console.log("resize shapping");
+	resize = true; // to know that the resize button is clicked
+	resizeChange = false; // variable used for boolean check in canvasdraw so that it only snaps to the mouse when the mouse
+							// is near the shape. ie: when mouse comes back onto canvas, selected shape doesn't snap right to it
+							// immediately 
 	$(canvas).bind('mousemove', function(event) {
 		canvasMouseMove(event);
 	});
-
 }
