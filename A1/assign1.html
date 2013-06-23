@@ -16,27 +16,25 @@
 	<canvas id="drawingCanvas" width="400px" height="400px"></canvas>
 	<br />
 	
-	<p class="select">Select a shape:</p>
-	<select id="shapeSelect">
+	<select id="shapeSelect" >
+		<option selected disabled><b>Select a shape:</b></option>
 		<option value="line" >Line</option>
 		<option value="rectangle" >Rectangle</option>
 		<option value="circle">Circle</option>
 	</select>
-
-	<button onclick="move()" >Move</button>
-	<button onclick="clearCanvas()" >Clear Canvas</button>
-	<button onclick="eraseShape()" id="eraseShape" >Erase Shape</button>
-	<button onClick="copyShape()" id="copy/paste">Copy</button>
-	<button onClick="resizeShape()"> resize </button>
+	<p style="display: inline">Outline Width:<p> 
+	<input type="text" id="slider" style="display: inline" data-slider="true" data-slider-range="1,50" data-slider-step="1" data-slider-snap="true" data-slider highlight="true" />
 	<br />
+
 	<p class="select" >Fill Colour:</p>
 	<input type='text' id="fillSelect" value="red"/>
 	<p class="select" >Outline Colour:</p>
 	<input type='text' id="outlineSelect" value="black"/>
 	<br />
-	Outline Width: 
-	<input type="text" data-slider="true" data-slider-range="1,50" data-slider-step="1" data-slider-snap="true" data-slider highlight="true" />
-
 	
+	<button onclick="clearCanvas()" >Clear Canvas</button>
+	<button onclick="eraseShape()" id="eraseShape" >Erase Shape</button>
+	<button onClick="copyShape()" >Copy & Paste</button>
+	<button onClick="resizeShape()"> resize </button>
 </body>
 </html>

@@ -6,13 +6,16 @@ button {
 	margin-bottom: 10px;
 }
 
-p.select {
-	float: bottom;
+p {
 	display: inline;
 	margin-right: 10px;
-	margin-top: 10px;
+	margin-left: 10px;
 }
 
+#slider {
+	float: right;
+	display: inline;
+}
 .colour-spectrum .sp-palette {
 	max-width: 200px;
 	margin-top: 10px;
