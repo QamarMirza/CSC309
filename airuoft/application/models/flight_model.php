@@ -33,4 +33,10 @@ class Flight_model extends CI_Model {
 
 		return $query; 
 	}
+
+	function check_date($day, $month, $year){
+	// - YYYY/MM/DD
+	$date = $year."/".$month."/".$day;
+
+	}
 }
