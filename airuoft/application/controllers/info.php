@@ -1,6 +1,6 @@
 <?php
 
-class Info extends CI_Controller {
+class ticket extends CI_Controller {
     
     function __construct() {
     	// Call the Controller constructor
@@ -29,12 +29,6 @@ class Info extends CI_Controller {
 
     }
 
-    function register(){
-
-
-
-
-    }
 
 }
 

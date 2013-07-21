@@ -32,7 +32,7 @@
 	
 	echo form_label('Credit Card:'); 
 	echo form_error('CreditCard');
-	echo form_password('CreditCard', set_value('setCreditCardNumber'), "required pattern='\d{16}' title='XXXXXXXXXXXXXXXX'"   );
+	echo form_password('CreditCard', set_value('setCreditCardNumber'), "required pattern='\d{16}' title='XXXXXXXXXXXXXXXX'");
 	
 	echo form_label('Credit Card Expiration Date');
 	echo form_error('CreditCardExpr');

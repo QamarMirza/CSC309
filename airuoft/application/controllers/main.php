@@ -72,18 +72,19 @@ class Main extends CI_Controller {
     	//Then we redirect to the index page again
     	redirect('', 'refresh');  
     }
-
-/* ---------------------------------------------------------------------------------------- */
- 
-    function addFlight() {
+ 	
+ 	function addFlight() {
     	$data['main'] = 'main/addFlight';
     	$this->load->library('form_validation');
     	$this->load->view('template', $data);
     }
+/* ---------------------------------------------------------------------------------------- */
+ 
+   
 
     // USER ADDS THEIR INFORMATION
     function addUser() {
-    	$data['main'] = 'main/addUser';
+    	$data['main'] = 'main/adddUser';
     	$this->load->library('form_validation');
     	$this->load->view('template', $data);
 
@@ -91,10 +92,14 @@ class Main extends CI_Controller {
 
     function checkDate(){
     	$this->load->model('flight_model');
-    	$check = true;
-    	//$check = $this->flight_model->check_date($Day, $Month, $Year);
+    	//$check = true;
+    	$day = $_REQUEST["name"];
+    	$month = $_REQUEST['month'];
+    	$year = $_REQUEST['year'];
+    	
+    	$check = $this->flight_model->check_date($day, $month, $year);
     	if ($check == true){
-    		addUser();
+    		$this->addUser();
     	}
     }
 }

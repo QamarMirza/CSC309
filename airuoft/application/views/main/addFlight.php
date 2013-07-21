@@ -5,12 +5,7 @@
 			input {
 				display: block;
 			}
-			input:valid{
-				color: green;
-			}
-			input:invalid{
-				color: red;
-			}
+
 		</style>
 		<script src="http://code.jquery.com/jquery-latest.js"></script>
 		<script> </script>
@@ -30,7 +25,7 @@
 			echo form_label("Year: ");
 			echo form_input('year', set_value('setYear'), "required id='year' " );
 
-			echo form_submit('Check Date', 'checkDate');
+			echo form_submit('add', 'Check Date');
 			echo form_close();
 
 		    // pick a date: July 29 2013
