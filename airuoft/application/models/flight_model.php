@@ -35,8 +35,14 @@ class Flight_model extends CI_Model {
 	}
 
 	function check_date($day, $month, $year){
-	// - YYYY/MM/DD
-	$date = $year."/".$month."/".$day;
+		echo "console.log('check date');";
+		// - YYYY/MM/DD
+		$date = $year . "/" . $month . "/" . $day;
+		if ($date == current_date()){ // if today or before today
+			echo "console.log('pooooop');";
+			return false;
+		}
+		return true;
 
 	}
 }
