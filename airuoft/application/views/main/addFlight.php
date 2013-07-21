@@ -24,11 +24,11 @@
 						// looks at main controller/then function
 			echo form_open('main/checkDate');
 			echo form_label("Day:");
-			echo form_input('Day', set_value('setDay'), "required id='day' ");
-			echo form_label("Month:")
-			echo form_input('Month', set_value('setMonth'), "required id='month'" );
+			echo form_input('day', set_value('setDay'), "required id='day';");
+			echo form_label("Month:");
+			echo form_input('month', set_value('setMonth'), "required id='month' ");
 			echo form_label("Year: ");
-			echo form_input('Year', set_value('setYear'), "required id='year' " );
+			echo form_input('year', set_value('setYear'), "required id='year' " );
 
 			echo form_submit('Check Date', 'checkDate');
 			echo form_close();
