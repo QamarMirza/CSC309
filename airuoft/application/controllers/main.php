@@ -92,12 +92,11 @@ class Main extends CI_Controller {
 
     function checkDate(){
     	$this->load->model('flight_model');
-    	//$check = true;
-    	$day = $_REQUEST["name"];
+    	$day = $_REQUEST["day"];
     	$month = $_REQUEST['month'];
     	$year = $_REQUEST['year'];
-    	
     	$check = $this->flight_model->check_date($day, $month, $year);
+    	echo "console.log('what????');";
     	if ($check == true){
     		$this->addUser();
     	}
