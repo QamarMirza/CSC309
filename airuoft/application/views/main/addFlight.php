@@ -4,37 +4,45 @@
 		<style>
 			input {
 				display: block;
+				float: left;
 			}
-
 		</style>
-		<script src="http://code.jquery.com/jquery-latest.js"></script>
-		<script> </script>
-	</head> 
-	<body>  
-		
 		<h1>Select a Flight</h1>
+  		<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+  		<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+  		<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+  		<script>
+  		$(function() {
+   		$( "#datepicker" ).datepicker({ minDate: +1, maxDate: "+14D" });
+   		 //$.datepicker.setDefaults( {dateFormat: "yy-mm-dd"});
 
+ 		 });
+  		</script>
+	</head>
+	<body>
 		<?php 
-		    echo validation_errors(); 
-						// looks at main controller/then function
-			echo form_open('main/checkDate');
-			echo form_label("Day:");
-			echo form_input('day', set_value('setDay'), "required id='day';");
-			echo form_label("Month:");
-			echo form_input('month', set_value('setMonth'), "required id='month' ");
-			echo form_label("Year: ");
-			echo form_input('year', set_value('setYear'), "required id='year' " );
+	    echo validation_errors(); 
+					// looks at main controller/then function
+		echo form_open('main/availableFlights');
+		?>
+		<table>
+			<tr>
+				<td><?php echo form_radio("campus", "1", TRUE); ?> </td>
+				<td><?php echo form_label ("St. George", "campus"); ?> </td>
+			</tr>
+			<tr>
+				<td><?php echo form_radio("campus", "2", FALSE);?></td>
+				<td><?php echo form_label ("Mississauga", "campus"); ?>
+				</td>
+			</tr>
+		</table>
+		<p> Date: </p> 
 
-			echo form_submit('add', 'Check Date');
-			echo form_close();
-
-		    // pick a date: July 29 2013
-		    // check if date is valid
-
-		    // pick a flight
-		    // pick a seat
-
+		<?php
+		$data = array('id' => 'datepicker', 'name' => 'date'); // same as <input type="text" id="datepicker" /> 
+		echo form_input($data); 
+		echo form_submit('add', 'Check Date');
+		echo form_close();
 		?>
 	</body>
-
 </html>

@@ -23,26 +23,15 @@ class Flight_model extends CI_Model {
 		$this->db->query("delete from flight");
 	}
 	
-	function availableFlights(){
-		$query = $this->db->query("select c1.name as 'from', c2.name as 'to', t.time, f.date, f.available
+	function availableFlights($date, $campus){
+		/*$query = $this->db->query("select c1.name as 'from', c2.name as 'to', t.time, f.date, f.available
 								   from flight f, timetable t, campus c1, campus c2
-								   where f.timetable_id = t.id and
-								         t.leavingfrom = c1.id and
-								         t.goingto = c2.id and
+								   where f.date = $date and
+								         t.leavingfrom = $campus and
 								         f.available > 0;");
-
+	*/
+		$query = $this->db->query("select date from flight where flight.date = $date;");
 		return $query; 
 	}
-
-	function check_date($day, $month, $year){
-		echo "console.log('check date');";
-		// - YYYY/MM/DD
-		$date = $year . "/" . $month . "/" . $day;
-		if ($date == current_date()){ // if today or before today
-			echo "console.log('pooooop');";
-			return false;
-		}
-		return true;
-
-	}
 }
+?>
