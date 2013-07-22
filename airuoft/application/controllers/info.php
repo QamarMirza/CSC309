@@ -8,28 +8,28 @@ class ticket extends CI_Controller {
     }
 
     function setFirstName($first){
-
-
+        $this->FirstName = $first;
     }
 
     function setLastName($last){
-
-
-
+        $this->LastName = $last
     }
 
     function setCreditCard($CreditCardnum){
-
-
-
+        $this->CreditCard = $CreditCardnum;
     }
 
-    function setCreditCardExpir(CreditCardExpiry){
-
-
+    function setCreditCardExpir($CreditCardExpiry){
+        $this->CreditCardEx = $CreditCardExpiry;
     }
 
+    function setFlight_Id($id){
+        $this->flight_id = $id;
+    }
 
+    function setSeat($seat_id){
+        $this->seat = $seat_id;
+    }
 }
 
 ?>
