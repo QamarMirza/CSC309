@@ -30,6 +30,12 @@ class ticket extends CI_Controller {
     function setSeat($seat_id){
         $this->seat = $seat_id;
     }
+
+    function register(){
+
+
+    }
+
 }
 
 ?>

@@ -60,15 +60,15 @@ class Main extends CI_Controller {
     }
 /* ---------------------------------------------------------------------------------------- */
  
-     function availableFlights(){
+    function availableFlights(){
     	$this->load->Library('table');
     	$this->load->model('flight_model');
     	$date = $_REQUEST['date'];
     	$campus = $_REQUEST['campus'];
 	    date_default_timezone_set("america/toronto");
-
   		$date = date_create($date);
-  		//$date = date_format($date, "Y-m-d");
+  		$date = date_format($date, "Y-m-d");
+  		//$date = (string)$date;
     	$flights = $this->flight_model->availableFlights($date, $campus);
 
 		if ($flights->num_rows() > 0){

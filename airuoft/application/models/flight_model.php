@@ -30,7 +30,9 @@ class Flight_model extends CI_Model {
 								         t.leavingfrom = $campus and
 								         f.available > 0;");
 	*/
-		$query = $this->db->query("select date from flight where flight.date = $date;");
+		$query = $this->db->query("select date 
+								   from flight f
+								   where f.date = DATE($date);");
 		return $query; 
 	}
 }
