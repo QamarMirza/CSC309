@@ -31,9 +31,18 @@ class ticket extends CI_Controller {
         $this->seat = $seat_id;
     }
 
-    function register(){
-
-
+    function buyTicket(){
+        $this->load->model('flight_model');
+        $id$ ;
+        $first ;
+        $last ;
+        $ccNum ;
+        $ccExp ;
+        $flight_id ;
+        $seat ;
+        $this->flight_model->buy();
+        $data['main'] = 'main/print';
+        $this->load->view('template', $data);
     }
 
 }
