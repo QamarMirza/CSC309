@@ -12,19 +12,21 @@
   		<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
   		<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
   		<script>
-  		$(function() {
-   		$( "#datepicker" ).datepicker({ minDate: +1, maxDate: "+14D" });
-   		 //$.datepicker.setDefaults( {dateFormat: "yy-mm-dd"});
+	  		$(function() {
+	   		$( "#datepicker" ).datepicker({ minDate: +1, maxDate: "+14D" });
+	   		 //$.datepicker.setDefaults( {dateFormat: "yy-mm-dd"});
 
- 		 });
+	 		 });
   		</script>
 	</head>
 	<body>
+
 		<?php 
-	    echo validation_errors(); 
-					// looks at main controller/then function
-		echo form_open('main/availableFlights');
+		    echo validation_errors(); 
+						// looks at main controller/then function
+			echo form_open('main/availableFlights');
 		?>
+
 		<table>
 			<tr>
 				<td><?php echo form_radio("campus", "1", TRUE); ?> </td>
@@ -36,13 +38,15 @@
 				</td>
 			</tr>
 		</table>
+	
 		<p> Date: </p> 
 
 		<?php
-		$data = array('id' => 'datepicker', 'name' => 'date'); // same as <input type="text" id="datepicker" /> 
-		echo form_input($data); 
-		echo form_submit('add', 'Check Date');
-		echo form_close();
+			$data = array('id' => 'datepicker', 'name' => 'date'); // same as <input type="text" id="datepicker" /> 
+			echo form_input($data, '', "required "); 
+			echo form_error('datepicker');
+			echo form_submit('add', 'Check Date');
+			echo form_close();
 		?>
 	</body>
 </html>
