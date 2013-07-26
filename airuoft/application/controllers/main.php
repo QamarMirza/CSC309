@@ -75,8 +75,8 @@ class Main extends CI_Controller {
 				//This time we are not only adding a new link, but, in the third parameter of the anchor function we are adding an onclick behaviour to ask the user if he/she really wants to delete the record.
 				$table[] = array($row->from,$row->to,$row->time,$row->date,$row->available, anchor("main/SeatSelect->$row->flightid", 'Check Seats'));
 			}
-			//Next step is to place our created array into a new array variable, one that we are sending to the view.
-			$data['flights'] = $table; 		   
+		//Next step is to place our created array into a new array variable, one that we are sending to the view.
+		$data['flights'] = $table;
 		}
 		//Now we are prepared to call the view, passing all the necessary variables inside the $data array
 		$data['main']='main/flights';
@@ -86,20 +86,21 @@ class Main extends CI_Controller {
 	// USER ADDS THEIR INFORMATION
 	function addUser() {
 		$data['main'] = 'main/addUser';
- 		$this->load->library('form_validation');
+		$this->load->library('form_validation');
 		$this->load->view('template', $data);
-    }
+	}
 
-    /*function SeatSelect($id){
+	/*
+	function SeatSelect($id) {
+		$this->load->model('flight_model');
+		$seats = $this->flight_model->get_seat($id);
 
-    	$this->load->model('flight_model');
-    	$seats = $this->flight_model->get_seat($id);
+		$data
+	}
+	*/
 
-    	$data
-
-
-    }
-*/
-
-
+	function helicopter() {
+		$data['main'] = 'main/helicopter'; // set the main view to helicopter.php
+		$this->load->view('template', $data);
+	}
 }
