@@ -31,6 +31,7 @@ class Main extends CI_Controller {
 			$data['flights'] = $table; 		   
 		}
 		//Now we are prepared to call the view, passing all the necessary variables inside the $data array
+		$data['flights'] = $flights;
 		$data['main']='main/flights';
 		$this->load->view('template', $data);
     }
@@ -70,16 +71,16 @@ class Main extends CI_Controller {
 		if ($flights->num_rows() > 0){
 			//Prepare the array that will contain the data
 			$table = array();	
-			$table[] = array('Date');
+			$table[] = array('From','To','Time','Date','Available', "FlightID");
 			foreach ($flights->result() as $row){
 				//This time we are not only adding a new link, but, in the third parameter of the anchor function we are adding an onclick behaviour to ask the user if he/she really wants to delete the record.
-				$table[] = array($row->date);
+				$table[] = array($row->from,$row->to,$row->time,$row->date,$row->available, $row->flightid);
 			}
 		//Next step is to place our created array into a new array variable, one that we are sending to the view.
-		$data['flights'] = $table;
+		$data['flights'] = $flights;
 		}
 		//Now we are prepared to call the view, passing all the necessary variables inside the $data array
-		$data['main']='main/flights';
+		$data['main']='main/flights2';
 		$this->load->view('template', $data);
 	}
 
@@ -89,4 +90,17 @@ class Main extends CI_Controller {
  		$this->load->library('form_validation');
 		$this->load->view('template', $data);
     }
+
+    function SeatSelect($id){
+
+    	$this->load->model('flight_model');
+    	$seats = $this->flight_model->get_seat($id);
+
+    	$data
+
+
+    }
+
+
+
 }

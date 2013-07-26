@@ -37,8 +37,8 @@
 
 	<p> Date: </p> 
 	<?php
-		$data = array('id' => 'datepicker', 'name' => 'date'); // same as <input type="text" id="datepicker" /> 
-		echo form_input($data, '', "required "); 
+		$data = array('id' => 'datepicker', 'name' => 'date', 'readonly' => 'readonly'); // same as <input type="text" id="datepicker" /> 
+		echo form_input($data, '', "required"); 
 		echo form_error('datepicker');
 		echo form_submit('add', 'Check Date');
 		echo form_close();
