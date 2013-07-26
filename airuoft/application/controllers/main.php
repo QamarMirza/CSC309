@@ -25,7 +25,7 @@ class Main extends CI_Controller {
 			$table[] = array('From','To','Time','Date','Available');
 			foreach ($flights->result() as $row){
 				//This time we are not only adding a new link, but, in the third parameter of the anchor function we are adding an onclick behaviour to ask the user if he/she really wants to delete the record.
-				$table[] = array($row->from,$row->to,$row->time,$row->date,$row->available);
+				$table[] = array($row->from,$row->to,$row->time,$row->date,$row->available, );
 			}
 			//Next step is to place our created array into a new array variable, one that we are sending to the view.
 			$data['flights'] = $table; 		   
@@ -68,10 +68,18 @@ class Main extends CI_Controller {
 		
 		$flights = $this->flight_model->getAvailableFlights($date, $campus);
 		if ($flights->num_rows() > 0){
-					$data['flights'] = $flights;
+			//Prepare the array that will contain the data
+			$table = array();	
+			$table[] = array('From','To','Time','Date','Available', '');
+			foreach ($flights->result() as $row){
+				//This time we are not only adding a new link, but, in the third parameter of the anchor function we are adding an onclick behaviour to ask the user if he/she really wants to delete the record.
+				$table[] = array($row->from,$row->to,$row->time,$row->date,$row->available, anchor("main/SeatSelect->$row->flightid", 'Check Seats'));
+			}
+			//Next step is to place our created array into a new array variable, one that we are sending to the view.
+			$data['flights'] = $table; 		   
 		}
 		//Now we are prepared to call the view, passing all the necessary variables inside the $data array
-		$data['main']='main/flights2';
+		$data['main']='main/flights';
 		$this->load->view('template', $data);
 	}
 
