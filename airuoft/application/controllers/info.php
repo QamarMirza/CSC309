@@ -8,19 +8,19 @@ class ticket extends CI_Controller {
     }
 
     function setFirstName($first){
-        $this->FirstName = $first;
+        $this->first = $first;
     }
 
     function setLastName($last){
-        $this->LastName = $last
+        $this->last = $last
     }
 
     function setCreditCard($CreditCardnum){
-        $this->CreditCard = $CreditCardnum;
+        $this->CCnum = $CreditCardnum;
     }
 
     function setCreditCardExpir($CreditCardExpiry){
-        $this->CreditCardEx = $CreditCardExpiry;
+        $this->CCexp = $CreditCardExpiry;
     }
 
     function setFlight_Id($id){
@@ -31,14 +31,8 @@ class ticket extends CI_Controller {
         $this->seat = $seat_id;
     }
 
-    function buyTicket(){
+    function buyTicket($seat_id, $flight_id){
         $this->load->model('flight_model');
-        $id$ ;
-        $first ;
-        $last ;
-        $ccNum ;
-        $ccExp ;
-        $flight_id ;
         $seat ;
         $this->flight_model->buy();
         $data['main'] = 'main/print';

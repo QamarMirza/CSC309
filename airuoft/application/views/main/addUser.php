@@ -22,7 +22,6 @@
 				if (!(day.length == 4)){
 					date.get(0).setCustomValidity("Expiry Date Invalid");
 				} else{
-
 					if (month > 0 && month < 13){
 						year = parseInt(year) + 2000;
 						newday = new Date(year, month, 0);
@@ -51,21 +50,22 @@
 
 		echo form_label('First Name:'); 
 		echo form_error('FirstName');
-		echo form_input('FirstName', set_value('setFirstName'), "required" );
+		echo form_input('FirstName', set_value('setFirstName'), "required | pattern='[a-zA-Z]+' | max_length[6] | title='Only letters are allowed.' ");
 		
 		echo form_label('Last Name:'); 
 		echo form_error('LastName');
-		echo form_input('LastName', set_value('setLastName'),  "required" );
+		echo form_input('LastName', set_value('setLastName'),  "required | pattern='[a-zA-Z]+' | max_length['16'] title='Only letters are allowed. Can't exceed 16 characteres.' " );
 		
 		echo form_label('Credit Card:'); 
 		echo form_error('CreditCard');
 		echo form_password('CreditCard', set_value('setCreditCardNumber'), "required pattern='\d{16}' title='XXXXXXXXXXXXXXXX' ");
 		
 		echo form_label('Credit Card Expiration Date');
-		echo form_input('CreditCardExpr', set_value('setCreditCardExpir'), "required pattern='\d{4}' oninput='checkValid()' id ='expiry' "); 
+		echo form_input('CreditCardExpr', set_value('setCreditCardExpir'), "required pattern='\d{4}' oninput='checkValid()' id ='expiry' title='MMYY' "); 
 		echo form_error('CreditCardExpr');
 
 		echo "<br />";
+		
 		echo form_submit('submit', 'Buy Ticket');
 		echo form_close();
 	?>

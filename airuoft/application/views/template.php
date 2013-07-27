@@ -4,7 +4,7 @@
 <head>
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
   <title><?php echo $title; ?></title>
-<link href="<?php echo base_url();?>css/default.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo base_url();?>css/template.css" rel="stylesheet" type="text/css" />
 <noscript>
 Javascript is not enabled! Please turn on Javascript to use this site.
 </noscript>
@@ -22,6 +22,10 @@ base_url = '<?= base_url();?>';
 <div id="wrapper">
   <div id="header">
   <?php $this->load->view('header');?>
+  </div>
+
+  <div id="nav">
+  <?php $this->load->view('navigation');?>
   </div>
 
   <div id="main">
