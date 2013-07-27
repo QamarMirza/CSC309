@@ -16,9 +16,9 @@ echo anchor('','Back') . "<br />";
     // See also mysql_result(), mysql_fetch_array(), mysql_fetch_row(), etc.
 	foreach ($flights->result() as $row){
         echo "<tr>";
-        echo "<td>" . $row->from . "</td><td>" . $row->to . "</td><td>" . $row->time . "</td><td>" . $row->date . "</td><td>" . $row->available . "</td><td>" . $row->flightid . "</td><td>" 
-        . anchor("main/SeatSelect->$row->flightid", 'Check Seats')  . "</td>"; 
-        
+        echo "<td>" . $row->from . "</td><td>" . $row->to . "</td><td>" . $row->time . "</td><td>" . 
+                      $row->date . "</td><td>" . $row->available . "</td><td>" . $row->flightid . "</td><td>" .
+                      anchor("main/helicopter", 'Check Seats')  . "</td>"; 
         echo "</tr>";
     }
     echo "</table>";
