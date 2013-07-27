@@ -23,6 +23,11 @@ class Flight_model extends CI_Model {
 		$this->db->query("delete from flight");
 	}
 	
+	function deleteAll() {
+		$this->delete();
+		$this->db->query("delete from ticket");
+	}
+
 	function getAvailableFlights($date, $campus){
 		date_default_timezone_set('UTC');
 		$query = $this->db->query("select c1.name as 'from', c2.name as 'to', t.time, f.date, f.available, f.id as 'flightid'				   
@@ -41,6 +46,19 @@ class Flight_model extends CI_Model {
 								   from ticket t
 								   where t.flight_id = '$flightid' ;");
 	
+		return $query;
+	}
+
+	function get_ticket(){
+		$query = $this->db->query(" select *
+									from ticket ;");
+		return $query;
+	}
+
+	function get_date($flight_id){
+		$query= $this->db->query("select date
+								  from flight f 
+								  where f.id = '$flight_id' ;");
 		return $query;
 	}
 }
