@@ -43,10 +43,9 @@ class Main extends CI_Controller {
     }
 
     function allTickets(){
-  
 		$this->load->library('table');
 		$this->load->model('flight_model');
-		$this->load->model('info');
+		$this->load->model('ticket_model');
 		//Then we call our model's get_flights function
 		$ticket = $this->flight_model->get_ticket();
 		//If it returns some results we continue
@@ -54,11 +53,15 @@ class Main extends CI_Controller {
 			//Prepare the array that will contain the data
 			$table = array();	
 			$table[] = array('Flight Date', 'Seat Number','First Name','Last Name','Credit Card Number','Credit Expiry');
+			
 			foreach ($ticket->result() as $row){
-				$day = $this->info->get_date($row->flight_id);
+				
+				$day = $this->ticket_model->get_date($row->flight_id);
 				foreach($day->result() as $d)
 				$table[] = array($d->date, $row->seat, $row->first, $row->last, $row->creditcardnumber, $row->creditcardexpiration);
+			
 			}
+			
 			//Next step is to place our created array into a new array variable, one that we are sending to the view.
 			$data['flights'] = $table; 		   
 		}
@@ -72,7 +75,6 @@ class Main extends CI_Controller {
 		//Now we are prepared to call the view, passing all the necessary variables inside the $data array
 		$data['main']='main/flights';
 		$this->load->view('template', $data);
-		
     }
 
 	function populate() {
@@ -86,6 +88,7 @@ class Main extends CI_Controller {
 	function delete() {
 		$this->load->model('flight_model');    	 
 		$this->flight_model->delete();
+		 
 		//Then we redirect to the index page again
 		redirect('', 'refresh');  
 	}
@@ -93,6 +96,7 @@ class Main extends CI_Controller {
  	function deleteAll() {
 		$this->load->model('flight_model');    	 
 		$this->flight_model->deleteAll();
+		 
 		//Then we redirect to the index page again
 		$data['main']='main/admin';
 		$this->load->view('template', $data);
@@ -112,6 +116,7 @@ class Main extends CI_Controller {
 		$campus = $_REQUEST['campus'];
 		date_default_timezone_set("UTC");
 		$date = $_REQUEST['date'];
+		$_SESSION['date'] = $date;
 
 		$flights = $this->flight_model->getAvailableFlights($date, $campus);
 		if ($flights->num_rows() > 0){
@@ -138,14 +143,15 @@ class Main extends CI_Controller {
 		$this->load->view('template', $data);
 	}
 
-	function seatSelect($id) {
-		$this->load->model('info');
-		$seats = $this->info->availableSeats($id);
+	function seatSelect($flight_id) {
+		$_SESSION['flight_id'] = $flight_id;
+		$this->load->model('ticket_model');
+		$seats = $this->ticket_model->availableSeats($flight_id);
 		$unavailableSeats = array();
 		if ($seats->num_rows() > 0) {
 			foreach($seats->result() as $row) {
 				echo $row->seat;
-				$unavailableSeats = $row->seat;
+				$unavailableSeats[] = $row->seat;
 			}
 		}
 
@@ -156,61 +162,62 @@ class Main extends CI_Controller {
 			unset($_SESSION['errno']);
 		}
 
-		$data['seats'] = $unavailableSeats;
+		$data['unavailableSeats'] = $unavailableSeats;
 		$data['main'] = 'main/helicopter';
 		$this->load->view('template', $data);
 	}
 	
 	function ticketUser() {
+		if ($seat = $this->input->get_post('seat')) {
+			echo $seat;
+			$_SESSION['seat'] = $seat;
+		} else {
+			echo "nooooooooooooooooooooooooooobody";
+		}
 		$data['main'] = 'main/ticketUser';
 		$this->load->library('form_validation');
 		$this->load->view('template', $data);
 	}
-
-	function buyTicket(){
-
-		$this->load->library('form_validation');
-    	$this->form_validation->set_rules('FirstName', 'First Name', 'required|regex_match[/[a-zA-Z]/]|max_length[16]');
-    	$this->form_validation->set_rules('LastName', 'Last Name', 'required|regex_match[/[a-zA-Z]/]|max_length[16]');
-    	$this->form_validation->set_rules('CreditCard', 'Credit Card Number', 'required|regex_match[/\d{16}/]');
-    	$this->form_validation->set_rules('CreditCardExpr', 'Credit Card Expiration', 'required|regex_match[/\d{4}/]|id ="expiry"');
-
-    	if ($this->form_validation->run() == FALSE){
-    		$this->load->view('main/ticketUser');
-    	} else {
+	
+	function buyTicket() {
+		if (isset($_SESSION['flight_id']) && isset($_SESSION['seat'])) {
+			$first = $_REQUEST["firstName"];
+			$last = $_REQUEST["lastName"];
+			$creditcard = $_REQUEST["creditCard"];
+			$creditcardexpr = $_REQUEST["creditCardExpr"];
+			$flight_id = $_SESSION['flight_id'];
+			$seat = $_SESSION['seat'];
+			
 	        $this->load->model('flight_model');
-	        $this->load->model('info');
+	        $this->load->model('ticket_model');
+	        
 	        $this->db->trans_begin();
-	        $this->flight_model->updateAvailablity($this->flight_id);  // update values in flight table (-1 available) and insert ticket into ticket table
-	        $this->info->addTicket($this);
-	        if($this->db->trans_status() == FALSE){
+	        $this->flight_model->updateAvailability($flight_id);  // update values in flight table (-1 available) and insert ticket into ticket table
+	        $this->ticket_model->insertTicket($first, $last, $creditcard, $creditcardexpr, $flight_id, $seat);
+	        if ($this->db->trans_status() == FALSE) {
 				$_SESSION['errmsg'] = $this->db->_errormessage();
 				$_SESSION['errno'] = $this->db->_errornumber();
 				$this->db->rollback();
-	        } else{
+				redirect('main/buyTicket', 'refresh');
+	        } else {
 	        	$this->db->trans_commit();
-		  		$date = $this->info->get_date($this->flight_id);
-		        $data['ticketInfo'] = $this;
-		        $data['ticketDate'] = $date;
-		        $data['main'] = 'main/print';
+		  		$date = $this->flight_model->get_date($flight_id);
+		        $data['first'] = $first;
+		        $data['last'] = $last;
+		        $data['creditcard'] = $creditcard;
+		        $data['creditcardexpr'] = $creditcardexpr;
+		        $data['flight_id'] = $flight_id;
+		        $data['seat'] = $seat;
+		        $data['date'] = $_SESSION['date'];
+		        $data['main'] = 'main/printSummary';
 		        $this->load->view('template', $data);
 	        }
-	        redirect('main/buyTicket', 'refresh');
-	    }
+		}
     }
 
-	function printt(){
-		$data['main'] = 'main/print';
-		$this->load->view('template', $data);
-
-	}
-
-	function helicopter() {
-		$unavailableSeats = array();
-		$data['seats'] = $unavailableSeats;
-		$data['main'] = 'main/helicopter';
+	function printSummary() {
+		$data['main'] = 'main/printSummary';
 		$this->load->view('template', $data);
 	}
-
 	
 }
