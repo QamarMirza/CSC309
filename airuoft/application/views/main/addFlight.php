@@ -1,22 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<style>
-		input {
-			display: block;
-			float: left;
-		}
-	</style>
+
 	<h1>Select a Flight</h1>
 	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+	<link href="<?php echo base_url();?>css/addFlight.css" rel="stylesheet" type="text/css" />
 	<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
 	<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-	<script>
-		$(function() {
-			$("#datepicker").datepicker({ minDate: +1, maxDate: "+14D" });
-			$.datepicker.setDefaults( {dateFormat: "yy-mm-dd"});
-		});
-	</script>
+
 </head>
 <body>
 	<?php
@@ -26,12 +17,12 @@
 
 	<table>
 		<tr>
-			<td><?php echo form_radio("campus", "1", TRUE); ?> </td>
-			<td><?php echo form_label ("St. George", "campus"); ?> </td>
+			<td class='radio'><?php echo form_radio("campus", "1", TRUE); ?> </td>
+			<td class='radio'><?php echo form_label ("St. George", "campus"); ?> </td>
 		</tr>
 		<tr>
-			<td><?php echo form_radio("campus", "2", FALSE); ?></td>
-			<td><?php echo form_label ("Mississauga", "campus"); ?></td>
+			<td class='radio'><?php echo form_radio("campus", "2", FALSE); ?></td>
+			<td class='radio'><?php echo form_label ("Mississauga", "campus"); ?></td>
 		</tr>
 	</table>
 

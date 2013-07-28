@@ -1,0 +1,33 @@
+#container {
+	width: 350px;
+	position: relative;
+}
+.seatBox {
+	width: 20px;
+	height: 20px;
+	border-style: solid;
+	border-width: 3px;
+	position: absolute;
+	top: 80px;
+}
+#seat1 {
+	left: 70px;
+}
+#seat2 {
+	left: 110px;
+}
+#seat3 {
+	left: 150px;
+}
+.unavailable {
+	background-color: yellow;
+}
+.seatBox {
+	background-color: white;
+}
+.selected {
+	background-color: green;
+}
+form {
+	margin-left: 85px;
+}
