@@ -129,6 +129,11 @@ class Main extends CI_Controller {
 		$this->load->view('template', $data);
 	}
 
+	function printt(){
+		$data['main'] = 'main/print';
+		$this->load->view('template', $data);
+
+	}
 	
 	function SeatSelect($id) {
 		$this->load->model('flight_model');

@@ -30,6 +30,9 @@
  		text-align:center
  }
  
+ #footer{
+    padding-left:90px;
+ }
  #nav{
  	padding: 5pt;
 	position: absolute;	
