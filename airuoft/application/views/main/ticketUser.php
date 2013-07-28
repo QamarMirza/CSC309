@@ -15,29 +15,31 @@
 		<script src="http://code.jquery.com/jquery-latest.js"></script>
 		<script> 
 			function checkValid() {
-				var expField = $("#expiry")[0];
-				var expVal = expField.value;
-				if (!(expVal.length === 4)) {
-					expField.setCustomValidity("Expiry date must be in MMYY format");
-				} else {
-					var month = expVal.substring(0, 2);
-					var year = expVal.substring(2, 4);
-					//FIXME: this needs rework
-					if (month > 0 && month < 13){
-						year = parseInt(year) + 2000;
-						expDate = new Date(year, month, 0);
-						today = new Date();
-						if (expDate >= today) {	
-							expField.setCustomValidity(""); // all is well, clear error message
-							return true;
-						} else {
-							expField.setCustomValidity("Card has expired");
-							return false
-						}
+				$(function(){
+					var expField = $("#expiry")[0];
+					var expVal = expField.value;
+					if (!(expVal.length === 4)) {
+						expField.setCustomValidity("Expiry date must be in MMYY format");
 					} else {
-						expField.setCustomValidity("Invalid month");
+						var month = expVal.substring(0, 2);
+						var year = expVal.substring(2, 4);
+						//FIXME: this needs rework
+						if (month > 0 && month < 13){
+							year = parseInt(year) + 2000;
+							expDate = new Date(year, month, 0);
+							today = new Date();
+							if (expDate >= today) {	
+								expField.setCustomValidity(""); // all is well, clear error message
+								return true;
+							} else {
+								expField.setCustomValidity("Card has expired");
+								return false
+							}
+						} else {
+							expField.setCustomValidity("Invalid month");
+						}
 					}
-				}
+				});
 			}
 		</script>
 	</head> 

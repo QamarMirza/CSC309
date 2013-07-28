@@ -41,25 +41,18 @@ class Flight_model extends CI_Model {
 		return $query;
 	}
 
-	function availableSeats($flightid){
-		$query = $this->db->query("select seat
-								   from ticket t
-								   where t.flight_id = '$flightid' ;");
-	
-		return $query;
-	}
-
-	function get_ticket(){
-		$query = $this->db->query(" select *
-									from ticket ;");
-		return $query;
-	}
-
 	function get_date($flight_id){
 		$query= $this->db->query("select date
 								  from flight f 
 								  where f.id = '$flight_id' ;");
 		return $query;
 	}
+
+	function updateAvailability($flight_id){
+		$this->db->query("update flight
+						   SET available = available - 1
+						   where flight.id = '$flight_id' ;");
+	}
+
 }
 ?>

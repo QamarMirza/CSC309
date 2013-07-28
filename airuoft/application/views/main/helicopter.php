@@ -98,6 +98,11 @@
 <body>
 	<?php
 	echo anchor('','Back') . "<br />";
+
+	if (isset($errno)){
+		echo "<p> DB: Error: ($errno) $errmsg</p>";
+	}
+	
 	?>
 	
 	<div id="container">
