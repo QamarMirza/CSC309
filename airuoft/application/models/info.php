@@ -14,7 +14,7 @@ class ticket extends CI_Model {
     }
 
     function setLastName($last){
-        $this->last = $last
+        $this->last = $last;
     }
 
     function setCreditCard($CreditCardnum){

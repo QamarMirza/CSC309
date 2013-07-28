@@ -41,6 +41,39 @@
 					}
 				});
 			}
+			function checkfirstName(){
+				var field = $("#first")[0];
+				var fieldValue = field.value;
+				if (typeof fieldValue == 'string' && fieldValue.length < 17){
+					field.setCustomValidity("");
+					return false;
+				} else{
+					field.setCustomValidity("First Name can only contain letters");
+					return true
+				}
+			}
+			function checklastName(){
+				var field = $("#last")[0];
+				var fieldValue = field.value;
+				if (typeof fieldValue == 'string' && fieldValue.length < 17){
+					field.setCustomValidity("");
+					return false;
+				} else{
+					field.setCustomValidity("Last Name can only contain letters");
+					return true
+				}
+			}
+			function checkNum(){
+				var field = $("#creditcardnumber")[0];
+				var fieldValue = field.value;
+				if (typeof parseInt(fieldValue) == 'number' && fieldValue.length === 16 ){
+					field.setCustomValidity("");
+					return false;
+				} else {
+					field.setCustomValidity("Credit Card Number needs to contain 16 digits");
+					return true
+				}
+			}
 		</script>
 	</head> 
 	<body>  
@@ -52,15 +85,15 @@
 
 		echo form_label('First Name:'); 
 		echo form_error('FirstName');
-		echo form_input('FirstName', set_value('setFirstName'), "required | pattern='[a-zA-Z]+' | max_length[6] | title='Only letters are allowed.' ");
+		echo form_input('FirstName', set_value('setFirstName'), "required | pattern='[a-zA-Z]' | max_length[16] | oninput='checkfirstName()' id='first' ");
 		
 		echo form_label('Last Name:'); 
 		echo form_error('LastName');
-		echo form_input('LastName', set_value('setLastName'),  "required | pattern='[a-zA-Z]+' | max_length['16'] title='Only letters are allowed. Can't exceed 16 characteres.' " );
+		echo form_input('LastName', set_value('setLastName'),  "required | pattern='[a-zA-Z]' | max_length[16] id='last' oninput='checklastName()' " );
 		
 		echo form_label('Credit Card:'); 
 		echo form_error('CreditCard');
-		echo form_password('CreditCard', set_value('setCreditCardNumber'), "required pattern='\d{16}' title='XXXXXXXXXXXXXXXX' ");
+		echo form_input('CreditCard', set_value('setCreditCardNumber'), "required pattern='\d{16}' id='creditcardnumber' oninput='checkNum()' ");
 		
 		echo form_label('Credit Card Expiration Date (MMYY)');
 		echo form_input('CreditCardExpr', set_value('setCreditCardExpir'), "required pattern='\d{4}' oninput='checkValid()' id ='expiry'"); 
