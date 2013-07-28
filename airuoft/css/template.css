@@ -31,11 +31,14 @@
  }
  
  #footer{
-    padding-left:90px;
+    float:left;
+    clear: both;
+    font-size:9pt;
  }
+ 
  #nav{
  	padding: 5pt;
-	position: absolute;	
+    float: left;
 	width:70px;
 	height: 800px;
 	font-size: 10pt;
