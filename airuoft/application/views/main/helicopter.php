@@ -6,39 +6,39 @@
 			width: 250px;
 			position: relative;
 		}
-		#seat1 {
-			width: 15px;
-			height: 15px;
-			position: absolute; 
-			top: 100px;
-			left: 70px;
+		.seatBox {
+			width: 20px;
+			height: 20px;
 			border-style: solid;
 			border-width: 3px;
+			position: absolute;
+			top: 70px;
+		}
+		#seat1 {
+			left: 70px;
 		}
 		#seat2 {
-			width: 15px;
-			height: 15px;
-			position: absolute;
-			top: 100px;
 			left: 110px;
-			border-style: solid;
-			border-width: 3px;
 		}
 		#seat3 {
-			width: 15px;
-			height: 15px;
-			position: absolute;
-			top: 100px;
 			left: 150px;
-			border-style: solid;
-			border-width: 3px;
+		}
+		.unavailable {
+			background-color: yellow;
+		}
+		.available {
+			background-color: white;
+		}
+		.selected {
+			background-color: green;
+		}
+		form {
+			margin-left: 85px;
 		}
 	</style>
 	<h1>Choose a seat yo</h1>
-	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
-	<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-	<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-	<script>
+	<script src="<?php echo base_url();?>js/jQuery/jquery-1.10.1.js"></script>
+	<script type="text/javascript">
 		$(function() {
 			var canvas = $("#drawingCanvas")[0];
 			var context = canvas.getContext('2d');
@@ -58,22 +58,59 @@
 			context.lineWidth = 3;
 			context.strokeStyle = 'black';
 			context.stroke();
+			
+			var unavailableSeats = <?php echo json_encode($seats); ?>;
+			console.log(unavailableSeats);
+			$.each(unavailableSeats, function(index, seat) {
+				console.log(index + ": " + seat);
+			});
+			
+			/* there is a known issue of class selector not working because of prototype.js
+			   so attach event to each seatBox individually
+			*/
+			$("#seat1").click(function() {
+				$('[name=seat]').val($(this)[0].title);
+				$(this).addClass("selected");
+				$("#seat2").removeClass("selected");
+				$("#seat3").removeClass("selected");
+				var myClass = $(this).attr("class");
+				console.log(myClass);
+			});
+			$("#seat2").click(function() {
+				$('[name=seat]').val($(this)[0].title);
+				$(this).addClass("selected");
+				$("#seat1").removeClass("selected");
+				$("#seat3").removeClass("selected");
+				var myClass = $(this).attr("class");
+				console.log(myClass);
+			});
+			$("#seat3").click(function() {
+				$('[name=seat]').val($(this)[0].title);
+				$(this).addClass("selected");
+				$("#seat1").removeClass("selected");
+				$("#seat2").removeClass("selected");
+				var myClass = $(this).attr("class");
+				console.log(myClass);
+			});
 		});
 	</script>
 </head>
 <body>
 	<?php
 	echo anchor('','Back') . "<br />";
-	
-	if (!empty($seats)) { 
-		echo $this->table->generate($seats); 
-	}
 	?>
+	
 	<div id="container">
-		<canvas id="drawingCanvas" width="250" height="200"></canvas>
-		<div id="seat1"></div>
-		<div id="seat2"></div>
-		<div id="seat3"></div>
+		<canvas id="drawingCanvas" width="250" height="150"></canvas>
+		<div id="seat1" class="seatBox" title="1"></div>
+		<div id="seat2" class="seatBox" title="2"></div>
+		<div id="seat3" class="seatBox" title="3"></div>
 	</div>
+	
+	<?php
+	echo form_open('main/ticketUser');
+	echo form_hidden('seat', '', 'required');
+	echo form_submit('submit', 'Take Seat');
+	?>
 </body>
 </html>

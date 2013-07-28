@@ -14,39 +14,39 @@
 		</style>
 		<script src="http://code.jquery.com/jquery-latest.js"></script>
 		<script> 
-			function checkValid(){
-				var date = $("#expiry");
-				var day = date.val();
-				 month = day.substring(0, 2);
-				 year = day.substring(2, 4);
-				if (!(day.length == 4)){
-					date.get(0).setCustomValidity("Expiry Date Invalid");
-				} else{
+			function checkValid() {
+				var expField = $("#expiry")[0];
+				var expVal = expField.value;
+				if (!(expVal.length === 4)) {
+					expField.setCustomValidity("Expiry date must be in MMYY format");
+				} else {
+					var month = expVal.substring(0, 2);
+					var year = expVal.substring(2, 4);
+					//FIXME: this needs rework
 					if (month > 0 && month < 13){
 						year = parseInt(year) + 2000;
-						newday = new Date(year, month, 0);
+						expDate = new Date(year, month, 0);
 						today = new Date();
-						if (newday >= today) {	
-							date.get(0).setCustomValidity(""); // all is well, clear error message
+						if (expDate >= today) {	
+							expField.setCustomValidity(""); // all is well, clear error message
 							return true;
 						} else {
-							date.get(0).setCustomValidity("Expiry Date invalid");
+							expField.setCustomValidity("Card has expired");
 							return false
 						}
 					} else {
-						date.get(0).setCustomValidity("Expiry Date invalid");
+						expField.setCustomValidity("Invalid month");
 					}
 				}
 			}
-			
 		</script>
 	</head> 
 	<body>  
 		<h1>User Information</h1>
 	<?php 
-	    echo validation_errors(); 
-	    date_default_timezone_set("america/toronto");
-		echo form_open('info/buyTicket');
+		echo validation_errors(); 
+		date_default_timezone_set("UTC");
+		echo form_open('main/buyTicket');
 
 		echo form_label('First Name:'); 
 		echo form_error('FirstName');
@@ -60,8 +60,8 @@
 		echo form_error('CreditCard');
 		echo form_password('CreditCard', set_value('setCreditCardNumber'), "required pattern='\d{16}' title='XXXXXXXXXXXXXXXX' ");
 		
-		echo form_label('Credit Card Expiration Date');
-		echo form_input('CreditCardExpr', set_value('setCreditCardExpir'), "required pattern='\d{4}' oninput='checkValid()' id ='expiry' title='MMYY' "); 
+		echo form_label('Credit Card Expiration Date (MMYY)');
+		echo form_input('CreditCardExpr', set_value('setCreditCardExpir'), "required pattern='\d{4}' oninput='checkValid()' id ='expiry'"); 
 		echo form_error('CreditCardExpr');
 
 		echo "<br />";

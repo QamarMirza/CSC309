@@ -11,6 +11,7 @@ class Main extends CI_Controller {
 		$data['main']='main/index';
 		$this->load->view('template', $data);
 	}
+	
 	function admin(){
 		$data['main']='main/admin.php';
 		$this->load->view('template', $data);
@@ -29,7 +30,7 @@ class Main extends CI_Controller {
 			$table[] = array('From','To','Time','Date','Available');
 			foreach ($flights->result() as $row){
 				//This time we are not only adding a new link, but, in the third parameter of the anchor function we are adding an onclick behaviour to ask the user if he/she really wants to delete the record.
-				$table[] = array($row->from,$row->to,$row->time,$row->date,$row->available );
+				$table[] = array($row->from,$row->to,$row->time,$row->date,$row->available);
 			}
 			//Next step is to place our created array into a new array variable, one that we are sending to the view.
 			$data['flights'] = $table; 		   
@@ -73,7 +74,7 @@ class Main extends CI_Controller {
 		//Then we redirect to the index page again
 		$data['main']='main/admin';
 		$this->load->view('template', $data);	}
-
+	
 	function delete() {
 		$this->load->model('flight_model');    	 
 		$this->flight_model->delete();
@@ -81,7 +82,7 @@ class Main extends CI_Controller {
 		//Then we redirect to the index page again
 		redirect('', 'refresh');  
 	}
- 	
+	
  	function deleteAll() {
 		$this->load->model('flight_model');    	 
 		$this->flight_model->deleteAll();
@@ -101,10 +102,11 @@ class Main extends CI_Controller {
 		$this->load->Library('table');
 		$this->load->model('flight_model');
 		
-		$campus = $_REQUEST['campus'];	
+		// add validation to check if campus isset and have value?
+		$campus = $_REQUEST['campus'];
 		date_default_timezone_set("UTC");
 		$date = $_REQUEST['date'];
-		
+
 		$flights = $this->flight_model->getAvailableFlights($date, $campus);
 		if ($flights->num_rows() > 0){
 			//Prepare the array that will contain the data
@@ -112,40 +114,54 @@ class Main extends CI_Controller {
 			$table[] = array('From','To','Time','Date','Available', '');
 			foreach ($flights->result() as $row){
 				//This time we are not only adding a new link, but, in the third parameter of the anchor function we are adding an onclick behaviour to ask the user if he/she really wants to delete the record.
-				$table[] = array($row->from,$row->to,$row->time,$row->date,$row->available, anchor("main/SeatSelect/$row->flightid", 'Check Seats'));
+				$table[] = array($row->from,$row->to,$row->time,$row->date,$row->available, anchor("main/seatSelect/$row->flightid", 'Check Seats'));
 			}
-		//Next step is to place our created array into a new array variable, one that we are sending to the view.
-		$data['flights'] = $table;
+			//Next step is to place our created array into a new array variable, one that we are sending to the view.
+			$data['flights'] = $table;
 		}
 		//Now we are prepared to call the view, passing all the necessary variables inside the $data array
 		$data['main']='main/flights';
 		$this->load->view('template', $data);
 	}
 
-	// USER ADDS THEIR INFORMATION
-	function addUser() {
-		$data['main'] = 'main/addUser';
-		$this->load->library('form_validation');
-		$this->load->view('template', $data);
-	}
-
-	function printt(){
-		$data['main'] = 'main/print';
-		$this->load->view('template', $data);
-
-	}
-	
-	function SeatSelect($id) {
+	function seatSelect($id) {
 		$this->load->model('flight_model');
 		$seats = $this->flight_model->availableSeats($id);
-		$this->flight_model->update_seat($id);
-		$data['seats'] = $seats;
+		$unavailableSeats = array();
+		if ($seats->num_rows() > 0) {
+			foreach($seats->result() as $row) {
+				echo $row->seat;
+				$unavailableSeats = $row->seat;
+			}
+		}
+		$data['seats'] = $unavailableSeats;
 		$data['main'] = 'main/helicopter';
 		$this->load->view('template', $data);
 	}
 	
-	function helicopter() {
-		$data['main'] = 'main/helicopter'; // set the main view to helicopter.php
+	function ticketUser() {
+		$data['main'] = 'main/ticketUser';
+		$this->load->library('form_validation');
 		$this->load->view('template', $data);
 	}
+	
+	function buyTicket($seat_id, $flight_id){
+		$this->load->model('flight_model');
+		if ($seat = $this->input->get_post('seat')) {
+			echo $seat;
+		} else {
+			echo "nooooooooooooooooooooooooooobody";
+		}
+		//$this->flight_model->buy();
+		//$data['main'] = 'main/print';
+		//$this->load->view('template', $data);
+	}
+	
+	function helicopter() {
+		$unavailableSeats = array();
+		$data['seats'] = $unavailableSeats;
+		$data['main'] = 'main/helicopter';
+		$this->load->view('template', $data);
+	}
+	
 }
