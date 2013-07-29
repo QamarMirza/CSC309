@@ -14,8 +14,8 @@
 				 top.wRef.document.writeln(
 				  '<html><head><title>Ticket Summary</title></head>'
 				 +'<body bgcolor=white onLoad="self.focus()">'
-				 +'<center><font color=red><b><i>For printing, <a href=# onclick="window.print();return false;">click here</a> or press Ctrl+P</i></b></font><br />'
-				 +'<table border=0 cellspacing=3 cellpadding=3>'
+				 +'<center><font color=red><b><i>For printing, <a href=# onclick="window.print();return false;">click here</a> or press Ctrl+P</i></b></font>'
+				 +'<table border=0 cellspacing=3 cellpadding=3><'
 				 )
 				 buf =  "<th>PURCHASE SUMMARY</th>"
 				 		+ "<tr>"

@@ -14,11 +14,11 @@
 
 		echo form_label('First Name:'); 
 		echo form_error('firstName');
-		echo form_input('firstName', set_value('firstName'), "required | pattern='[a-zA-Z]' | max_length[16] | oninput='checkfirstName()' id='first' ");
+		echo form_input('firstName', set_value('firstName'), "required | pattern='[a-zA-Z]+' | max_length[16] | oninput='checkfirstName()' id='first' ");
 		
 		echo form_label('Last Name:'); 
 		echo form_error('lastName');
-		echo form_input('lastName', set_value('lastName'),  "required | pattern='[a-zA-Z]' | max_length[16] id='last' oninput='checklastName()' " );
+		echo form_input('lastName', set_value('lastName'),  "required | pattern='[a-zA-Z]+' | max_length[16] id='last' oninput='checklastName()' " );
 		
 		echo form_label('Credit Card:'); 
 		echo form_error('creditCard');

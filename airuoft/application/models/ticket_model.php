@@ -10,7 +10,7 @@ class ticket_model extends CI_Model {
     }
 
     function get_ticket(){
-        $query = $this->db->query("select distinct * from ticket");
+        $query = $this->db->query("select distinct first, last, creditcardnumber, creditcardexpiration, flight_id, seat from ticket");
         return $query;
     }
 

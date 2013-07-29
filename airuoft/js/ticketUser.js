@@ -8,7 +8,7 @@ function checkValid() {
 		} else {
 			var month = expVal.substring(0, 2);
 			var year = expVal.substring(2, 4);
-			if (!((typeof parseInt(month)) == 'number' && (typeof parseInt(year)) == 'number')) {
+			if (( isNaN(parseInt(month))) || isNaN(parseInt(year))) {
 				expField.setCustomValidity("invalid month/year");
 				return false;
 			}
@@ -20,7 +20,7 @@ function checkValid() {
 					expField.setCustomValidity(""); // all is well, clear error message
 					return true;
 				} else {
-					expField.setCustomValidity("Card has expired");
+					expField.setCustomValidity("card has expired");
 					return false;
 				}
 			} else {
@@ -33,7 +33,7 @@ function checkValid() {
 function checkfirstName(){
 	var field = $("#first")[0];
 	var fieldValue = field.value;
-	if (typeof fieldValue == 'string' && fieldValue.length < 17){
+	if (fieldValue.length < 17){
 		field.setCustomValidity("");
 		return false;
 	} else{
@@ -44,7 +44,7 @@ function checkfirstName(){
 function checklastName(){
 	var field = $("#last")[0];
 	var fieldValue = field.value;
-	if (typeof fieldValue == 'string' && fieldValue.length < 17){
+	if (fieldValue.length < 17){
 		field.setCustomValidity("");
 		return false;
 	} else{
