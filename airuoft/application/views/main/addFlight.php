@@ -8,6 +8,7 @@
 	<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 	<script type='text/javascript'>
 		$(function() {
+			/* initialize the datepicker widget*/
 			$("#datepicker").datepicker({ minDate: +1, maxDate: "+14D" });
 			$.datepicker.setDefaults( {dateFormat: "yy-mm-dd"});
 		});
