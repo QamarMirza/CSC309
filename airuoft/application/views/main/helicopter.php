@@ -80,14 +80,13 @@
 			}
 			
 			var unavailableSeats = <?php echo json_encode($unavailableSeats); ?>;
-			console.log("unavailable seats: " + unavailableSeats);
 			$.each(unavailableSeats, function(index, seat) {
-				if (seat === 1) {
-					seat1.addClass("unavailable");
-				} else if (seat === 2) {
-					seat2.addClass("unavailable");
-				} else if (seat === 3) {
-					seat3.addClass("unavailable");
+				if (seat === "1") {
+					seat1.addClass("unavailable").removeClass("selected");
+				} else if (seat === "2") {
+					seat2.addClass("unavailable").removeClass("selected");
+				} else if (seat === "3") {
+					seat3.addClass("unavailable").removeClass("selected");
 				} else {
 					console.log("what");
 				}
@@ -152,12 +151,9 @@
 </head>
 <body>
 	<?php
-	echo anchor('','Back') . "<br />";
-
 	if (isset($errno)){
 		echo "<p> DB: Error: ($errno) $errmsg</p>";
 	}
-	
 	?>
 	
 	<div id="container">
