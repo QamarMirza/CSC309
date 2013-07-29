@@ -4,14 +4,13 @@ class ticket_model extends CI_Model {
     function availableSeats($flightid){
         $query = $this->db->query("select seat
                                    from ticket t
-                                   where t.flight_id = '$flightid' ;");
+                                   where t.flight_id = '$flightid'");
     
         return $query;
     }
 
     function get_ticket(){
-        $query = $this->db->query(" select *
-                                    from ticket ;");
+        $query = $this->db->query("select distinct * from ticket");
         return $query;
     }
 

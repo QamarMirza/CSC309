@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<h1>Choose a seat</h1>
+	<h3>Choose a seat</h3>
 	<link href="<?php echo base_url();?>css/helicopter.css" rel="stylesheet" type="text/css" />
 	<script src="<?php echo base_url();?>js/jQuery/jquery-1.10.1.js"></script>
 	<script type="text/javascript">
