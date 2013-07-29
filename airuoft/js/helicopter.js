@@ -56,18 +56,24 @@ $(function() {
 	var seat3 = $("#seat3");
 	var seatField = $('[name=seat]');
 	var seat = seatField.val();
-	if (seat === 1) {
-		seat1.addClass("selected");
-	} else if (seat === 2) {
-		seat2.addClass("selected");
-	} else if (seat === 3) {
-		seat3.addClass("selected");
+	if (seat === "1") {
+		if (!seat1.hasClass('unavailable')) {
+			seat1.addClass("selected");
+		}
+	} else if (seat === "2") {
+		if (!seat2.hasClass('unavailable')) {
+			seat2.addClass("selected");
+		}
+	} else if (seat === "3") {
+		if (!seat3.hasClass('unavailable')) {
+			seat3.addClass("selected");
+		}
 	} else {
 		console.log("no seat selected");
 	}
 	
-	var unavailableSeats = <?php echo json_encode($seats); ?>;
-	console.log(unavailableSeats);
+	var unavailableSeats = <?php echo json_encode($unavailableSeats); ?>;
+	console.log("unavailable seats: " + unavailableSeats);
 	$.each(unavailableSeats, function(index, seat) {
 		if (seat === 1) {
 			seat1.addClass("unavailable");
