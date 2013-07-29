@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
+	<link href="<?php echo base_url();?>css/printSummary.css" rel="stylesheet" type="text/css" />
 	<script src="http://code.jquery.com/jquery-latest.js"></script>
 		<script>
 			function writeSummaryTable() {
@@ -12,15 +13,15 @@
 				   +',scrollbars=1'
 				   +',resizable=1')
 				 top.wRef.document.writeln(
-				  '<html><head><title>Ticket Summary</title></head>'
-				 +'<body bgcolor=white onLoad="self.focus()">'
-				 +'<center><font color=red><b><i>For printing, <a href=# onclick="window.print();return false;">click here</a> or press Ctrl+P</i></b></font>'
-				 +'<table border=0 cellspacing=3 cellpadding=3><'
+					 '<html><head><title>Ticket Summary</title></head>'
+					 +'<body bgcolor=white onLoad="self.focus()">'
+					 +'<center><font color=red><b><i>For printing, <a href=# onclick="window.print();return false;">click here</a> or press Ctrl+P</i></b></font>'
+					 +'<table border=0>'
 				 )
-				 buf =  "<th>PURCHASE SUMMARY</th>"
+				 buf = "<th>PURCHASE SUMMARY</th>"
 				 		+ "<tr>"
-							+ "<td>Flight id: <td>" 
-							+ "<td> <?php echo $flight_id; ?> </td>"
+							+ "<td>Flight id: </td>" 
+							+ "<td><?php echo $flight_id; ?></td>"
 						+ "</tr>"
 						+ "<tr>" 
 							+ "<td>Date:</td>" 
@@ -31,7 +32,7 @@
 							+ "<td><?php echo $first; ?></td>"
 						+ "</tr>" 
 						+ "<tr>"
-							+ "<td>Last Name:<td>" 
+							+ "<td>Last Name:</td>" 
 							+ "<td><?php echo $last; ?></td>"
 						+ "</tr>"
 						+ "<tr>"
@@ -45,7 +46,7 @@
 						+ "<tr>"
 							+ "<td>Expiration Date: </td>" 
 							+ "<td><?php echo $creditcardexpr; ?></td>"
-						+ "/tr>"
+						+ "</tr>"
 						+ "<tr>"
 							+ "<td>Cost:</td>" 
 							+ "<td>$20.00</td>"
@@ -58,8 +59,6 @@
 	<body>
 		Congratulations on your ticket purchase <?php echo $first . " " .  $last; ?>!<br />
 		Would you like to print a receipt? <br />
-		<p>
-		</p>
 		<button name='print' type='button' onClick="writeSummaryTable()"> Print Receipt </button>
 	</body>
 </html>
