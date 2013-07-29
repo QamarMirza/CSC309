@@ -3,9 +3,9 @@
 	<head>
 		<link rel="stylesheet" href="<?php echo base_url();?>css/ticketUser.css"></script>
 		<script src="http://code.jquery.com/jquery-latest.js"></script>
-		<script src="<?php echo base_url();?>/js/tickerUser.js" type="text/javascript"></script>	
-	</head> 
-	<body>  
+		<script src="<?php echo base_url();?>js/ticketUser.js" type="text/javascript"></script>	
+	</head>
+	<body>
 		<h1>User Information</h1>
 	<?php 
 		echo validation_errors(); 
