@@ -6,7 +6,7 @@
 		<script src="<?php echo base_url();?>js/ticketUser.js" type="text/javascript"></script>	
 	</head>
 	<body>
-		<h1>User Information</h1>
+		<h2>User Information</h2>
 	<?php 
 		echo validation_errors(); 
 		date_default_timezone_set("UTC");
