@@ -6,6 +6,7 @@
 	<script src="<?php echo base_url();?>js/jQuery/jquery-1.10.1.js"></script>
 	<script type="text/javascript">
 		$(function() {
+			/* draw the helicopter schematic using canvas */
 			var canvas = $("#drawingCanvas")[0];
 			var context = canvas.getContext('2d');
 			
@@ -25,7 +26,7 @@
 			context.fillStyle = 'red';
 			context.fill();
 			
-			/* draw the lines */
+			// draw the lines
 			context.lineWidth = 2;
 			context.beginPath();
 			context.moveTo(125, 40);
@@ -56,6 +57,7 @@
 			context.moveTo(325, 85);
 			context.lineTo(325, 65);
 			context.stroke();
+
 			
 			/* initialize the seat boxes and their status */
 			var seat1 = $("#seat1");
@@ -78,7 +80,8 @@
 			} else {
 				console.log("no seat selected");
 			}
-			
+
+			/* udpate seatbox stauts for unavailable seats */
 			var unavailableSeats = <?php echo json_encode($unavailableSeats); ?>;
 			$.each(unavailableSeats, function(index, seat) {
 				if (seat === "1") {
@@ -103,10 +106,6 @@
 					$(this).addClass("selected");
 					seat2.removeClass("selected");
 					seat3.removeClass("selected");
-					var myClass = $(this).attr("class");
-					console.log(myClass);
-				} else {
-					console.log("avail?");
 				}
 			});
 			seat2.click(function() {
@@ -115,10 +114,6 @@
 					$(this).addClass("selected");
 					seat1.removeClass("selected");
 					seat3.removeClass("selected");
-					var myClass = $(this).attr("class");
-					console.log(myClass);
-				} else {
-					console.log("avail?");
 				}
 			});
 			seat3.click(function() {
@@ -127,14 +122,11 @@
 					$(this).addClass("selected");
 					seat1.removeClass("selected");
 					seat2.removeClass("selected");
-					var myClass = $(this).attr("class");
-					console.log(myClass);
-				} else {
-					console.log("avail?");
 				}
 			});
 		});
-		
+
+		/* custom validation message for seat, make sure seat is picked */
 		function checkSeat() {
 			$(function() {
 				var seatField = $('[name=seat]');

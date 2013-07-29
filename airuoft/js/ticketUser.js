@@ -1,3 +1,5 @@
+
+/* custom validation message for creditCardExpr */
 function checkValid() {
 	$(function(){
 		var expField = $("#expiry")[0];
@@ -30,6 +32,8 @@ function checkValid() {
 		}
 	});
 }
+
+/* custom validation message for firstName */
 function checkfirstName(){
 	var field = $("#first")[0];
 	var fieldValue = field.value;
@@ -41,6 +45,8 @@ function checkfirstName(){
 		return true
 	}
 }
+
+/* custom validation message for lastName */
 function checklastName(){
 	var field = $("#last")[0];
 	var fieldValue = field.value;
@@ -52,6 +58,8 @@ function checklastName(){
 		return true
 	}
 }
+
+/* custom validation message for creditCard */
 function checkNum(){
 	var field = $("#creditcardnumber")[0];
 	var fieldValue = field.value;
