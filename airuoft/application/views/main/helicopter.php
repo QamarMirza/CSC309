@@ -83,12 +83,13 @@
 			$.each(unavailableSeats, function(index, seat) {
 				if (seat === "1") {
 					seat1.addClass("unavailable").removeClass("selected");
+					seat1.css('background-color', 'yellow');
 				} else if (seat === "2") {
 					seat2.addClass("unavailable").removeClass("selected");
+					seat2.css('background-color', 'yellow');
 				} else if (seat === "3") {
 					seat3.addClass("unavailable").removeClass("selected");
-				} else {
-					console.log("what");
+					seat3.css('background-color', 'yellow');
 				}
 			});
 			
