@@ -84,7 +84,7 @@ class Main extends CI_Controller {
 		$this->load->view('template', $data);	}
 	
 	function delete() {
-		$this->load->model('flight_model');    	 
+		$this->load->model('flight_model');
 		$this->flight_model->delete();
 		 
 		//Then we redirect to the index page again
@@ -104,13 +104,12 @@ class Main extends CI_Controller {
 		$this->load->library('form_validation');
 		$this->load->view('template', $data);
 	}
-/* ---------------------------------------------------------------------------------------- */
- 
-	function availableFlights(){
+
+	/* return available flights for the date user selected */ 
+	function availableFlights() {
 		$this->load->Library('table');
 		$this->load->model('flight_model');
 		
-		// add validation to check if campus isset and have value?
 		$campus = $_REQUEST['campus'];
 		date_default_timezone_set("UTC");
 		$date = $_REQUEST['date'];
@@ -173,6 +172,7 @@ class Main extends CI_Controller {
 		$this->load->view('template', $data);
 	}
 	
+	/* update database with ticket user information */
 	function buyTicket() {
 		if (isset($_SESSION['flight_id']) && isset($_SESSION['seat'])) {
 			$first = $_REQUEST["firstName"];
