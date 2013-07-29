@@ -3,15 +3,16 @@ function checkValid() {
 		var expField = $("#expiry")[0];
 		var expVal = expField.value;
 		if (!(expVal.length === 4)) {
-			expField.setCustomValidity("Expiry date must be in MMYY format");
+			expField.setCustomValidity("Need to be 4 digits: MMYY");
+			return false;
 		} else {
 			var month = expVal.substring(0, 2);
 			var year = expVal.substring(2, 4);
-			if (!((typeof parseInt(month)) == 'number' && (typeof parseInt(year)) == 'number')){
+			if (!((typeof parseInt(month)) == 'number' && (typeof parseInt(year)) == 'number')) {
 				expField.setCustomValidity("invalid month/year");
-				return false
+				return false;
 			}
-			if (month > 0 && month < 13){
+			if (month > 0 && month < 13) {
 				year = parseInt(year) + 2000;
 				expDate = new Date(year, month, 0);
 				today = new Date();
@@ -20,15 +21,12 @@ function checkValid() {
 					return true;
 				} else {
 					expField.setCustomValidity("Card has expired");
-					return false
+					return false;
 				}
 			} else {
 				expField.setCustomValidity("invalid month");
-				return false
+				return false;
 			}
-		} else{
-			expField.setCustomValidity("Need to be 4 digits: MMYY");
-			return false
 		}
 	});
 }
