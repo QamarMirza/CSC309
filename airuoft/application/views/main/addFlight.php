@@ -6,8 +6,12 @@
 	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
 	<link href="<?php echo base_url();?>css/addFlight.css" rel="stylesheet" type="text/css" />
 	<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-	<script src="<?php echo base_url();?>/js/addFlight.js" type='text/javascript'></script>
-
+	<script type='text/javascript'>
+		$(function() {
+			$("#datepicker").datepicker({ minDate: +1, maxDate: "+14D" });
+			$.datepicker.setDefaults( {dateFormat: "yy-mm-dd"});
+		});
+	</script>
 </head>
 <body>
 	<?php
