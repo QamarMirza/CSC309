@@ -148,7 +148,6 @@ class Main extends CI_Controller {
 		$unavailableSeats = array();
 		if ($seats->num_rows() > 0) {
 			foreach($seats->result() as $row) {
-				echo $row->seat;
 				$unavailableSeats[] = $row->seat;
 			}
 		}
@@ -167,10 +166,7 @@ class Main extends CI_Controller {
 	
 	function ticketUser() {
 		if ($seat = $this->input->get_post('seat')) {
-			echo $seat;
 			$_SESSION['seat'] = $seat;
-		} else {
-			echo "nooooooooooooooooooooooooooobody";
 		}
 		$data['main'] = 'main/ticketUser';
 		$this->load->library('form_validation');
@@ -185,7 +181,6 @@ class Main extends CI_Controller {
 			$creditcardexpr = $_REQUEST["creditCardExpr"];
 			$flight_id = $_SESSION['flight_id'];
 			$seat = $_SESSION['seat'];
-			echo $flight_id . " " . $seat;
 	        $this->load->model('flight_model');
 	        $this->load->model('ticket_model');
 	        
