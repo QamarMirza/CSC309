@@ -46,24 +46,22 @@ class Main extends CI_Controller {
 		$this->load->library('table');
 		$this->load->model('flight_model');
 		$this->load->model('ticket_model');
-		//Then we call our model's get_flights function
-		$ticket = $this->flight_model->get_ticket();
+		$ticket = $this->ticket_model->get_ticket();
 		//If it returns some results we continue
 		if ($ticket->num_rows() > 0){
 			//Prepare the array that will contain the data
 			$table = array();	
 			$table[] = array('Flight Date', 'Seat Number','First Name','Last Name','Credit Card Number','Credit Expiry');
-			
+
 			foreach ($ticket->result() as $row){
-				
-				$day = $this->ticket_model->get_date($row->flight_id);
-				foreach($day->result() as $d)
-				$table[] = array($d->date, $row->seat, $row->first, $row->last, $row->creditcardnumber, $row->creditcardexpiration);
-			
+				$date = $this->ticket_model->get_date($row->flight_id);
+				foreach($date->result() as $d) {
+					$table[] = array($d->date, $row->seat, $row->first, $row->last, $row->creditcardnumber, $row->creditcardexpiration);
+				}
 			}
 			
 			//Next step is to place our created array into a new array variable, one that we are sending to the view.
-			$data['flights'] = $table; 		   
+			$data['flights'] = $table;
 		}
 		if (isset($_SESSION['errno'])){
 			$data['errmsg'] = $_SESSION['errormsg'];
@@ -75,7 +73,7 @@ class Main extends CI_Controller {
 		//Now we are prepared to call the view, passing all the necessary variables inside the $data array
 		$data['main']='main/flights';
 		$this->load->view('template', $data);
-    }
+	}
 
 	function populate() {
 		$this->load->model('flight_model');
@@ -187,7 +185,7 @@ class Main extends CI_Controller {
 			$creditcardexpr = $_REQUEST["creditCardExpr"];
 			$flight_id = $_SESSION['flight_id'];
 			$seat = $_SESSION['seat'];
-			
+			echo $flight_id . " " . $seat;
 	        $this->load->model('flight_model');
 	        $this->load->model('ticket_model');
 	        
