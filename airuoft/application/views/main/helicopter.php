@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-
-	<h1>Choose a seat yo</h1>
+	<h1>Choose a seat</h1>
 	<script src="<?php echo base_url();?>css/helicopter.css"></script>
 	<script src="<?php echo base_url();?>js/jQuery/jquery-1.10.1.js"></script>
 	<script src="<?php echo base_url();?>js/helicopter.js"></script>
-
 </head>
 <body>
 	<?php
