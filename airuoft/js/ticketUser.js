@@ -7,7 +7,7 @@ function checkValid() {
 		} else {
 			var month = expVal.substring(0, 2);
 			var year = expVal.substring(2, 4);
-			if (!(typeof parseInt(month) == 'number' && typeof parseInt(year) == 'number')){
+			if (!((typeof parseInt(month)) == 'number' && (typeof parseInt(year)) == 'number')){
 				expField.setCustomValidity("invalid month/year");
 				return false
 			}
@@ -26,6 +26,9 @@ function checkValid() {
 				expField.setCustomValidity("invalid month");
 				return false
 			}
+		} else{
+			expField.setCustomValidity("Need to be 4 digits: MMYY");
+			return false
 		}
 	});
 }
