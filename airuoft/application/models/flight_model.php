@@ -50,8 +50,10 @@ class Flight_model extends CI_Model {
 
 	function updateAvailability($flight_id){
 		$this->db->query("update flight
-						   SET available = available - 1
-						   where flight.id = '$flight_id' ;");
+						   SET available = case
+						   when available > 0 then available-1 
+						   end 
+						   where flight.id = $flight_id ;");
 	}
 
 }

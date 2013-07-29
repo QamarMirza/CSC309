@@ -54,7 +54,7 @@ class Main extends CI_Controller {
 			$table[] = array('Flight Date', 'Seat Number','First Name','Last Name','Credit Card Number','Credit Expiry');
 
 			foreach ($ticket->result() as $row){
-				$date = $this->ticket_model->get_date($row->flight_id);
+				$date = $this->flight_model->get_date($row->flight_id);
 				foreach($date->result() as $d) {
 					$table[] = array($d->date, $row->seat, $row->first, $row->last, $row->creditcardnumber, $row->creditcardexpiration);
 				}
