@@ -12,7 +12,7 @@ class Arcade extends CI_Controller {
 	    	// enforce access control to protected functions	
     		
     		if (!isset($_SESSION['user']))
-   			redirect('account/loginForm', 'refresh'); //Then we redirect to the index page again
+   				redirect('account/loginForm', 'refresh'); //Then we redirect to the index page again
  	    	
 	    	return call_user_func_array(array($this, $method), $params);
     }
