@@ -1,6 +1,7 @@
 
 <table>
 <?php 
+	echo "you suck";
 	if ($users) {
 		foreach ($users as $user) {
 			if ($user->id != $currentUser->id) {

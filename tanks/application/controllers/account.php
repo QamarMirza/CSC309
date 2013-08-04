@@ -3,57 +3,59 @@
 class Account extends CI_Controller {
      
     function __construct() {
-    		// Call the Controller constructor
-	    	parent::__construct();
-	    	session_start();
+		// Call the Controller constructor
+    	parent::__construct();
+    	session_start();
+
     }
         
     public function _remap($method, $params = array()) {
-	    	// enforce access control to protected functions	
+    	// enforce access control to protected functions	
 
-    		$protected = array('updatePasswordForm','updatePassword','index','logout');
-    		
-    		if (in_array($method,$protected) && !isset($_SESSION['user']))
-   			redirect('account/loginForm', 'refresh'); //Then we redirect to the index page again
- 	    	
-	    	return call_user_func_array(array($this, $method), $params);
+		$protected = array('updatePasswordForm','updatePassword','index','logout');
+		
+		if (in_array($method,$protected) && !isset($_SESSION['user']))
+			redirect('account/loginForm', 'refresh'); //Then we redirect to the index page again
+	    	
+    	return call_user_func_array(array($this, $method), $params);
     }
           
     
     function loginForm() {
-    		$this->load->view('account/loginForm');
+		$this->load->view('account/loginForm');
     }
     
     function login() {
+	    include_once $_SERVER['DOCUMENT_ROOT'] . '/securimage/securimage.php';
+		$securimage = new Securimage();
+		if ($securimage->check($_POST['captcha_code']) == false) {
+		  // the code was incorrect
+		  // you should handle the error so that the form processor doesn't continue
+		  // or you can use the following code if there is no validation or you do not know how
+	  		echo "The security code entered was incorrect.<br /><br />";
+	 	 	echo "Please go <a href='javascript:history.go(-1)'>back</a> and try again.";
+	 	 	exit;
+		}
     		$this->load->library('form_validation');
     		$this->form_validation->set_rules('username', 'Username', 'required');
     		$this->form_validation->set_rules('password', 'Password', 'required');
 
-    		if ($this->form_validation->run() == FALSE)
-    		{
+    		if ($this->form_validation->run() == FALSE) {
     			$this->load->view('account/loginForm');
-    		}
-    		else
-    		{
+    		} else {
     			$login = $this->input->post('username');
     			$clearPassword = $this->input->post('password');
-    			 
     			$this->load->model('user_model');
-    		
     			$user = $this->user_model->get($login);
-    			 
     			if (isset($user) && $user->comparePassword($clearPassword)) {
     				$_SESSION['user'] = $user;
-    				$data['user']=$user;
-    				
-    				$this->user_model->updateStatus($user->id, User::AVAILABLE);
-    				
+    				$data['user']=$user;		
+    				$this->user_model->updateStatus($user->id, User::AVAILABLE);				
     				redirect('arcade/index', 'refresh'); //redirect to the main application page
-    			}
- 			else {   			
-				$data['errorMsg']='Incorrect username or password!';
- 				$this->load->view('account/loginForm',$data);
- 			}
+    			} else {   			
+					$data['errorMsg']='Incorrect username or password!';
+	 				$this->load->view('account/loginForm',$data);
+	 			}
     		}
     }
 
@@ -66,40 +68,37 @@ class Account extends CI_Controller {
     }
 
     function newForm() {
-	    	$this->load->view('account/newForm');
+    	$this->load->view('account/newForm');
     }
     
     function createNew() {
-    		$this->load->library('form_validation');
-    	    $this->form_validation->set_rules('username', 'Username', 'required|is_unique[user.login]');
-	    	$this->form_validation->set_rules('password', 'Password', 'required');
-	    	$this->form_validation->set_rules('first', 'First', "required");
-	    	$this->form_validation->set_rules('last', 'last', "required");
-	    	$this->form_validation->set_rules('email', 'Email', "required|is_unique[user.email]");
-	    	
-	    
-	    	if ($this->form_validation->run() == FALSE)
-	    	{
-	    		$this->load->view('account/newForm');
-	    	}
-	    	else  
-	    	{
-	    		$user = new User();
-	    		 
-	    		$user->login = $this->input->post('username');
-	    		$user->first = $this->input->post('first');
-	    		$user->last = $this->input->post('last');
-	    		$clearPassword = $this->input->post('password');
-	    		$user->encryptPassword($clearPassword);
-	    		$user->email = $this->input->post('email');
-	    		
-	    		$this->load->model('user_model');
-	    		 
-	    		
-	    		$this->user_model->insert($user);
-	    		
-	    		$this->load->view('account/loginForm');
-	    	}
+		$this->load->library('form_validation');
+	    $this->form_validation->set_rules('username', 'Username', 'required|is_unique[user.login]');
+    	$this->form_validation->set_rules('password', 'Password', 'required');
+    	$this->form_validation->set_rules('first', 'First', "required");
+    	$this->form_validation->set_rules('last', 'last', "required");
+    	$this->form_validation->set_rules('email', 'Email', "required|is_unique[user.email]");
+    	
+    
+    	if ($this->form_validation->run() == FALSE) {
+    		$this->load->view('account/newForm');
+    	} else {
+    		$user = new User();
+    		 
+    		$user->login = $this->input->post('username');
+    		$user->first = $this->input->post('first');
+    		$user->last = $this->input->post('last');
+    		$clearPassword = $this->input->post('password');
+    		$user->encryptPassword($clearPassword);
+    		$user->email = $this->input->post('email');
+    		
+    		$this->load->model('user_model');
+    		 
+    		
+    		$this->user_model->insert($user);
+    		
+    		$this->load->view('account/loginForm');
+    	}
     }
 
     
@@ -108,92 +107,83 @@ class Account extends CI_Controller {
     }
     
     function updatePassword() {
-	    	$this->load->library('form_validation');
-	    	$this->form_validation->set_rules('oldPassword', 'Old Password', 'required');
-	    	$this->form_validation->set_rules('newPassword', 'New Password', 'required');
-	    	 
-	    	 
-	    	if ($this->form_validation->run() == FALSE)
-	    	{
-	    		$this->load->view('account/updatePasswordForm');
-	    	}
-	    	else
-	    	{
-	    		$user = $_SESSION['user'];
-	    		
-	    		$oldPassword = $this->input->post('oldPassword');
-	    		$newPassword = $this->input->post('newPassword');
-	    		 
-	    		if ($user->comparePassword($oldPassword)) {
-	    			$user->encryptPassword($newPassword);
-	    			$this->load->model('user_model');
-	    			$this->user_model->updatePassword($user);
-	    			$data['user']=$user;
-	    			$this->load->view('mainPage',$data);
-	    		}
-	    		else {
-	    			$data['errorMsg']="Incorrect password!";
-	    			$this->load->view('account/updatePasswordForm',$data);
-	    		}
-	    	}
+    	$this->load->library('form_validation');
+    	$this->form_validation->set_rules('oldPassword', 'Old Password', 'required');
+    	$this->form_validation->set_rules('newPassword', 'New Password', 'required');
+    	 
+    	if ($this->form_validation->run() == FALSE) {
+    		$this->load->view('account/updatePasswordForm');
+    	} else {
+    		$user = $_SESSION['user'];
+    		
+    		$oldPassword = $this->input->post('oldPassword');
+    		$newPassword = $this->input->post('newPassword');
+    		 
+    		if ($user->comparePassword($oldPassword)) {
+    			$user->encryptPassword($newPassword);
+    			$this->load->model('user_model');
+    			$this->user_model->updatePassword($user);
+    			$data['user']=$user;
+    			$this->load->view('mainPage',$data);
+    		} else {
+    			$data['errorMsg']="Incorrect password!";
+    			$this->load->view('account/updatePasswordForm',$data);
+    		}
+    	}
     }
     
     function recoverPasswordForm() {
-    		$this->load->view('account/recoverPasswordForm');
+		$this->load->view('account/recoverPasswordForm');
     }
     
     function recoverPassword() {
-	    	$this->load->library('form_validation');
-	    	$this->form_validation->set_rules('email', 'email', 'required');
-	    	
-	    	if ($this->form_validation->run() == FALSE)
-	    	{
-	    		$this->load->view('account/recoverPasswordForm');
-	    	}
-	    	else
-	    	{ 
-	    		$email = $this->input->post('email');
-	    		$this->load->model('user_model');
-	    		$user = $this->user_model->getFromEmail($email);
+    	$this->load->library('form_validation');
+    	$this->form_validation->set_rules('email', 'email', 'required');
+    	
+    	if ($this->form_validation->run() == FALSE) {
+    		$this->load->view('account/recoverPasswordForm');
+    	} else { 
+    		$email = $this->input->post('email');
+    		$this->load->model('user_model');
+    		$user = $this->user_model->getFromEmail($email);
 
-	    		if (isset($user)) {
-	    			$newPassword = $user->initPassword();
-	    			$this->user_model->updatePassword($user);
-	    			
-	    			$this->load->library('email');
-	    		
-	    			$config['protocol']    = 'smtp';
-	    			$config['smtp_host']    = 'ssl://smtp.gmail.com';
-	    			$config['smtp_port']    = '465';
-	    			$config['smtp_timeout'] = '7';
-	    			$config['smtp_user']    = 'google_username@gmail.com';
-	    			$config['smtp_pass']    = 'google_password';
-	    			$config['charset']    = 'utf-8';
-	    			$config['newline']    = "\r\n";
-	    			$config['mailtype'] = 'text'; // or html
-	    			$config['validation'] = TRUE; // bool whether to validate email or not
-	    			
-		    	  	$this->email->initialize($config);
-	    			
-	    			$this->email->from('csc309Login@cs.toronto.edu', 'Login App');
-	    			$this->email->to($user->email);
-	    			
-	    			$this->email->subject('Password recovery');
-	    			$this->email->message("Your new password is $newPassword");
-	    			
-	    			$result = $this->email->send();
-	    			
-	    			//$data['errorMsg'] = $this->email->print_debugger();	
-	    			
-	    			//$this->load->view('emailPage',$data);
-	    			$this->load->view('account/emailPage');
-	    			
-	    		}
-	    		else {
-	    			$data['errorMsg']="No record exists for this email!";
-	    			$this->load->view('account/recoverPasswordForm',$data);
-	    		}
-	    	}
+    		if (isset($user)) {
+    			$newPassword = $user->initPassword();
+    			$this->user_model->updatePassword($user);
+    			
+    			$this->load->library('email');
+    		
+    			$config['protocol']    = 'smtp';
+    			$config['smtp_host']    = 'ssl://smtp.gmail.com';
+    			$config['smtp_port']    = '465';
+    			$config['smtp_timeout'] = '7';
+    			$config['smtp_user']    = 'google_username@gmail.com';
+    			$config['smtp_pass']    = 'google_password';
+    			$config['charset']    = 'utf-8';
+    			$config['newline']    = "\r\n";
+    			$config['mailtype'] = 'text'; // or html
+    			$config['validation'] = TRUE; // bool whether to validate email or not
+    			
+	    	  	$this->email->initialize($config);
+    			
+    			$this->email->from('csc309Login@cs.toronto.edu', 'Login App');
+    			$this->email->to($user->email);
+    			
+    			$this->email->subject('Password recovery');
+    			$this->email->message("Your new password is $newPassword");
+    			
+    			$result = $this->email->send();
+    			
+    			//$data['errorMsg'] = $this->email->print_debugger();	
+    			
+    			//$this->load->view('emailPage',$data);
+    			$this->load->view('account/emailPage');
+    			
+    		} else {
+    			$data['errorMsg']="No record exists for this email!";
+    			$this->load->view('account/recoverPasswordForm',$data);
+    		}
+    	}
     }    
  }
 
