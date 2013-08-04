@@ -27,11 +27,11 @@
 	    echo "<p>" . anchor('account/recoverPasswordForm','Recover Password') . "</p>";
     ?>
 
-    <img id="captcha" src="/securimage/securimage_show.php" alt="CAPTCHA Image" />
+    <img id="captcha" src="/tanks/securimage/securimage_show.php" alt="CAPTCHA Image" />
     <input type="text" name="captcha_code" size="10" maxlength="6" />
 
     <?php
-        $onclick = array('onclick' => "document.getElementById('captcha').src = '/securimage/securimage_show.php?' + Math.random(); return false;");
+        $onclick = array('onclick' => "document.getElementById('captcha').src = '/tanks/securimage/securimage_show.php?' + Math.random(); return false;");
         echo anchor('', "[ Different Image ]", $onclick);
 	    echo form_close();
     ?>	

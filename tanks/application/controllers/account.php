@@ -26,7 +26,7 @@ class Account extends CI_Controller {
     }
     
     function login() {
-	    include_once $_SERVER['DOCUMENT_ROOT'] . '/securimage/securimage.php';
+	    include_once $_SERVER['DOCUMENT_ROOT'] . '/tanks/securimage/securimage.php';
 		$securimage = new Securimage();
 		if ($securimage->check($_POST['captcha_code']) == false) {
 		  // the code was incorrect
