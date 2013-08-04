@@ -5,13 +5,12 @@
 	
 	<head>
 
-	<script src="http://code.jquery.com/jquery-latest.js"></script>
+	<script src="http://code.jquery.com/jquery-1.8.3.js"></script>
 	<script src="<?= base_url() ?>/js/jquery.timers.js"></script>
 	<script>
 		$(function(){
 			$('#availableUsers').everyTime(500,function(){
 					$('#availableUsers').load('<?= base_url() ?>arcade/getAvailableUsers');
-
 					$.getJSON('<?= base_url() ?>arcade/getInvitation',function(data, text, jqZHR){
 							if (data && data.invited) {
 								var user=data.login;
