@@ -22,23 +22,31 @@ class Account extends CI_Controller {
           
     
     function loginForm() {
+        if (!(isset($_SESSION['loginAttempts']))) {
+            $_SESSION['loginAttempts'] = 0;
+        } 
+        if (!(isset($_SESSION['remaining']))){
+            $_SESSION['remaining'] = 0;
+        }
 		$this->load->view('account/loginForm');
     }
     
     function login() {
-	    include_once $_SERVER['DOCUMENT_ROOT'] . '/tanks/securimage/securimage.php';
-		$securimage = new Securimage();
-		if ($securimage->check($_POST['captcha_code']) == false) {
+	   // include_once $_SERVER['DOCUMENT_ROOT'] . '/tanks/securimage/securimage.php';
+		//$securimage = new Securimage();
+		//if ($securimage->check($_POST['captcha_code']) == false) {
 		  // the code was incorrect
 		  // you should handle the error so that the form processor doesn't continue
 		  // or you can use the following code if there is no validation or you do not know how
-	  		echo "The security code entered was incorrect.<br /><br />";
-	 	 	echo "Please go <a href='javascript:history.go(-1)'>back</a> and try again.";
-	 	 	exit;
-		}
+	  	//	echo "The security code entered was incorrect.<br /><br />";
+	 	 //	echo "Please go <a href='javascript:history.go(-1)'>back</a> and try again.";
+	 	 //	exit;
+		//}
     		$this->load->library('form_validation');
     		$this->form_validation->set_rules('username', 'Username', 'required');
     		$this->form_validation->set_rules('password', 'Password', 'required');
+
+
 
     		if ($this->form_validation->run() == FALSE) {
     			$this->load->view('account/loginForm');
@@ -48,12 +56,21 @@ class Account extends CI_Controller {
     			$this->load->model('user_model');
     			$user = $this->user_model->get($login);
     			if (isset($user) && $user->comparePassword($clearPassword)) {
+                    $_SESSION['loginAttempts'] = 0;
+                    $_SESSION['remaining'] = 0;
+
     				$_SESSION['user'] = $user;
     				$data['user']=$user;		
     				$this->user_model->updateStatus($user->id, User::AVAILABLE);				
     				redirect('arcade/index', 'refresh'); //redirect to the main application page
-    			} else {   			
-					$data['errorMsg']='Incorrect username or password!';
+    			} else {   	
+                    $_SESSION['loginAttempts'] = $_SESSION['loginAttempts'] + 1;
+                    if (isset($_REQUEST['remaining'])){
+                        echo $_REQUEST['remaining'];
+                        $_SESSION['remaining'] = $_REQUEST['remaining'];
+                    }
+					
+                    $data['errorMsg']='Incorrect username or password!';
 	 				$this->load->view('account/loginForm',$data);
 	 			}
     		}
