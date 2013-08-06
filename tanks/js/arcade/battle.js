@@ -4,6 +4,9 @@ var player2;
 var offsetX, offsetY; // used for moving tanks
 var mx = 0;
 var my = 0;
+var keys = {};
+var gameover = false;
+var id = 1; // for testing right now
 
 $(function() {
 	// setup canvas
@@ -11,14 +14,68 @@ $(function() {
 	canvasElement = canvas[0]; // canvas[0] is the actual HTML DOM element for our drawing canvas
 	context = canvasElement.getContext("2d");
 
-	// attach mouse events to entire document
+	// attach key events to entire document
 	$(window).keydown(function(event) {
-		keydownHandler(event);
-	});
+        keys[event.keyCode] = true;
+    });
 
-	drawTanks();
+    $(window).keyup(function(event) {
+        delete keys[event.keyCode];
+    });
+
+	initTanks();
+
+	//while (!gameover) {
+        gameLoop();
+    //}
 });
 
+function gameLoop() {
+    if (id === 1) {
+        if (keys[37]){
+            player1.tankBody.x1 -=1;
+            player1.tankBody.x2 -=1;
+        }
+        if (keys[38]){
+            player1.tankBody.y1 -=1;
+            player1.tankBody.y2 -=1;
+        }
+        if (keys[39]){
+            player1.tankBody.x1 +=1;
+            player1.tankBody.x2 +=1;
+        }
+        if (keys[40]){
+            player1.tankBody.y1 +=1;
+            player1.tankBody.y2 +=1;
+        }
+        player1.tankBody.draw();
+    } else {
+        if (keys[37]){
+            player1.tankBody.x1 -=1;
+            player1.tankBody.x2 -=1;
+        }
+        if (keys[38]){
+            player1.tankBody.y1 -=1;
+            player1.tankBody.y2 -=1;
+        }
+        if (keys[39]){
+            player1.tankBody.x1 +=1;
+            player1.tankBody.x2 +=1;
+        }
+        if (keys[40]){
+            player1.tankBody.y1 +=1;
+            player1.tankBody.y2 +=1;
+        }
+        //player2.tankBody.draw();
+    }
+
+    // redraw/reposition your object here
+    // also redraw/animate any objects not controlled by the user
+    
+    setTimeout(gameLoop, 20);
+}
+
+/*
 function keydownHandler(event){
     //console.log('keycode: '+ event.keyCode);
     if (event.keyCode === 37) { // left
@@ -35,70 +92,47 @@ function keydownHandler(event){
         my = 2;
     }
 };
-
-/*
-	when a tank that is selected and is clicked on and drag we call this function
-	to update where it is moved to by calculating the offset from the mouse	
 */
-function moveTank(x, y) {
-	var tank = previousSelectedTank;
-	if (tank instanceof Circle || tank instanceof Rectangle) {
-		tank.x1 = x - offsetX;
-		tank.y1 = y - offsetY;
-	} else {
-		var diffX = tank.x2 - tank.x1;
-		var diffY = tank.y2 - tank.y1;ss
-		tank.x1 = x - offsetX;
-		tank.y1 = y - offsetY;
-		tank.x2 = tank.x1 + diffX;
-		tank.y2 = tank.y1 + diffY;
-	}
-	drawTanks();		
-}
 
-function drawTanks() {
+function initTanks() {
 	// Clear the canvasElement.
 	context.clearRect(0, 0, canvasElement.width, canvasElement.height);
 
 	// draw tank positioned for player number
 	player1 = new Tank(0, 150, 50, 200);
     player1.tankBody.fillColor = "beige";
-    player1.tankBody.strokeColor = "blue";    
+    player1.tankBody.strokeColor = "blue";
+    player1.turret.fillColor = "beige";
+    player1.turret.strokeColor = "blue";
 	player1.draw();
 	
 	player2 = new Tank(150, 0, 200, 50);
     player2.tankBody.fillColor = "beige";
     player2.tankBody.strokeColor = "green";
+    player2.turret.fillColor = "beige";
+    player2.turret.strokeColor = "green";
 	player2.draw();
 }
 
-function clearCanvas(event) {
-	// Remove all the tanks.
-	tanks = [];
-
-	// Update the display.
-	drawTanks();
-}
-
 /*
-	This is the object created for the rectangle tank. we define it's point of origin and then offset values
-	as well as it's initial colour outline and width and fill colour.
+	This is the Tank object. Its made up of a TankBody and a Turret
 */
-function Tank(x1, y1, x2, y2) {
+function Tank(x1, y1, x2, y2, id) {
+    this.id = id;
     this.tankBody = new TankBody(x1, y1, x2, y2);
     var centerX = x1 + (x2 - x1) / 2;
     var centerY = y1 + (y2 - y1) / 2;
     this.turret = new Turret(centerX-8, centerY-8, x2/1.5, y2/1.5);
-    //this.cannon = new Cannon(centerX, centerY, x2, y2);
+    this.cannon = new Cannon(centerX, centerY, x2, y2);
     this.draw = function(){
         this.tankBody.draw();
         this.turret.draw();
-        //this.cannon.draw();        
+        this.cannon.draw();
     }
 }
 
 /*
-	This is the object created for the tank body. 
+	This is the TankBody object.
 	We define it's point of origin and then offset values with keyboard
 */
 function TankBody(x1, y1, x2, y2) {
@@ -159,24 +193,23 @@ TankBody.prototype.testHit = function(x, y) {
 	}
 };
 
-TankBody.prototype.update = function (x1, y1, x2, y2) {
+TankBody.prototype.update = function(x1, y1, x2, y2) {
 	this.x1 = x1;
 	this.y1 = y1;
 	this.x2 = x2-this.x1; // offset value. distance between where tank begins and where mouse is
 	this.y2 = y2-this.y1;
 };
 
-	
 /*
-	This is the turret object created for the tank. 
-	we define it's point of origin and then offset values
+	This is the Turret object
+	We define it's point of origin and then offset values with keyboard
 */
 function Turret(x1, y1, x2, y2) {
 	this.update(x1, y1, x2, y2);
 	this.outlineWidth = 2
 	this.isSelected = false;
 	this.draw = function() {
-		// Draw the rectangle
+		// Draw the turret
 		context.globalAlpha = 0.85;
 		context.beginPath();
 		context.rect(this.x1, this.y1, this.x2, this.y2);
@@ -237,6 +270,10 @@ Turret.prototype.update = function (x1, y1, x2, y2) {
 	this.y2 = y2-this.y1;
 };
 
+/*
+	This is the Cannon object
+	We define it's point of origin and then offset values with keyboard
+*/
 function Cannon(x1, y1, x2, y2) {
 	this.update(x1, y1, x2, y2);
 	this.outlineWidth = 2
