@@ -31,44 +31,51 @@ $(function() {
 });
 
 function gameLoop() {
+    // Clear the canvasElement.
+	context.clearRect(0, 0, canvasElement.width, canvasElement.height);
+
     if (id === 1) {
         if (keys[37]){
             player1.tankBody.x1 -=1;
-            player1.tankBody.x2 -=1;
+            player1.turret.x1 -=1;
+            player1.cannon.x1 -=1;
         }
         if (keys[38]){
             player1.tankBody.y1 -=1;
-            player1.tankBody.y2 -=1;
+            player1.turret.y1 -=1;
+            player1.cannon.y1 -=1;
         }
         if (keys[39]){
             player1.tankBody.x1 +=1;
-            player1.tankBody.x2 +=1;
+            player1.turret.x1 +=1;
+            player1.cannon.x1 +=1;
         }
         if (keys[40]){
             player1.tankBody.y1 +=1;
-            player1.tankBody.y2 +=1;
+            player1.turret.y1 +=1;
+            player1.cannon.y1 +=1;
         }
-        player1.tankBody.draw();
     } else {
         if (keys[37]){
-            player1.tankBody.x1 -=1;
-            player1.tankBody.x2 -=1;
+            player2.tankBody.x1 -=1;
+            player2.turret.x1 -=1;
         }
         if (keys[38]){
-            player1.tankBody.y1 -=1;
-            player1.tankBody.y2 -=1;
+            player2.tankBody.y1 -=1;
+            player2.turret.y1 -=1;
         }
         if (keys[39]){
-            player1.tankBody.x1 +=1;
-            player1.tankBody.x2 +=1;
+            player2.tankBody.x1 +=1;
+            player2.turret.x1 +=1;
         }
         if (keys[40]){
-            player1.tankBody.y1 +=1;
-            player1.tankBody.y2 +=1;
+            player2.tankBody.y1 +=1;
+            player2.turret.y1 +=1;
         }
-        //player2.tankBody.draw();
     }
-
+    player1.draw();
+    player2.draw();
+        
     // redraw/reposition your object here
     // also redraw/animate any objects not controlled by the user
     
@@ -98,32 +105,35 @@ function initTanks() {
 	// Clear the canvasElement.
 	context.clearRect(0, 0, canvasElement.width, canvasElement.height);
 
-	// draw tank positioned for player number
-	player1 = new Tank(0, 150, 50, 200);
+	// draw tank positioned for player1
+	player1 = new Tank(0, 150, 50, 200, 0);
     player1.tankBody.fillColor = "beige";
     player1.tankBody.strokeColor = "blue";
     player1.turret.fillColor = "beige";
     player1.turret.strokeColor = "blue";
+    player1.cannon.fillColor = "blue";
 	player1.draw();
-	
-	player2 = new Tank(150, 0, 200, 50);
+
+	// draw tank positioned for player2
+	player2 = new Tank(150, 0, 200, 50, 0);
     player2.tankBody.fillColor = "beige";
     player2.tankBody.strokeColor = "green";
     player2.turret.fillColor = "beige";
     player2.turret.strokeColor = "green";
+    player2.cannon.fillColor = "green";
 	player2.draw();
 }
 
 /*
 	This is the Tank object. Its made up of a TankBody and a Turret
 */
-function Tank(x1, y1, x2, y2, id) {
+function Tank(x1, y1, x2, y2, angle) {
     this.id = id;
     this.tankBody = new TankBody(x1, y1, x2, y2);
     var centerX = x1 + (x2 - x1) / 2;
     var centerY = y1 + (y2 - y1) / 2;
-    this.turret = new Turret(centerX-8, centerY-8, x2/1.5, y2/1.5);
-    this.cannon = new Cannon(centerX, centerY, x2, y2);
+    this.turret = new Turret(centerX-8, centerY-35, centerX+8, centerY, angle);
+    this.cannon = new Cannon(centerX, centerY-8, x2, y2, angle);
     this.draw = function(){
         this.tankBody.draw();
         this.turret.draw();
@@ -204,7 +214,7 @@ TankBody.prototype.update = function(x1, y1, x2, y2) {
 	This is the Turret object
 	We define it's point of origin and then offset values with keyboard
 */
-function Turret(x1, y1, x2, y2) {
+function Turret(x1, y1, x2, y2, angle) {
 	this.update(x1, y1, x2, y2);
 	this.outlineWidth = 2
 	this.isSelected = false;
@@ -274,7 +284,7 @@ Turret.prototype.update = function (x1, y1, x2, y2) {
 	This is the Cannon object
 	We define it's point of origin and then offset values with keyboard
 */
-function Cannon(x1, y1, x2, y2) {
+function Cannon(x1, y1, x2, y2, angle) {
 	this.update(x1, y1, x2, y2);
 	this.outlineWidth = 2
 	this.draw = function() {
@@ -282,10 +292,10 @@ function Cannon(x1, y1, x2, y2) {
 		context.globalAlpha = 0.85;
 		context.beginPath();
 		context.arc(this.x1, this.y1, this.radius, 0, Math.PI*2);
-		context.fillStyle = "black";
+		context.fillStyle = this.fillColor;
 		context.strokeStyle = "black";
 		context.fill();
-		context.stroke(); 
+		context.stroke();
 	};
 }
 
