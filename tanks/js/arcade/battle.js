@@ -82,25 +82,6 @@ function gameLoop() {
     setTimeout(gameLoop, 20);
 }
 
-/*
-function keydownHandler(event){
-    //console.log('keycode: '+ event.keyCode);
-    if (event.keyCode === 37) { // left
-        mx = -2;
-        my = 0;
-    } else if (event.keyCode === 38) { // up
-        mx = 0;
-        my = -2;
-    } else if (event.keyCode === 39) { // right
-        mx = 2;
-        my = 0;
-    } else if (event.keyCode === 40) { // down
-        mx = 0;
-        my = 2;
-    }
-};
-*/
-
 function initTanks() {
 	// Clear the canvasElement.
 	context.clearRect(0, 0, canvasElement.width, canvasElement.height);
