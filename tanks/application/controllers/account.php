@@ -25,9 +25,6 @@ class Account extends CI_Controller {
         if (!(isset($_SESSION['loginAttempts']))) {
             $_SESSION['loginAttempts'] = 0;
         } 
-        if (!(isset($_SESSION['remaining']))){
-            $_SESSION['remaining'] = 0;
-        }
 		$this->load->view('account/loginForm');
     }
     
@@ -45,18 +42,13 @@ class Account extends CI_Controller {
 			$user = $this->user_model->get($login);
 			if (isset($user) && $user->comparePassword($clearPassword)) {
 				$_SESSION['loginAttempts'] = 0;
-				$_SESSION['remaining'] = 0;
 				$_SESSION['user'] = $user;
 				$data['user']=$user;		
 				$this->user_model->updateStatus($user->id, User::AVAILABLE);				
 				redirect('arcade/index', 'refresh'); //redirect to the main application page
-			} else {
+			} else {  
                 $_SESSION['loginAttempts'] = $_SESSION['loginAttempts'] + 1;
-                if (isset($_REQUEST['remaining'])) {
-                	echo $_REQUEST['remaining'];
-                    $_SESSION['remaining'] = $_REQUEST['remaining'];
-                }
-					
+                sleep(pow(2, $_SESSION['loginAttempts']));
 				$data['errorMsg']='Incorrect username or password!';
  				$this->load->view('account/loginForm',$data);
  			}
