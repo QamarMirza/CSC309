@@ -46,7 +46,7 @@ class Account extends CI_Controller {
 				$data['user']=$user;		
 				$this->user_model->updateStatus($user->id, User::AVAILABLE);				
 				redirect('arcade/index', 'refresh'); //redirect to the main application page
-			} else {  
+			} else {
                 $_SESSION['loginAttempts'] = $_SESSION['loginAttempts'] + 1;
                 sleep(pow(2, $_SESSION['loginAttempts']));
 				$data['errorMsg']='Incorrect username or password!';
