@@ -21,7 +21,7 @@ $(function() {
     });
 
 	initTanks();
-
+	
 	//while (!gameover) {
         gameLoop();
     //}
@@ -52,6 +52,23 @@ function gameLoop() {
             player1.turret.y1 +=1;
             player1.cannon.y1 +=1;
         }
+        if (keys[65]){
+            player1.turret.angle -= 0.1;
+        }
+        if (keys[68]){
+            player1.turret.angle += 0.1;
+        }
+        if (keys[32]){
+            console.log("FIRE IN THE HOLE");
+        }
+        /*
+        if (keys[87]){
+            player1.turret.angle -= 0.1;
+        }
+        if (keys[83]){
+            player1.turret.angle += 0.1;
+        }
+        */
     } else {
         if (keys[37]){
             player2.tankBody.x1 -=1;
@@ -73,10 +90,7 @@ function gameLoop() {
     player1.draw();
     player2.draw();
         
-    // redraw/reposition your object here
-    // also redraw/animate any objects not controlled by the user
-    
-    setTimeout(gameLoop, 20);
+    setTimeout(gameLoop, 50);
 }
 
 function initTanks() {
@@ -93,7 +107,7 @@ function initTanks() {
 	player1.draw();
 
 	// draw tank positioned for player2
-	player2 = new Tank(150, 0, 50, 50, 90);
+	player2 = new Tank(150, 0, 50, 50, 270);
     player2.tankBody.fillColor = "beige";
     player2.tankBody.strokeColor = "green";
     player2.turret.fillColor = "beige";
@@ -185,7 +199,7 @@ TankBody.prototype.testHit = function(x1, y1) {
 
 /*
 	This is the Turret object
-	We define it's point of origin and then offset values with keyboard
+	We define it's point of origin and then offset values as the tank moves
 */
 function Turret(x1, y1, w, h, angle) {
     this.x1 = x1;
@@ -193,24 +207,28 @@ function Turret(x1, y1, w, h, angle) {
     this.w = w;
     this.h = h,
     //this.angle = angle;
-	this.angle = angle * Math.PI / 180;
+	this.angle = angle * Math.PI / 180; // this is the initial angle upon construction
 	this.outlineWidth = 2
-	console.log(this.x1);
-	console.log(this.y1);
-    console.log(this.w);
-	console.log(this.h);
-	console.log(this.angle);
 	this.draw = function() {
 		// Draw the turret
 		context.save(); // saves the coordinate system
-		context.translate(this.x1 + this.w/2, this.y1 + this.h/2);
-        context.rotate(this.angle); // rotate around the start point
+		
+		context.translate(this.x1 + this.w/2, this.y1 + this.h/2); // new point of origin
+        context.rotate(this.angle); // rotate around the center point
+
+        // main turret
 		context.beginPath();
 		context.rect(-1*(this.w/2), -1*(this.h/2), this.w, this.h);
 		context.fillStyle = this.fillColor;
 		context.strokeStyle = this.strokeColor;
 		context.fill();
 		context.stroke();
+
+		// draw an extra line to indicate bottom end of turret
+        context.beginPath();
+        context.rect(-1*(this.w/2), -1*(this.h/2 - 22), this.w , 1);
+		context.stroke();
+		
 		context.restore(); // restores the coordinate system back to (0,0)
 	};
 }
