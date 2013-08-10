@@ -4,6 +4,7 @@ var player2;
 var keys = {};
 var gameover = false;
 var id = 1; // for testing right now
+var hit = false;
 
 $(function() {
 	// setup canvas
@@ -27,72 +28,125 @@ $(function() {
     //}
 });
 
-function gameLoop() {
-    // Clear the canvasElement.
-	context.clearRect(0, 0, canvasElement.width, canvasElement.height);
-
-    if (id === 1) {
-        if (keys[37]){
-            player1.tankBody.x1 -=1;
-            player1.turret.x1 -=1;
-            player1.cannon.x1 -=1;
-        }
-        if (keys[38]){
-            player1.tankBody.y1 -=1;
-            player1.turret.y1 -=1;
-            player1.cannon.y1 -=1;
-        }
-        if (keys[39]){
-            player1.tankBody.x1 +=1;
-            player1.turret.x1 +=1;
-            player1.cannon.x1 +=1;
-        }
-        if (keys[40]){
-            player1.tankBody.y1 +=1;
-            player1.turret.y1 +=1;
-            player1.cannon.y1 +=1;
-        }
-        if (keys[65]){
-            player1.turret.angle -= 0.1;
-        }
-        if (keys[68]){
-            player1.turret.angle += 0.1;
-        }
-        if (keys[32]){
-            console.log("FIRE IN THE HOLE");
-        }
-        /*
-        if (keys[87]){
-            player1.turret.angle -= 0.1;
-        }
-        if (keys[83]){
-            player1.turret.angle += 0.1;
-        }
-        */
-    } else {
-        if (keys[37]){
-            player2.tankBody.x1 -=1;
-            player2.turret.x1 -=1;
-        }
-        if (keys[38]){
-            player2.tankBody.y1 -=1;
-            player2.turret.y1 -=1;
-        }
-        if (keys[39]){
-            player2.tankBody.x1 +=1;
-            player2.turret.x1 +=1;
-        }
-        if (keys[40]){
-            player2.tankBody.y1 +=1;
-            player2.turret.y1 +=1;
-        }
-    }
-    player1.draw();
-    player2.draw();
-        
-    setTimeout(gameLoop, 50);
+function checkCollision(){
+	if (player2.tankBody.y1 + player2.tankBody.h >= player1.tankBody.y1){
+		if (((player2.tankBody.x1<=player1.tankBody.x1 + player1.tankBody.w) && (player1.tankBody.x1 <=  player2.tankBody.x1 + player2.tankBody.w)) 
+			|| 
+			((player1.tankBody.x1<=player2.tankBody.x1 + player2.tankBody.w) && (player2.tankBody.x1 <=  player1.tankBody.x1 + player1.tankBody.w)) ){
+			console.log('HHHHHHHIIIIITTT');
+			window.location = "account/loginForm";
+			hit =true;
+		}
+	}
 }
 
+function gameLoop() {
+    // Clear the canvasElement.
+
+
+	context.clearRect(0, 0, canvasElement.width, canvasElement.height);
+    if (!hit) {
+    	if (id === 1) {
+	        if (keys[37]){
+		    	if (player1.tankBody.x1 > 0){
+		            player1.tankBody.x1 -=1;
+		            player1.turret.x1 -=1;
+		            player1.cannon.x1 -=1;
+		        }
+	        }
+	        if (keys[38]){
+	        	if (player1.tankBody.y1 > 0){
+		            player1.tankBody.y1 -=1;
+		            player1.turret.y1 -=1;
+		            player1.cannon.y1 -=1;
+		        }
+	        }
+	        if (keys[39]){
+	        	if (player1.tankBody.w + player1.tankBody.x1 < canvas[0].width){
+		            player1.tankBody.x1 +=1;
+		            player1.turret.x1 +=1;
+		            player1.cannon.x1 +=1;
+		        }
+	        }
+	        if (keys[40]){
+	        	if (player1.tankBody.h + player1.tankBody.y1 < canvas[0].height){
+		            player1.tankBody.y1 +=1;
+		            player1.turret.y1 +=1;
+		            player1.cannon.y1 +=1;
+		        }
+	        }
+	        if (keys[65]){
+            	player1.turret.angle -= 0.1;
+	        }
+	        if (keys[68]){
+	            player1.turret.angle += 0.1;
+	        }
+	        if (keys[32]){
+	            console.log("FIRE IN THE HOLE");
+	        }
+	        /*
+	        if (keys[87]){
+	            player1.turret.angle -= 0.1;
+	        }
+	        if (keys[83]){
+	            player1.turret.angle += 0.1;
+	        }
+	        */
+	    } else {
+	         if (keys[37]){
+		    	if (player2.tankBody.x1 > 0){
+		            player2.tankBody.x1 -=1;
+		            player2.turret.x1 -=1;
+		            player2.cannon.x1 -=1;
+		        }
+	        }
+	        if (keys[38]){
+	        	if (player2.tankBody.y1 > 0){
+		            player2.tankBody.y1 -=1;
+		            player2.turret.y1 -=1;
+		            player2.cannon.y1 -=1;
+		        }
+	        }
+	        if (keys[39]){
+	        	if (player2.tankBody.w + player2.tankBody.x1 < canvas[0].width){
+		            player2.tankBody.x1 +=1;
+		            player2.turret.x1 +=1;
+		            player2.cannon.x1 +=1;
+		        }
+	        }
+	        if (keys[40]){
+	        	if (player2.tankBody.h +player2.tankBody.y1 < canvas[0].height ){
+		            player2.tankBody.y1 +=1;
+		            player2.turret.y1 +=1;
+		            player2.cannon.y1 +=1;
+		        }
+	        }
+	   }
+	}
+    player1.draw();
+    player2.draw();
+    
+    // send coordinates to database of player1 
+
+    var url = "<?= base_url()?>/account/updateCoordinates";
+    var player = $(this).serializedArray();
+    var arg = "json="+json.stringify(player);
+    $.ajax({
+    	url : url
+    	data : arg
+    	type: post
+    });
+
+    checkCollision();
+    
+
+
+    // redraw/reposition your object here
+    // also redraw/animate any objects not controlled by the user
+    if (!hit){
+    	setTimeout(gameLoop, 20);
+	}	
+}
 function initTanks() {
 	// Clear the canvasElement.
 	context.clearRect(0, 0, canvasElement.width, canvasElement.height);
