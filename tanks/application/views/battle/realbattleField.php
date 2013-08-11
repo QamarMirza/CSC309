@@ -4,20 +4,23 @@
 	<script src="http://code.jquery.com/jquery-1.8.3.js"></script>
 	<script src="<?= base_url() ?>/js/jquery.timers.js"></script>
 	<script>
-		var otherUser = <?php echo json_encode($otherUser); ?>;
-		var user = <?php echo json_encode($user); ?>;
+		//var otherUser = <?php echo json_encode($otherUser); ?>;
+		//var user = <?php echo json_encode($user); ?>;
+		var otherUser = "<?= $otherUser->login ?>";
+		var user = "<?= $user->login ?>";
 		var status = "<?= $status ?>";
-
-        user.tank = null;
-        otherUser.tank = null;
         console.log(user);
+        var player1 = null;
+        var player2 = null;
         var keys = {};
         var gameover = false;
         var id = 1; // for testing right now
         var hit = false;
-
+        var reset = false;
+        var fire_once = false;
+        
 		$(function(){
-			$('body').everyTime(2000,function(){
+			$('body').everyTime(2000, function(){
 			    if (status == 'waiting') {
 					$.getJSON('<?= base_url() ?>arcade/checkInvitation',function(data, text, jqZHR){
 						if (data && data.status =='rejected') {
@@ -34,42 +37,31 @@
 				$.getJSON(url, function (data, text, jqXHR){
 					if (data && data.status =='success') {
                         // Clear the canvasElement.
-                        context.clearRect(0, 0, canvasElement.width, canvasElement.height);
-                        if (!user.tank) {
-	                        // draw tank positioned for user.tank
-	                        user.tank = new Tank(0, 150, 50, 50, 0);
-                            user.tank.tankBody.fillColor = "beige";
-                            user.tank.tankBody.strokeColor = "blue";
-                            user.tank.turret.fillColor = "beige";
-                            user.tank.turret.strokeColor = "blue";
-                            user.tank.cannon.fillColor = "blue";
-	                        user.tank.draw();
+                        /*context.clearRect(0, 0, canvasElement.width, canvasElement.height);
+                        if (!player1) {
+	                        // draw tank positioned for player1
+	                        player1 = new Tank(0, 150, 50, 50, 0);
+                            player1.tankBody.fillColor = "beige";
+                            player1.tankBody.strokeColor = "blue";
+                            player1.turret.fillColor = "beige";
+                            player1.turret.strokeColor = "blue";
+                            player1.cannon.fillColor = "blue";
+	                        player1.draw();
                         }
-						if (!otherUser.tank) {
-	                        // draw tank positioned for otherUser.tank
-	                        otherUser.tank = new Tank(150, 0, 50, 50, data.angle);
-                            otherUser.tank.tankBody.fillColor = "beige";
-                            otherUser.tank.tankBody.strokeColor = "green";
-                            otherUser.tank.turret.fillColor = "beige";
-                            otherUser.tank.turret.strokeColor = "green";
-                            otherUser.tank.cannon.fillColor = "green";
-	                        otherUser.tank.draw();
-						}
+						if (!player2) {
+	                        // draw tank positioned for otherplayer1
+	                        otherplayer1 = new Tank(150, 0, 50, 50, data.angle);
+                            otherplayer1.tankBody.fillColor = "beige";
+                            otherplayer1.tankBody.strokeColor = "green";
+                            otherplayer1.turret.fillColor = "beige";
+                            otherplayer1.turret.strokeColor = "green";
+                            otherplayer1.cannon.fillColor = "green";
+	                        otherplayer1.draw();
+						}*/
 						console.log(data);
 					}
 				});
 			});
-
-			$('form').submit(function(){
-				//var arguments = $(this).serialize();
-				var url = "<?= base_url() ?>combat/postCoordinates";
-				$.post(url, arguments, function (data,textStatus,jqXHR){
-					var conversation = $('[name=conversation]').val();
-					var msg = $('[name=msg]').val();
-					$('[name=conversation]').val(conversation + "\n" + user + ": " + msg);
-				});
-				return false;
-			});	
 
 	        // setup canvas
 	        canvas = $("#drawingCanvas"); // this returns a jQuery object
@@ -85,19 +77,50 @@
                 delete keys[event.keyCode];
             });
 
-	        //initTanks();
-	
+	        initTanks();
+
+			$('form').submit(function(event){
+                event.preventDefault();
+                console.log("hi");
+				//var arguments = $(this).serialize();
+				var url = "<?= base_url() ?>combat/postCoordinates";
+				var data = {
+				    "x1": player1.tankBody.x1,
+		            "y1": player1.tankBody.y1,
+		            "x2": player1.cannon.x1,
+		            "y2": player1.cannon.y1,
+		            "angle": player1.turret.angle,
+		            "shot": 0,
+		            "hit": 0
+		        }
+				$.ajax({
+                    url: url,
+                    data: JSON.stringify(data),
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    success: function(data){
+                        console.log("succeededdd");
+                    },
+                    error: function(){
+                        console.log("faileddd");
+                    },
+                    type: 'POST'
+                });
+				return false;
+			});
+
+            $('[type=submit]').trigger('click');
 	        //while (!gameover) {
                 gameLoop();
             //}
 		});
 
         function checkCollision(){
-            if (otherUser.tank && user.tank) {
-	            if (otherUser.tank.tankBody.y1 + otherUser.tank.tankBody.h >= user.tank.tankBody.y1){
-		            if (((otherUser.tank.tankBody.x1<=user.tank.tankBody.x1 + user.tank.tankBody.w) && (user.tank.tankBody.x1 <=  otherUser.tank.tankBody.x1 + otherUser.tank.tankBody.w)) 
+            if (player1 && player2) {
+                if (player2.tankBody.y1 + player2.tankBody.h >= player1.tankBody.y1){
+		            if (((player2.tankBody.x1<=player1.tankBody.x1 + player1.tankBody.w) && (player1.tankBody.x1 <=  player2.tankBody.x1 + player2.tankBody.w)) 
 			            || 
-			            ((user.tank.tankBody.x1<=otherUser.tank.tankBody.x1 + otherUser.tank.tankBody.w) && (otherUser.tank.tankBody.x1 <=  user.tank.tankBody.x1 + user.tank.tankBody.w)) ){
+			            ((player1.tankBody.x1<=player2.tankBody.x1 + player2.tankBody.w) && (player2.tankBody.x1 <=  player1.tankBody.x1 + player1.tankBody.w)) ){
 			            console.log('HHHHHHHIIIIITTT');
 			            window.location = "account/loginForm";
 			            hit =true;
@@ -112,82 +135,104 @@
 	        context.fillRect(0, 0, canvasElement.width, canvasElement.height);
             if (!hit) {
                 if (id === 1) {
-                    if (keys[37]){
-			            if (user.tank.tankBody.x1 > 0){
-                        user.tank.tankBody.x1 -=1;
-                        user.tank.turret.x1 -=1;
-                        user.tank.cannon.x1 -=1;
+                    if (keys[37]) {
+			            if (player1.tankBody.x1 > 0) {
+                        	player1.tankBody.x1 -=1;
+                        	player1.turret.x1 -=1;
+	                        if (!player1.cannon.inMotion){
+	                        	player1.cannon.x1 -=1;
+                    		}
                     	}
                     }
                     if (keys[38]){
-	                    if (user.tank.tankBody.y1 > 0){
-                        user.tank.tankBody.y1 -=1;
-                        user.tank.turret.y1 -=1;
-                        user.tank.cannon.y1 -=1;
+	                    if (player1.tankBody.y1 > 0){
+	                        player1.tankBody.y1 -=1;
+	                        player1.turret.y1 -=1;
+                            if (!player1.cannon.inMotion){
+	                        	player1.cannon.y1 -=1;
+	                        }
                     	}
                     }
                     if (keys[39]){
-	                    if (user.tank.tankBody.w + user.tank.tankBody.x1 < canvas[0].width){
-                        user.tank.tankBody.x1 +=1;
-                        user.tank.turret.x1 +=1;
-                        user.tank.cannon.x1 +=1;
+	                    if (player1.tankBody.w + player1.tankBody.x1 < canvas[0].width){
+	                        player1.tankBody.x1 +=1;
+	                        player1.turret.x1 +=1;
+	                        if (!player1.cannon.inMotion){
+	                        	player1.cannon.x1 +=1;
+	                        }
                     	}
                     }
                     if (keys[40]){
-	                    if (user.tank.tankBody.h + user.tank.tankBody.y1 < canvas[0].height){
-                        	user.tank.tankBody.y1 +=1;
-                        	user.tank.turret.y1 +=1;
-                        	user.tank.cannon.y1 +=1;
+	                    if (player1.tankBody.h + player1.tankBody.y1 < canvas[0].height){
+                        	player1.tankBody.y1 +=1;
+                        	player1.turret.y1 +=1;
+                        	if (!player1.cannon.inMotion){
+                        		player1.cannon.y1 +=1;
+                        	}
                         }
                     }
+
                     if (keys[65]){
-                        user.tank.turret.angle -= 0.1;
+                        player1.turret.angle -= 0.1;
                     }
                     if (keys[68]){
-                        user.tank.turret.angle += 0.1;
+                        player1.turret.angle += 0.1;
                     }
                     if (keys[32]){
-                        console.log("FIRE IN THE HOLE");
-                        user.tank.fire();
-                    }
+                    	if (!player1.cannon.inMotion){
+                    		player1.cannon.inMotion = true;
+	                        console.log("FIRE IN THE HOLE");
+	                        reset = false;
+	                        cannon_angle = player1.turret.angle;
+	                        player1.fire();
+	                    }
+	                }
                 } else {
                     if (keys[37]){
-		                if (otherUser.tank.tankBody.x1 > 0){
-                        	otherUser.tank.tankBody.x1 -=1;
-                        	otherUser.tank.turret.x1 -=1;
-		                    otherUser.tank.cannon.x1 -=1;
+		                if (player2.tankBody.x1 > 0){
+                        	player2.tankBody.x1 -=1;
+                        	player2.turret.x1 -=1;
+		                    if (!player2.cannon.inMotion){
+		                    	player2.cannon.x1 -=1;
+		                    }
                     	}
 	                }
                     if (keys[38]){
-	                    if (otherUser.tank.tankBody.y1 > 0){
-                        	otherUser.tank.tankBody.y1 -=1;
-                        	otherUser.tank.turret.y1 -=1;
-		                	otherUser.tank.cannon.y1 -=1;
+	                    if (player2.tankBody.y1 > 0){
+                        	player2.tankBody.y1 -=1;
+                        	player2.turret.y1 -=1;
+		                	if (!player2.cannon.inMotion){
+		                		player2.cannon.y1 -=1;
+		                	}
 		                }
                     }
                     if (keys[39]){
-	                    if (otherUser.tank.tankBody.w + otherUser.tank.tankBody.x1 < canvas[0].width){
-                        	otherUser.tank.tankBody.x1 +=1;
-                        	otherUser.tank.turret.x1 +=1;
-		                    otherUser.tank.cannon.x1 +=1;
+	                    if (player2.tankBody.w + player2.tankBody.x1 < canvas[0].width){
+                        	player2.tankBody.x1 +=1;
+                        	player2.turret.x1 +=1;
+		                    if (!player1.cannon.inMotion){
+		                   		player2.cannon.x1 +=1;
+		                   	}
 		                }
                     }
                     if (keys[40]){
-	                    if (otherUser.tank.tankBody.h +otherUser.tank.tankBody.y1 < canvas[0].height ){
-                        	otherUser.tank.tankBody.y1 +=1;
-                        	otherUser.tank.turret.y1 +=1;
-		                        otherUser.tank.cannon.y1 +=1;
+	                    if (player2.tankBody.h + player2.tankBody.y1 < canvas[0].height){
+                        	player2.tankBody.y1 +=1;
+                        	player2.turret.y1 +=1;
+		                    if (!player2.cannon.inMotion){
+		                        player2.cannon.y1 +=1;
+		                    }
 		                }
                     }
                 }
             }
-            if (user.tank) {
-                user.tank.draw();
-            }
-            if (otherUser.tank) {
-                otherUser.tank.draw();
-            }
-                
+            if (player1) {
+                player1.draw();
+            }            
+            if (player2) {
+                player2.draw();
+            }        
+
             checkCollision();
 
             // redraw/reposition your object here
@@ -201,23 +246,23 @@
 	        // Clear the canvasElement.
 	        context.clearRect(0, 0, canvasElement.width, canvasElement.height);
 
-	        // draw tank positioned for user.tank
-	        user.tank = new Tank(0, 150, 50, 50, 0);
-            user.tank.tankBody.fillColor = "beige";
-            user.tank.tankBody.strokeColor = "blue";
-            user.tank.turret.fillColor = "beige";
-            user.tank.turret.strokeColor = "blue";
-            user.tank.cannon.fillColor = "blue";
-	        user.tank.draw();
+	        // draw tank positioned for player1
+	        player1 = new Tank(0, 150, 50, 50, 0);
+            player1.tankBody.fillColor = "beige";
+            player1.tankBody.strokeColor = "blue";
+            player1.turret.fillColor = "beige";
+            player1.turret.strokeColor = "blue";
+            player1.cannon.fillColor = "blue";
+	        player1.draw();
 
-	        // draw tank positioned for otherUser.tank
-	        otherUser.tank = new Tank(150, 0, 50, 50, 270);
-            otherUser.tank.tankBody.fillColor = "beige";
-            otherUser.tank.tankBody.strokeColor = "green";
-            otherUser.tank.turret.fillColor = "beige";
-            otherUser.tank.turret.strokeColor = "green";
-            otherUser.tank.cannon.fillColor = "green";
-	        otherUser.tank.draw();
+	        // draw tank positioned for player2
+	        player2 = new Tank(150, 0, 50, 50, 270);
+            player2.tankBody.fillColor = "beige";
+            player2.tankBody.strokeColor = "green";
+            player2.turret.fillColor = "beige";
+            player2.turret.strokeColor = "green";
+            player2.cannon.fillColor = "green";
+	        player2.draw();
         }
 
         /*
@@ -236,14 +281,16 @@
             }
             var thisTank = this;
             this.fire = function() {
-                var angle = thisTank.turret.angle;
-                context.save();
-                
-                thisTank.cannon.x1 += 5;
-                thisTank.cannon.y1 -= 5;
-
-                context.restore();
-            	setTimeout(thisTank.fire, 25);
+    	    	//var angle = thisTank.turret.angle;
+    	        context.save();
+    	        context.translate(thisTank.cannon.x1 + thisTank.cannon.radius/2, thisTank.cannon.y1 + thisTank.cannon.h/2); // new point of origin
+    	        thisTank.cannon.x1 -= Math.cos(cannon_angle + Math.PI/2);
+    	        thisTank.cannon.y1 -= Math.sin(cannon_angle + Math.PI/2);
+    	        context.restore();
+    	        //thisTank.tankBody.testHit();
+    	        if (!reset){
+    	            setTimeout(thisTank.fire, 20);
+    	        }
             }
         }
 
@@ -255,7 +302,7 @@
             this.x1 = x1;
             this.y1 = y1;
             this.w = w;
-            this.h = h,
+            this.h = h;
 	        this.outlineWidth = 3;
 	        this.draw = function() {
 		        // Draw the rectangle.
@@ -269,47 +316,33 @@
         }
 
         //FIXME: has to be changed
-        TankBody.prototype.testHit = function(x1, y1) {
-	        var precision;
-	        if (this.outlineWidth <= 5) {
-		        var precision = this.outlineWidth + 2;
-	        } else if (this.outlineWidth <= 10) {
-		        var precision = this.outlineWidth / 1.15;
-	        } else if  (this.outlineWidth <= 15) {
-		        var precision = this.outlineWidth / 1.5;
-	        } else{
-		        var precision = this.outlineWidth /1.8;
-	        } 
-
-	        if (this.w < 0) {
-		        if (this.h < 0) { // if box is drawn bottom right to top left
-			        if (this.h < 0) { 
-				        if (this.x1  + precision> x1 && this.x1+this.w - precision < x1 && this.y1 + precision > y1 && this.y1+this.h - precision < y1) { 
-					        return true;
-				        }
-				        return false;
-			        }
-		        } else { // x1 >0, box is drawn top right to bottom left
-			        if (this.h > 0) { 
-				        if (this.x1 +precision > x1 && this.x1+this.w  - precision< x1 && this.y1  - precision< y1 && this.y1+this.h + precision > y1) {
-					        return true;
-				        }
-				        return false;
-			        }
-		        }
-	        } else { // x1 > 0
-		        if (this.h < 0) { // box is drawn bottom left to top right
-			        if (this.x1 - precision< x1 && this.x1+this.w +precision> x1 && this.y1  + precision> y1 && this.y1+this.h - precision< y1) {
-				        return true;
-			        }
-			        return false;
-		        } else { // y > 0, box is drawn top left to bottom right 
-			        if (this.x1 - precision < x1 && this.x1+this.w  + precision> x1 && this.y1 - precision < y1 && this.y1+this.h + precision > y1) {
-				        return true;
-			        }
-			        return false;
+        TankBody.prototype.testHit = function() {
+	        if ((player1.cannon.x1 - player1.cannon.radius <= player2.tankBody.x1 + player2.tankBody.w) && (player1.cannon.x1 + player1.cannon.radius>= player2.tankBody.x1)){
+		        if ((player1.cannon.y1 - player1.cannon.radius <= player2.tankBody.y1 + player2.tankBody.h) && (player1.cannon.y1 + player1.cannon.radius >= player2.tankBody.y1)){
+			        console.log('hittttttttttttttttt');
 		        }
 	        }
+	        if ((player1.cannon.x1 - player1.cannon.radius <= 0) || (player1.cannon.x1 + player1.cannon.radius>= canvas[0].width)){
+		        console.log('out on x');
+		        // reset to tank
+		            var centerX = player1.tankBody.x1 + player1.tankBody.w / 2;
+            		var centerY = player1.tankBody.y1 + player1.tankBody.h / 2;
+			        player1.cannon.x1 = centerX;
+			        player1.cannon.y1 = centerY;
+			        reset = true;
+            		player1.cannon.inMotion = false;
+	        }
+	
+	        if ((player1.cannon.y1 - player1.cannon.radius <= 0) || (player1.cannon.y1 + player1.cannon.radius >= canvas[0].height)){
+		        console.log('out on y');
+		        // reset to tank
+	            var centerX = player1.tankBody.x1 + player1.tankBody.w / 2;
+        		var centerY = player1.tankBody.y1 + player1.tankBody.h / 2;
+		        player1.cannon.x1 = centerX;
+		        player1.cannon.y1 = centerY;
+		        reset = true;
+		        player1.cannon.inMotion = false;
+	        }	
         };
 
         /*
@@ -320,9 +353,10 @@
             this.x1 = x1;
             this.y1 = y1;
             this.w = w;
-            this.h = h,
+            this.h = h;
+            this.inMotion = false;
             //this.angle = angle;
-	        this.angle = angle * Math.PI / 180; // this is the initial angle upon construction
+	        this.angle = angle * Math.PI / 2; // this is the initial angle upon construction
 	        this.outlineWidth = 2
 	        this.draw = function() {
 		        // Draw the turret
@@ -343,7 +377,6 @@
                 context.beginPath();
                 context.rect(-1*(this.w/2), -1*(this.h/2 - 22), this.w , 1);
 		        context.stroke();
-		
 		        context.restore(); // restores the coordinate system back to (0,0)
 	        };
         }
@@ -352,12 +385,11 @@
 	        This is the Cannon object
 	        We define it's point of origin and then offset values with keyboard
         */
-        function Cannon(x1, y1, angle) {
+        function Cannon(x1, y1) {
 	        this.x1 = x1;
 	        this.y1 = y1;
-	        this.angle = angle * Math.PI / 180; // this is the initial angle upon construction
-	        this.radius = 5
-	        this.outlineWidth = 2
+	        this.radius = 5;
+	        this.outlineWidth = 2;
 	        this.draw = function() {
 		        // Draw the cannon
 		        context.beginPath();
