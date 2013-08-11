@@ -41,8 +41,9 @@ function checkCollision(){
 }
 
 function gameLoop() {
-    // Clear the canvasElement.
-	context.clearRect(0, 0, canvasElement.width, canvasElement.height);
+    // Clear the canvas with some shadow effect for movement
+    context.fillStyle = "rgba(255, 255, 255, .5)";
+	context.fillRect(0, 0, canvasElement.width, canvasElement.height);
     if (!hit) {
         if (id === 1) {
             if (keys[37]){
@@ -81,15 +82,8 @@ function gameLoop() {
             }
             if (keys[32]){
                 console.log("FIRE IN THE HOLE");
+                player1.fire();
             }
-            /*
-            if (keys[87]){
-                player1.turret.angle -= 0.1;
-            }
-            if (keys[83]){
-                player1.turret.angle += 0.1;
-            }
-            */
         } else {
             if (keys[37]){
 		        if (player2.tankBody.x1 > 0){
@@ -125,22 +119,22 @@ function gameLoop() {
     player2.draw();
         
     // send coordinates to database of player1 
-
+    /*
     var url = "<?= base_url()?>/account/updateCoordinates";
     var player = $(this).serializedArray();
     var arg = "json="+json.stringify(player);
     $.ajax({
-    	url : url
-    	data : arg
+    	url : url,
+    	data : arg,
     	type: post
     });
-
+    */
     checkCollision();
 
     // redraw/reposition your object here
     // also redraw/animate any objects not controlled by the user
     if (!hit){
-    	setTimeout(gameLoop, 50);
+    	setTimeout(gameLoop, 25);
 	}
 }
 
@@ -176,10 +170,21 @@ function Tank(x1, y1, w, h, angle) {
     var centerY = y1 + h / 2;
     this.turret = new Turret(centerX-8.5, centerY-17, w/3, h/1.5, angle);
     this.cannon = new Cannon(centerX, centerY);
-    this.draw = function(){
+    this.draw = function() {
         this.tankBody.draw();
         this.turret.draw();
         this.cannon.draw();
+    }
+    var thisTank = this;
+    this.fire = function() {
+        var angle = thisTank.turret.angle;
+        context.save();
+        
+        thisTank.cannon.x1 += 5;
+        thisTank.cannon.y1 -= 5;
+
+        context.restore();
+    	setTimeout(thisTank.fire, 25);
     }
 }
 
@@ -288,9 +293,10 @@ function Turret(x1, y1, w, h, angle) {
 	This is the Cannon object
 	We define it's point of origin and then offset values with keyboard
 */
-function Cannon(x1, y1) {
+function Cannon(x1, y1, angle) {
 	this.x1 = x1;
 	this.y1 = y1;
+	this.angle = angle * Math.PI / 180; // this is the initial angle upon construction
 	this.radius = 5
 	this.outlineWidth = 2
 	this.draw = function() {
