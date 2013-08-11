@@ -19,63 +19,60 @@ class Arcade extends CI_Controller {
        
     
     function index() {
-		    	$data['user']=$_SESSION['user'];
-		    	if (isset($_SESSION['errmsg'])) {
-		    		$data['errmsg']=	$_SESSION['errmsg'];
-		    		unset($_SESSION['errmsg']);
-		    	}
-		    	$this->load->view('arcade/mainPage',$data);
+    	$data['user']=$_SESSION['user'];
+    	if (isset($_SESSION['errmsg'])) {
+    		$data['errmsg']=	$_SESSION['errmsg'];
+    		unset($_SESSION['errmsg']);
+    	}
+    	$this->load->view('arcade/mainPage',$data);
     }
 
     function getAvailableUsers() {
  	   	$this->load->model('user_model');
-    		$users = $this->user_model->getAvailableUsers();
-    		$data['users']=$users;
-    		$data['currentUser']=$_SESSION['user'];
-    		$this->load->view('arcade/availableUsers',$data);
+		$users = $this->user_model->getAvailableUsers();
+		$data['users']=$users;
+		$data['currentUser']=$_SESSION['user'];
+		$this->load->view('arcade/availableUsers',$data);
     }
     
     function getInvitation() {
-	    	$user = $_SESSION['user'];
-	    		
-	    	$this->load->model('user_model');
-	    	$user = $this->user_model->get($user->login);
-	    	
-	    	// if the current user has been invited to battle
-	    	if ($user->user_status_id == User::INVITED) {
-	    		$this->load->model('invite_model');
-	    		$invite = $this->invite_model->get($user->invite_id);
-	    		$hostUser = $this->user_model->getFromId($invite->user1_id);
+    	$user = $_SESSION['user'];
+    		
+    	$this->load->model('user_model');
+    	$user = $this->user_model->get($user->login);
+    	
+    	// if the current user has been invited to battle
+    	if ($user->user_status_id == User::INVITED) {
+    		$this->load->model('invite_model');
+    		$invite = $this->invite_model->get($user->invite_id);
+    		$hostUser = $this->user_model->getFromId($invite->user1_id);
 
-	    		$msg = array('invited'=>true,'login'=>$hostUser->login);
-	    		echo json_encode($msg);	
-	    	}
-	    	else {
-	    		$msg = array('invited'=>false);
-	    		echo json_encode($msg);
-	    	}
+    		$msg = array('invited'=>true,'login'=>$hostUser->login);
+    		echo json_encode($msg);	
+    	}
+    	else {
+    		$msg = array('invited'=>false);
+    		echo json_encode($msg);
+    	}
     }
     
     function acceptInvitation() {
-	    	$user = $_SESSION['user'];
-	    	 
-	    	$this->load->model('user_model');
-	    	$this->load->model('invite_model');
-	    	$this->load->model('battle_model');
-	    	
-	    	
-	    	$user = $this->user_model->get($user->login);
+    	$user = $_SESSION['user'];
+    	 
+    	$this->load->model('user_model');
+    	$this->load->model('invite_model');
+    	$this->load->model('battle_model');
+    	
+    	$user = $this->user_model->get($user->login);
 	    	
 	    $invite = $this->invite_model->get($user->invite_id);
 	    $hostUser = $this->user_model->getFromId($invite->user1_id);
-
 	    
 	    // start transactional mode
 	    $this->db->trans_begin();
 	    
 	    // change status of invitation to ACCEPTED
 	    $this->invite_model->updateStatus($invite->id,Invite::ACCEPTED);
-	    
 	    
 	    // create a battle entry
 	    $battle = new Battle();
@@ -92,7 +89,7 @@ class Arcade extends CI_Controller {
 	    $this->user_model->updateBattle($hostUser->id,$battleId);
 	    
 	    if ($this->db->trans_status() === FALSE)
-	    		goto transactionerror;
+    		goto transactionerror;
 	    
 	    // if all went well commit changes
 	    $this->db->trans_commit();
@@ -106,8 +103,6 @@ class Arcade extends CI_Controller {
 	    $this->db->trans_rollback();
 
 	    echo json_encode(array('status'=>'failure'));
-	     
-	    
     }
     
 	function declineInvitation() {
@@ -170,80 +165,76 @@ class Arcade extends CI_Controller {
 	
 	
     function invite() {
-    		try {
+		try {
     		$login = $this->input->get('login');
 		
-		if (!isset($login)) 
-			goto loginerror;
+		    if (!isset($login)) 
+			    goto loginerror;
 
-		$user1 = $_SESSION['user'];
-		$user2 = null;
+		    $user1 = $_SESSION['user'];
+		    $user2 = null;
 		
-		$this->load->model('user_model');
-		$this->load->model('invite_model');
+		    $this->load->model('user_model');
+		    $this->load->model('invite_model');
 		
-		// start transactional mode
-		$this->db->trans_begin();	
+		    // start transactional mode
+		    $this->db->trans_begin();	
 
 
-		// lock both user records in alphabetic order to prevent deadlocks	
-		if (strcmp($user1->login, $login) < 0) {
-			$user1 = $this->user_model->getExclusive($user1->login);
-			$user2 = $this->user_model->getExclusive($login); 
-		}
-		else {
-			$user2 = $this->user_model->getExclusive($login);
-			$user1 = $this->user_model->getExclusive($user1->login);
-		}
+		    // lock both user records in alphabetic order to prevent deadlocks	
+		    if (strcmp($user1->login, $login) < 0) {
+			    $user1 = $this->user_model->getExclusive($user1->login);
+			    $user2 = $this->user_model->getExclusive($login); 
+		    }
+		    else {
+			    $user2 = $this->user_model->getExclusive($login);
+			    $user1 = $this->user_model->getExclusive($user1->login);
+		    }
 			
-		if (!isset($user2) || $user2->user_status_id != User::AVAILABLE) 
-			goto nouser2;
+		    if (!isset($user2) || $user2->user_status_id != User::AVAILABLE) 
+			    goto nouser2;
 
-		// update status of both users
-		$this->user_model->updateStatus($user1->id,User::WAITING);
-		$this->user_model->updateStatus($user2->id,User::INVITED);
+		    // update status of both users
+		    $this->user_model->updateStatus($user1->id,User::WAITING);
+		    $this->user_model->updateStatus($user2->id,User::INVITED);
 		
-		// create an invite entry
-		$invite = new Invite();
-		$invite->user1_id = $user1->id;
-		$invite->user2_id = $user2->id;
-				   
-		$this->invite_model->insert($invite);
+		    // create an invite entry
+		    $invite = new Invite();
+		    $invite->user1_id = $user1->id;
+		    $invite->user2_id = $user2->id;
+				       
+		    $this->invite_model->insert($invite);
 
-		$inviteId = mysql_insert_id();
+		    $inviteId = mysql_insert_id();
 		
-		$this->user_model->updateInvitation($user1->id,$inviteId);
-		$this->user_model->updateInvitation($user2->id,$inviteId);
-		
-		
-		if ($this->db->trans_status() === FALSE) 
-			goto transactionerror;
+		    $this->user_model->updateInvitation($user1->id,$inviteId);
+		    $this->user_model->updateInvitation($user2->id,$inviteId);
 		
 		
-		// if all went well commit changes
-		$this->db->trans_commit();
-		
-		redirect('combat/index', 'refresh'); //redirect to combat stage
+		    if ($this->db->trans_status() === FALSE) 
+			    goto transactionerror;
 		
 		
+		    // if all went well commit changes
+		    $this->db->trans_commit();
 		
-		return;
+		    redirect('combat/index', 'refresh'); //redirect to combat stage
 		
-		// something went wrong
-	transactionerror:
-	nouser2:	
-		$this->db->trans_rollback();
+		    return;
+		
+		    // something went wrong
+	        transactionerror:
+	        nouser2:	
+		        $this->db->trans_rollback();
 	
-    	loginerror:
-    	
-    		$_SESSION["errmsg"] = "Sorry, this user is no longer available.";
-    	 
-    		redirect('arcade/index', 'refresh'); //redirect to the main application page
-    		}
-    		catch(Exception $e) {
-    			$this->db->trans_rollback();
-    		}
-    		
+        	loginerror:
+        		$_SESSION["errmsg"] = "Sorry, this user is no longer available.";
+        	 
+        		redirect('arcade/index', 'refresh'); //redirect to the main application page
+		}
+		catch(Exception $e) {
+			$this->db->trans_rollback();
+		}
     }
  
  }

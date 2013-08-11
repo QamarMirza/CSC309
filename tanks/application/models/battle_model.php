@@ -60,7 +60,6 @@ class Battle_model extends CI_Model {
 		return $this->db->update('battle',array('u2_shot'=>false));
 	}
 	
-	
 	function updateMsgU1($id,$msg) {
 		$this->db->where('id',$id);
 		return $this->db->update('battle',array('u1_msg'=>$msg));
@@ -71,12 +70,9 @@ class Battle_model extends CI_Model {
 		return $this->db->update('battle',array('u2_msg'=>$msg));
 	}
 	
-	
-	
 	function updateStatus($id, $status) {
 		$this->db->where('id',$id);
 		return $this->db->update('battle',array('battle_status_id'=>$status));
 	}
-	
 }
 ?>
