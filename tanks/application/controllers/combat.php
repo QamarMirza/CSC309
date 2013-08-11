@@ -21,39 +21,39 @@ class Combat extends CI_Controller {
     function index() {
 		$user = $_SESSION['user'];
     		    	
-	    	$this->load->model('user_model');
-	    	$this->load->model('invite_model');
-	    	$this->load->model('battle_model');
-	    	
-	    	$user = $this->user_model->get($user->login);
+    	$this->load->model('user_model');
+    	$this->load->model('invite_model');
+    	$this->load->model('battle_model');
+    	
+    	$user = $this->user_model->get($user->login);
 
-	    	$invite = $this->invite_model->get($user->invite_id);
-	    	
-	    	if ($user->user_status_id == User::WAITING) {
-	    		$invite = $this->invite_model->get($user->invite_id);
-	    		$otherUser = $this->user_model->getFromId($invite->user2_id);
-	    	}
-	    	else if ($user->user_status_id == User::BATTLING) {
-	    		$battle = $this->battle_model->get($user->battle_id);
-	    		if ($battle->user1_id == $user->id)
-	    			$otherUser = $this->user_model->getFromId($battle->user2_id);
-	    		else
-	    			$otherUser = $this->user_model->getFromId($battle->user1_id);
-	    	}
-	    	
-	    	$data['user']=$user;
-	    	$data['otherUser']=$otherUser;
-	    	
-	    	switch($user->user_status_id) {
-	    		case User::BATTLING:	
-	    			$data['status'] = 'battling';
-	    			break;
-	    		case User::WAITING:
-	    			$data['status'] = 'waiting';
-	    			break;
-	    	}
-	    	
-		$this->load->view('battle/battleField',$data);
+    	$invite = $this->invite_model->get($user->invite_id);
+    	
+    	if ($user->user_status_id == User::WAITING) {
+    		$invite = $this->invite_model->get($user->invite_id);
+    		$otherUser = $this->user_model->getFromId($invite->user2_id);
+    	}
+    	else if ($user->user_status_id == User::BATTLING) {
+    		$battle = $this->battle_model->get($user->battle_id);
+    		if ($battle->user1_id == $user->id)
+    			$otherUser = $this->user_model->getFromId($battle->user2_id);
+    		else
+    			$otherUser = $this->user_model->getFromId($battle->user1_id);
+    	}
+    	
+    	$data['user']=$user;
+    	$data['otherUser']=$otherUser;
+    	
+    	switch($user->user_status_id) {
+    		case User::BATTLING:	
+    			$data['status'] = 'battling';
+    			break;
+    		case User::WAITING:
+    			$data['status'] = 'waiting';
+    			break;
+    	}
+    	
+		$this->load->view('battle/realbattleField',$data);
     }
 
  	function postMsg() {
@@ -128,8 +128,117 @@ class Combat extends CI_Controller {
  		
  		// if all went well commit changes
  		$this->db->trans_commit();
- 		
+
+ 		// send back the data
  		echo json_encode(array('status'=>'success','message'=>$msg));
+		return;
+		
+		transactionerror:
+		    $this->db->trans_rollback();
+		
+		error:
+		    echo json_encode(array('status'=>'failure','message'=>$errormsg));
+ 	}
+
+	/* change this */
+ 	function postCoordinates() {
+ 		$this->load->library('form_validation');
+ 		
+		$user = $_SESSION['user'];
+ 			 
+		$user = $this->user_model->getExclusive($user->login);
+		if ($user->user_status_id != User::BATTLING) {	
+			$errormsg="Not in BATTLING state";
+			goto error;
+		}
+		
+		$battle = $this->battle_model->get($user->battle_id);			
+
+		// get the fields
+		$msg = $this->input->post('msg');
+		
+		if ($battle->user1_id == $user->id) {
+		    // update user1 coordinates
+			$msg = $battle->u1_msg == ''? $msg : $battle->u1_msg . "\n" . $msg;
+			$this->battle_model->updateMsgU1($battle->id, $msg);
+		}
+		else {
+		    // update user2 coordinates
+			$msg = $battle->u2_msg == ''? $msg :  $battle->u2_msg . "\n" . $msg;
+			$this->battle_model->updateMsgU2($battle->id, $msg);
+		}
+			
+		echo json_encode(array('status'=>'success'));
+		 
+		return;
+ 		
+		error:
+			echo json_encode(array('status'=>'failure','message'=>$errormsg));
+ 	}
+
+	function getCoordinates() {
+ 		$this->load->model('user_model');
+ 		$this->load->model('battle_model');
+ 			
+ 		$user = $_SESSION['user'];
+ 		 
+ 		$user = $this->user_model->get($user->login);
+ 		if ($user->user_status_id != User::BATTLING) {	
+ 			$errormsg="Not in BATTLING state";
+ 			goto error;
+ 		}
+ 		// start transactional mode
+ 		$this->db->trans_begin();
+ 			
+ 		$battle = $this->battle_model->getExclusive($user->battle_id);			
+ 			
+ 		if ($battle->user1_id == $user->id) {
+			//$msg = $battle->u2_msg;
+
+			$other_id = $battle->user2_id;
+			//$x1 = $battle->u2_x1;
+            $x1 = 200;
+			$y1 = $battle->u2_y1;
+			$x2 = $battle->u2_x2;
+			$y2 = $battle->u2_y2;
+	        $angle = $battle->u2_angle;
+	        $shot = $battle->u2_shot;
+	        $hit = $battle->u2_hit;
+																		
+ 			//$this->battle_model->updateMsgU2($battle->id,"what");
+ 		}
+ 		else {
+ 			//$msg = $battle->u1_msg;
+
+			$other_id = $battle->user1_id;
+			//$x1 = $battle->u1_x1;
+            $x1 = 100;
+			$y1 = $battle->u1_y1;
+			$x2 = $battle->u1_x2;
+			$y2 = $battle->u1_y2;
+	        $angle = $battle->u1_angle;
+	        $shot = $battle->u1_shot;
+	        $hit = $battle->u1_hit;
+
+ 			//$this->battle_model->updateMsgU1($battle->id,"who");
+ 		}
+
+ 		if ($this->db->trans_status() === FALSE) {
+ 			$errormsg = "Transaction error";
+ 			goto transactionerror;
+ 		}
+ 		
+ 		// if all went well commit changes
+ 		$this->db->trans_commit();
+ 		
+ 		echo json_encode(array('status'=>'success', 'other_id'=>$other_id, 
+ 		                                            'x1'=>$x1, 
+ 		                                            'y1'=>$y1,
+ 		                                            'x2'=>$x2,
+ 		                                            'y2'=>$y2, 
+ 		                                            'angle'=>$angle, 
+ 		                                            'shot'=>$shot,
+ 		                                            'hit'=>$hit ));
 		return;
 		
 		transactionerror:

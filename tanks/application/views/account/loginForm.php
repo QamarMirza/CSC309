@@ -11,7 +11,6 @@
         }
 	</style>
 	<script src="http://code.jquery.com/jquery-latest.js"></script>
-	<script type="text/javascript" src="<?php echo base_url();?>js/arcade/battle.js"></script>
 </head> 
 <body>  
 	<h1>Login</h1>
@@ -32,7 +31,5 @@
     echo "<p>" . anchor('account/recoverPasswordForm','Recover Password') . "</p>";
     echo form_close();
     ?>
-
-    <canvas id="drawingCanvas" width="200" height="200"></canvas>
 </body>
 </html>
