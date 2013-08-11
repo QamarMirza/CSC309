@@ -82,7 +82,7 @@
 			$('form').submit(function(event){
                 event.preventDefault();
                 console.log("hi");
-				//var arguments = $(this).serialize();
+				var args = $(this).serialize();
 				var url = "<?= base_url() ?>combat/postCoordinates";
 				var data = {
 				    "x1": player1.tankBody.x1,
@@ -90,14 +90,13 @@
 		            "x2": player1.cannon.x1,
 		            "y2": player1.cannon.y1,
 		            "angle": player1.turret.angle,
-		            "shot": 0,
-		            "hit": 0
+		            "shot": false,
+		            "hit": false
 		        }
+                console.log(args);
 				$.ajax({
                     url: url,
-                    data: JSON.stringify(data),
-                    dataType: 'json',
-                    contentType: 'application/json',
+                    data: data,
                     success: function(data){
                         console.log("succeededdd");
                     },
@@ -420,7 +419,8 @@
 	
     <?php 
 	    echo form_open();
-	    echo form_submit('Send','Send');
+	    echo form_input('msg', 'you suck');	    
+        echo form_submit('Send','Send');
 	    echo form_close();
     ?>
 
