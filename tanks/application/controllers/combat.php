@@ -142,8 +142,9 @@ class Combat extends CI_Controller {
 
 	/* change this */
  	function postCoordinates() {
- 		$this->load->library('form_validation');
- 		
+ 		$this->load->model('user_model');
+		$this->load->model('battle_model');
+
 		$user = $_SESSION['user'];
  			 
 		$user = $this->user_model->getExclusive($user->login);
@@ -155,17 +156,21 @@ class Combat extends CI_Controller {
 		$battle = $this->battle_model->get($user->battle_id);			
 
 		// get the fields
-		$msg = $this->input->post('msg');
-		
+		$x1 = $this->input->post('x1');
+		$y1 = $this->input->post('y1');
+		$x2 = $this->input->post('x2');
+		$y2 = $this->input->post('y2');
+		$angle = $this->input->post('angle');
+		$shot = $this->input->post('shot');
+		$hit = $this->input->post('hit');
+
 		if ($battle->user1_id == $user->id) {
 		    // update user1 coordinates
-			$msg = $battle->u1_msg == ''? $msg : $battle->u1_msg . "\n" . $msg;
-			$this->battle_model->updateMsgU1($battle->id, $msg);
+			$this->battle_model->updateU1($battle->id, $x1, $y1, $x2, $y2, $angle, $shot, $hit);
 		}
 		else {
 		    // update user2 coordinates
-			$msg = $battle->u2_msg == ''? $msg :  $battle->u2_msg . "\n" . $msg;
-			$this->battle_model->updateMsgU2($battle->id, $msg);
+            $this->battle_model->updateU2($battle->id, $x1, $y1, $x2, $y2, $angle, $shot, $hit);
 		}
 			
 		echo json_encode(array('status'=>'success'));
@@ -193,11 +198,9 @@ class Combat extends CI_Controller {
  		$battle = $this->battle_model->getExclusive($user->battle_id);			
  			
  		if ($battle->user1_id == $user->id) {
-			//$msg = $battle->u2_msg;
-
 			$other_id = $battle->user2_id;
-			//$x1 = $battle->u2_x1;
-            $x1 = 200;
+			$x1 = $battle->u2_x1;
+            //$x1 = 200;
 			$y1 = $battle->u2_y1;
 			$x2 = $battle->u2_x2;
 			$y2 = $battle->u2_y2;
@@ -208,11 +211,9 @@ class Combat extends CI_Controller {
  			//$this->battle_model->updateMsgU2($battle->id,"what");
  		}
  		else {
- 			//$msg = $battle->u1_msg;
-
 			$other_id = $battle->user1_id;
-			//$x1 = $battle->u1_x1;
-            $x1 = 100;
+			$x1 = $battle->u1_x1;
+            //$x1 = 100;
 			$y1 = $battle->u1_y1;
 			$x2 = $battle->u1_x2;
 			$y2 = $battle->u1_y2;
