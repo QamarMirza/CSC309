@@ -81,8 +81,6 @@
 
 			$('form').submit(function(event){
                 event.preventDefault();
-                console.log("hi");
-				var args = $(this).serialize();
 				var url = "<?= base_url() ?>combat/postCoordinates";
 				var data = {
 				    "x1": player1.tankBody.x1,
@@ -93,7 +91,6 @@
 		            "shot": false,
 		            "hit": false
 		        }
-                console.log(args);
 				$.ajax({
                     url: url,
                     data: data,
@@ -109,21 +106,20 @@
 			});
 
             $('[type=submit]').trigger('click');
+
 	        //while (!gameover) {
                 gameLoop();
             //}
 		});
 
         function checkCollision(){
-            if (player1 && player2) {
-                if (player2.tankBody.y1 + player2.tankBody.h >= player1.tankBody.y1){
-		            if (((player2.tankBody.x1<=player1.tankBody.x1 + player1.tankBody.w) && (player1.tankBody.x1 <=  player2.tankBody.x1 + player2.tankBody.w)) 
-			            || 
-			            ((player1.tankBody.x1<=player2.tankBody.x1 + player2.tankBody.w) && (player2.tankBody.x1 <=  player1.tankBody.x1 + player1.tankBody.w)) ){
-			            console.log('HHHHHHHIIIIITTT');
-			            window.location = "account/loginForm";
-			            hit =true;
-		            }
+            if (player2.tankBody.y1 + player2.tankBody.h >= player1.tankBody.y1){
+	            if (((player2.tankBody.x1<=player1.tankBody.x1 + player1.tankBody.w) && (player1.tankBody.x1 <=  player2.tankBody.x1 + player2.tankBody.w)) 
+		            || 
+		            ((player1.tankBody.x1<=player2.tankBody.x1 + player2.tankBody.w) && (player2.tankBody.x1 <=  player1.tankBody.x1 + player1.tankBody.w)) ){
+		            console.log('HHHHHHHIIIIITTT');
+		            window.location.href = '<?= base_url() ?>arcade/index';
+		            hit =true;
 	            }
             }
         }
@@ -225,12 +221,8 @@
                     }
                 }
             }
-            if (player1) {
-                player1.draw();
-            }            
-            if (player2) {
-                player2.draw();
-            }        
+            player1.draw();
+            player2.draw();
 
             checkCollision();
 
@@ -280,13 +272,12 @@
             }
             var thisTank = this;
             this.fire = function() {
-    	    	//var angle = thisTank.turret.angle;
     	        context.save();
     	        context.translate(thisTank.cannon.x1 + thisTank.cannon.radius/2, thisTank.cannon.y1 + thisTank.cannon.h/2); // new point of origin
     	        thisTank.cannon.x1 -= Math.cos(cannon_angle + Math.PI/2);
     	        thisTank.cannon.y1 -= Math.sin(cannon_angle + Math.PI/2);
     	        context.restore();
-    	        //thisTank.tankBody.testHit();
+    	        thisTank.tankBody.testHit();
     	        if (!reset){
     	            setTimeout(thisTank.fire, 20);
     	        }
@@ -316,11 +307,15 @@
 
         //FIXME: has to be changed
         TankBody.prototype.testHit = function() {
+            /* check if cannon hit tank */
 	        if ((player1.cannon.x1 - player1.cannon.radius <= player2.tankBody.x1 + player2.tankBody.w) && (player1.cannon.x1 + player1.cannon.radius>= player2.tankBody.x1)){
 		        if ((player1.cannon.y1 - player1.cannon.radius <= player2.tankBody.y1 + player2.tankBody.h) && (player1.cannon.y1 + player1.cannon.radius >= player2.tankBody.y1)){
-			        console.log('hittttttttttttttttt');
+			        console.log('hhhhhhittttttttttttttttt');
+                    window.location.href = '<?= base_url() ?>arcade/index';
 		        }
 	        }
+
+            /* check if cannon out of bound */
 	        if ((player1.cannon.x1 - player1.cannon.radius <= 0) || (player1.cannon.x1 + player1.cannon.radius>= canvas[0].width)){
 		        console.log('out on x');
 		        // reset to tank
@@ -419,7 +414,6 @@
 	
     <?php 
 	    echo form_open();
-	    echo form_input('msg', 'you suck');	    
         echo form_submit('Send','Send');
 	    echo form_close();
     ?>
