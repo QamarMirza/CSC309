@@ -155,6 +155,7 @@ class Combat extends CI_Controller {
 		
 		$battle = $this->battle_model->get($user->battle_id);			
 
+
         // get fields
         $x1 = intval($this->input->post('x1'));
         $y1 = intval($this->input->post('y1'));
@@ -179,6 +180,69 @@ class Combat extends CI_Controller {
  		
 		error:
 			echo json_encode(array('status'=>'failure','message'=>$errormsg));
+ 	}
+
+ 	function postBattleStatus() {
+		$this->load->model('user_model');
+		$this->load->model('battle_model');
+
+		$user = $_SESSION['user'];
+				 
+		$user = $this->user_model->getExclusive($user->login);
+		if ($user->user_status_id != User::BATTLING) {	
+			$errormsg="Not in BATTLING state";
+			goto error;
+		}
+		
+		$battle = $this->battle_model->get($user->battle_id);			
+
+		// get the fields
+		$battle_status = $this->input->post('battle_status');
+		
+		$this->battle_model->updateStatus($battle->id, $battle_status);
+				
+		echo json_encode(array('status'=>'success'));
+		 
+		return;
+			
+		error:
+			echo json_encode(array('status'=>'failure','message'=>$errormsg));
+ 	}
+
+ 	function getBattleStatus(){
+ 		$this->load->model('user_model');
+ 		$this->load->model('battle_model');
+ 			
+ 		$user = $_SESSION['user'];
+ 		 
+ 		$user = $this->user_model->get($user->login);
+ 		if ($user->user_status_id != User::BATTLING) {	
+ 			$errormsg="Not in BATTLING state";
+ 			goto error;
+ 		}
+ 		// start transactional mode
+ 		$this->db->trans_begin();
+ 			
+ 		$battle = $this->battle_model->getExclusive($user->battle_id);			
+ 			
+		$battle_status = $battle->battle_status_id;
+		
+ 		if ($this->db->trans_status() === FALSE) {
+ 			$errormsg = "Transaction error";
+ 			goto transactionerror;
+ 		}
+ 		
+ 		// if all went well commit changes
+ 		$this->db->trans_commit();
+ 		
+ 		echo json_encode(array('status'=>'success', 'battle_status_id'=>$battle_status ));
+		return;
+		
+		transactionerror:
+		$this->db->trans_rollback();
+		
+		error:
+		echo json_encode(array('status'=>'failure','message'=>$errormsg));
  	}
 
 	function getCoordinates() {

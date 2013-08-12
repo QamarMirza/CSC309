@@ -252,6 +252,28 @@ class Arcade extends CI_Controller {
 			$this->db->trans_rollback();
 		}
     }
+
+    function setUserStatus(){
+    	 	$this->load->model('user_model');
+			$this->load->model('battle_model');
+
+			$user = $_SESSION['user'];
+	 			 
+			$user = $this->user_model->getExclusive($user->login);
+			if ($user->user_status_id != User::BATTLING) {	
+				$errormsg="Not in BATTLING state";
+				goto error;
+			}
+
+			$battle = $this->battle_model->get($user->battle_id);	
+			
+			$id = $this->user_model->get_ID($battle->id);
+			foreach ($id as $i){
+				$this->user_model->updateStatus($i, 2);
+			}
+		error:
+			echo json_encode(array('status'=>'failure','message'=>$errormsg));
+    }
  
  }
 
