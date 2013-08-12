@@ -22,7 +22,7 @@
         var collision = false;
 
 		$(function(){
-			$('body').everyTime(2000, function(){
+			$('body').everyTime(70, function(){
 			    if (status == 'waiting') {
 					$.getJSON('<?= base_url() ?>arcade/checkInvitation',function(data, text, jqZHR){
 						if (data && data.status =='rejected') {
@@ -39,7 +39,7 @@
 
 	        // setup canvas
    	        canvas = $("#drawingCanvas"); // this returns a jQuery object
-            canvas.everyTime(450, function() {
+            canvas.everyTime(70, function() {
                 var url = "<?= base_url() ?>combat/getCoordinates";
 				$.getJSON(url, function (data, text, jqXHR){
 					if (data && data.status =='success') {
@@ -73,9 +73,9 @@
                                 //$('[type=submit]').trigger('click');
                             //});
 
-                            setInterval(function(){
+                           // setInterval(function(){
                                 gameLoop();
-                            }, 75);
+                            //}, 5);
                         } else {
                             player2.tankBody.x1 = parseInt(data.x1);
                             player2.tankBody.y1 = parseInt(data.y1);
@@ -100,7 +100,7 @@
                     if (data && data.status =='success') {
                         if (data.battle_status == 4) {
                             // IS THIS EVEN NEEDED ANYMORE???
-                            //alert("Draw game");
+                            alert("Draw game");
                             /* STOP EVERYTHING, DO A REDIRECT HERE?????????????????????????? */
                         }
                     }
@@ -130,8 +130,8 @@
                     var data = {"battle_status": 4};
                 } else {
                     var url = "<?= base_url() ?>combat/postCoordinates";
-			        var data = {
-			            "x1": player1.tankBody.x1,
+		        var data = {
+		            "x1": player1.tankBody.x1,
 	                    "y1": player1.tankBody.y1,
 	                    "x2": player1.cannon.x1,
 	                    "y2": player1.cannon.y1,
@@ -151,15 +151,16 @@
 		});
         
         function checkCollision() {
-            if (player2.tankBody.y1 + player2.tankBody.h >= player1.tankBody.y1){
+  	if ((player2.tankBody.y1 + player2.tankBody.h >= player1.tankBody.y1) && (player2.tankBody.y1 + player2.tankBody.h <= player1.tankBody.y1 + player1.tankBody.h)){
                 if (((player2.tankBody.x1<=player1.tankBody.x1 + player1.tankBody.w) && (player1.tankBody.x1 <=  player2.tankBody.x1 + player2.tankBody.w)) 
                     || 
-                    ((player1.tankBody.x1<=player2.tankBody.x1 + player2.tankBody.w) && (player2.tankBody.x1 <=  player1.tankBody.x1 + player1.tankBody.w)) ){
+                    ((player1.tankBody.x1<=player2.tankBody.x1 + player2.tankBody.w) && (player2.tankBody.x1 <=  player1.tankBody.x1 + player1.tankBody.w))){
                     collision = true;                    
                     alert("Draw game");
                     /* STOP EVERYTHING, DO A REDIRECT HERE?????????????????????????? */
+		window.location.href("<?= base_url() ?>arcade/getAvailableUsers");
                 }
-            }
+            } 
         }
 
         function gameLoop() {
