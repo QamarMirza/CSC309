@@ -48,7 +48,7 @@
 $active_group = 'default';
 $active_record = TRUE;
 
-$db['default']['hostname'] = '127.0.0.1:3300';
+$db['default']['hostname'] = 'bungle08.cs.toronto.edu';
 $db['default']['username'] = 'c3mirzaq';
 $db['default']['password'] = '335719';
 $db['default']['database'] = 'c3mirzaq';  
