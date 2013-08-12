@@ -144,6 +144,21 @@
             */
 		});
 
+        function checkCollision() {
+            if (player2.tankBody.y1 + player2.tankBody.h >= player1.tankBody.y1){
+                if (((player2.tankBody.x1<=player1.tankBody.x1 + player1.tankBody.w) && (player1.tankBody.x1 <=  player2.tankBody.x1 + player2.tankBody.w)) 
+                    || 
+                    ((player1.tankBody.x1<=player2.tankBody.x1 + player2.tankBody.w) && (player2.tankBody.x1 <=  player1.tankBody.x1 + player1.tankBody.w)) ){
+                    
+                    console.log('HHHHHHHIIIIITTT');
+                    //alert("THE GAME ENDED IN A DRAW, NEXT ROUND!");
+                    hit =true;
+                    draw = true;
+                    $('form').submit();
+                }
+            }
+        }
+        
         function gameLoop() {
             // Clear the canvas with some shadow effect for movement
             context.fillStyle = "rgba(255, 255, 255, .8)";
@@ -298,7 +313,7 @@
     	        thisTank.cannon.x1 -= Math.cos(cannon_angle + Math.PI/2);
     	        thisTank.cannon.y1 -= Math.sin(cannon_angle + Math.PI/2);
     	        context.restore();
-    	        //thisTank.tankBody.testHit();
+    	        thisTank.tankBody.testHit();
     	        if (!reset){
     	            setTimeout(thisTank.fire, 20);
     	        }
