@@ -155,14 +155,14 @@ class Combat extends CI_Controller {
 		
 		$battle = $this->battle_model->get($user->battle_id);			
 
-		// get the fields
-		$x1 = 9001;
-		$y1 = $this->input->post('y1');
-		$x2 = $this->input->post('x2');
-		$y2 = $this->input->post('y2');
-		$angle = $this->input->post('angle');
-		$shot = $this->input->post('shot');
-		$hit = $this->input->post('hit');
+        // get fields
+        $x1 = intval($this->input->post('x1'));
+        $y1 = intval($this->input->post('y1'));
+        $x2 = intval($this->input->post('x2'));
+        $y2 = intval($this->input->post('y2'));
+        $angle = intval($this->input->post('angle'));
+        $shot = $this->input->post('shot');
+        $hit = $this->input->post('hit');
 
 		if ($battle->user1_id == $user->id) {
 		    // update user1 coordinates
@@ -172,7 +172,7 @@ class Combat extends CI_Controller {
 		    // update user2 coordinates
             $this->battle_model->updateU2($battle->id, $x1, $y1, $x2, $y2, $angle, $shot, $hit);
 		}
-			
+
 		echo json_encode(array('status'=>'success'));
 		 
 		return;
@@ -200,20 +200,18 @@ class Combat extends CI_Controller {
  		if ($battle->user1_id == $user->id) {
 			$other_id = $battle->user2_id;
 			$x1 = $battle->u2_x1;
-            //$x1 = 200;
 			$y1 = $battle->u2_y1;
 			$x2 = $battle->u2_x2;
 			$y2 = $battle->u2_y2;
 	        $angle = $battle->u2_angle;
 	        $shot = $battle->u2_shot;
 	        $hit = $battle->u2_hit;
-																		
- 			//$this->battle_model->updateMsgU2($battle->id,"what");
+	
+ 			//$this->battle_model->updateU2($battle->id,"");
  		}
  		else {
 			$other_id = $battle->user1_id;
 			$x1 = $battle->u1_x1;
-            //$x1 = 100;
 			$y1 = $battle->u1_y1;
 			$x2 = $battle->u1_x2;
 			$y2 = $battle->u1_y2;
@@ -221,7 +219,7 @@ class Combat extends CI_Controller {
 	        $shot = $battle->u1_shot;
 	        $hit = $battle->u1_hit;
 
- 			//$this->battle_model->updateMsgU1($battle->id,"who");
+ 			//$this->battle_model->updateU1($battle->id,"");
  		}
 
  		if ($this->db->trans_status() === FALSE) {
@@ -232,14 +230,14 @@ class Combat extends CI_Controller {
  		// if all went well commit changes
  		$this->db->trans_commit();
  		
- 		echo json_encode(array('status'=>'success', 'other_id'=>$other_id, 
- 		                                            'x1'=>$x1, 
+ 		echo json_encode(array('status'=>'success', 'other_id'=>$other_id,
+ 		                                            'x1'=>$x1,
  		                                            'y1'=>$y1,
  		                                            'x2'=>$x2,
- 		                                            'y2'=>$y2, 
- 		                                            'angle'=>$angle, 
+ 		                                            'y2'=>$y2,
+ 		                                            'angle'=>$angle,
  		                                            'shot'=>$shot,
- 		                                            'hit'=>$hit ));
+ 		                                            'hit'=>$hit));
 		return;
 		
 		transactionerror:
