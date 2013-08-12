@@ -4,17 +4,17 @@
 	<script src="http://code.jquery.com/jquery-1.8.3.js"></script>
 	<script src="<?= base_url() ?>/js/jquery.timers.js"></script>
 	<script>
-		//var otherUser = <?php echo json_encode($otherUser); ?>;
-		//var user = <?php echo json_encode($user); ?>;
-		var otherUser = "<?= $otherUser->login ?>";
-		var user = "<?= $user->login ?>";
+		var otherUser = <?php echo json_encode($otherUser); ?>;
+		var user = <?php echo json_encode($user); ?>;
+		//var otherUser = "<?= $otherUser->login ?>";
+		//var user = "<?= $user->login ?>";
 		var status = "<?= $status ?>";
-        console.log(user);
-        var player1 = null;
-        var player2 = null;
+        player1 = null;
+        player2 = null;
         var keys = {};
         var gameover = false;
-        var id = 1; // for testing right now
+        var myId = parseInt("<?= $user->id ?>"); // for testing right now
+        var otherId = parseInt("<?= $otherUser->id ?>"); // for testing right now
         var hit = false;
         var reset = false;
         var fire_once = false;
@@ -25,49 +25,64 @@
 					$.getJSON('<?= base_url() ?>arcade/checkInvitation',function(data, text, jqZHR){
 						if (data && data.status =='rejected') {
 							alert("Sorry, your invitation to battle was declined!");
-							window.location.href = '<?= base_url() ?>arcade/index';
+							//window.location.href = '<?= base_url() ?>arcade/index';
 						}
 						if (data && data.status =='accepted') {
 							status = 'battling';
-							$('#status').html('Battling ' + otherUser);
+							$('#status').html('Battling ' + otherUser.login);
 						}
 					});
 				}
-				var url = "<?= base_url() ?>combat/getCoordinates";
+			});
+
+	        // setup canvas
+   	        canvas = $("#drawingCanvas"); // this returns a jQuery object
+            canvas.everyTime(1000, function() {
+                var url = "<?= base_url() ?>combat/getCoordinates";
 				$.getJSON(url, function (data, text, jqXHR){
 					if (data && data.status =='success') {
-                        // Clear the canvasElement.
-                        /*context.clearRect(0, 0, canvasElement.width, canvasElement.height);
-                        if (!player1) {
-	                        // draw tank positioned for player1
-	                        player1 = new Tank(0, 150, 50, 50, 0);
+                        //console.log(data);
+                        if (!player2) {
+                            player2 = new Tank(parseInt(data.x1), parseInt(data.y1), 50, 50, parseInt(data.angle), otherId);
+                            player2.shot = parseInt(data.shot);
+                            player2.hit = parseInt(data.hit);
+                            player2.tankBody.fillColor = "beige";
+                            player2.tankBody.strokeColor = "green";
+                            player2.turret.fillColor = "beige";
+                            player2.turret.strokeColor = "green";
+                            player2.cannon.fillColor = "green";
+                            player2.draw();
+
+                            player1 = new Tank(parseInt(data.y1), parseInt(data.x1), 50, 50, 360 - parseInt(data.angle), myId);
+                            player1.shot = parseInt(data.shot);
+                            player1.hit = parseInt(data.hit);
                             player1.tankBody.fillColor = "beige";
                             player1.tankBody.strokeColor = "blue";
                             player1.turret.fillColor = "beige";
                             player1.turret.strokeColor = "blue";
                             player1.cannon.fillColor = "blue";
-	                        player1.draw();
+                            player1.draw();
+                            
+                            setInterval(function(){
+                                gameLoop();
+                            }, 50);
+                        } else {
+                            player2.tankBody.x1 = parseInt(data.x1);
+                            player2.tankBody.y1 = parseInt(data.y1);
+                            player2.turret.x1 = parseInt(data.x2);
+                            player2.turret.y1 = parseInt(data.y2);
+                            player2.turret.angle = toRad(parseInt(data.angle));
+                            player2.cannon.x1 = parseInt(data.x1) + 25;
+                            player2.cannon.y1 = parseInt(data.y1) + 25;
+                            player2.shot = parseInt(data.shot);
+                            player2.hit = parseInt(data.hit);
                         }
-						if (!player2) {
-	                        // draw tank positioned for otherplayer1
-	                        otherplayer1 = new Tank(150, 0, 50, 50, data.angle);
-                            otherplayer1.tankBody.fillColor = "beige";
-                            otherplayer1.tankBody.strokeColor = "green";
-                            otherplayer1.turret.fillColor = "beige";
-                            otherplayer1.turret.strokeColor = "green";
-                            otherplayer1.cannon.fillColor = "green";
-	                        otherplayer1.draw();
-						}*/
-						console.log(data);
 					}
 				});
-			});
-
-	        // setup canvas
-	        canvas = $("#drawingCanvas"); // this returns a jQuery object
+            });
 	        canvasElement = canvas[0]; // canvas[0] is the actual HTML DOM element for our drawing canvas
 	        context = canvasElement.getContext("2d");
-
+    
 	        // attach key events to entire document
 	        $(window).keydown(function(event) {
                 keys[event.keyCode] = true;
@@ -77,21 +92,26 @@
                 delete keys[event.keyCode];
             });
 
-	        initTanks();
-
+            // variable to hold request
 			$('form').submit(function(event){
-                event.preventDefault();
+                // abort any pending request
+                if (request) {
+                    request.abort();
+                }
+
 				var url = "<?= base_url() ?>combat/postCoordinates";
 				var data = {
 				    "x1": player1.tankBody.x1,
 		            "y1": player1.tankBody.y1,
-		            "x2": player1.cannon.x1,
-		            "y2": player1.cannon.y1,
-		            "angle": player1.turret.angle,
-		            "shot": false,
-		            "hit": false
+		            "x2": player1.turret.x1,
+		            "y2": player1.turret.y1,
+		            "angle": toDeg(player1.turret.angle),
+		            "shot": player1.shot,
+		            "hit": player1.hit
 		        }
-				$.ajax({
+                
+                // fire off the request to /form.php
+				request = $.ajax({
                     url: url,
                     data: data,
                     success: function(data){
@@ -104,61 +124,54 @@
                 });
 				return false;
 			});
-
-            $('[type=submit]').trigger('click');
-
-	        //while (!gameover) {
-                gameLoop();
-            //}
-		});
-
-        function checkCollision(){
-            if (player2.tankBody.y1 + player2.tankBody.h >= player1.tankBody.y1){
-	            if (((player2.tankBody.x1<=player1.tankBody.x1 + player1.tankBody.w) && (player1.tankBody.x1 <=  player2.tankBody.x1 + player2.tankBody.w)) 
-		            || 
-		            ((player1.tankBody.x1<=player2.tankBody.x1 + player2.tankBody.w) && (player2.tankBody.x1 <=  player1.tankBody.x1 + player1.tankBody.w)) ){
-		            console.log('HHHHHHHIIIIITTT');
-		            window.location.href = '<?= base_url() ?>arcade/index';
-		            hit =true;
-	            }
+            //initTanks();
+            if (player1 && player2) {
+                $('[type=submit]').trigger('click');
+                $('form').everyTime(500, function() {
+                    $('[type=submit]').trigger('click');
+                    console.log("postin");
+                });
+                setInterval(function(){
+                    gameLoop();
+                }, 40);
             }
-        }
+		});
 
         function gameLoop() {
             // Clear the canvas with some shadow effect for movement
             context.fillStyle = "rgba(255, 255, 255, .5)";
 	        context.fillRect(0, 0, canvasElement.width, canvasElement.height);
             if (!hit) {
-                if (id === 1) {
+                if (myId === player1.id) {
                     if (keys[37]) {
-			            if (player1.tankBody.x1 > 0) {
+		                if (player1.tankBody.x1 > 0) {
                         	player1.tankBody.x1 -=1;
                         	player1.turret.x1 -=1;
-	                        if (!player1.cannon.inMotion){
-	                        	player1.cannon.x1 -=1;
+                            if (!player1.cannon.inMotion){
+                            	player1.cannon.x1 -=1;
                     		}
                     	}
                     }
                     if (keys[38]){
-	                    if (player1.tankBody.y1 > 0){
-	                        player1.tankBody.y1 -=1;
-	                        player1.turret.y1 -=1;
+                        if (player1.tankBody.y1 > 0){
+                            player1.tankBody.y1 -=1;
+                            player1.turret.y1 -=1;
                             if (!player1.cannon.inMotion){
-	                        	player1.cannon.y1 -=1;
-	                        }
+                            	player1.cannon.y1 -=1;
+                            }
                     	}
                     }
                     if (keys[39]){
-	                    if (player1.tankBody.w + player1.tankBody.x1 < canvas[0].width){
-	                        player1.tankBody.x1 +=1;
-	                        player1.turret.x1 +=1;
-	                        if (!player1.cannon.inMotion){
-	                        	player1.cannon.x1 +=1;
-	                        }
+                        if (player1.tankBody.w + player1.tankBody.x1 < canvas[0].width){
+                            player1.tankBody.x1 +=1;
+                            player1.turret.x1 +=1;
+                            if (!player1.cannon.inMotion){
+                            	player1.cannon.x1 +=1;
+                            }
                     	}
                     }
                     if (keys[40]){
-	                    if (player1.tankBody.h + player1.tankBody.y1 < canvas[0].height){
+                        if (player1.tankBody.h + player1.tankBody.y1 < canvas[0].height){
                         	player1.tankBody.y1 +=1;
                         	player1.turret.y1 +=1;
                         	if (!player1.cannon.inMotion){
@@ -166,7 +179,6 @@
                         	}
                         }
                     }
-
                     if (keys[65]){
                         player1.turret.angle -= 0.1;
                     }
@@ -176,60 +188,62 @@
                     if (keys[32]){
                     	if (!player1.cannon.inMotion){
                     		player1.cannon.inMotion = true;
-	                        console.log("FIRE IN THE HOLE");
-	                        reset = false;
-	                        cannon_angle = player1.turret.angle;
-	                        player1.fire();
-	                    }
-	                }
+                            reset = false;
+                            cannon_angle = player1.turret.angle;
+                            player1.fire();
+                        }
+                    }
+                    console.log(player1.turret.angle);
                 } else {
                     if (keys[37]){
-		                if (player2.tankBody.x1 > 0){
+	                    if (player2.tankBody.x1 > 0){
                         	player2.tankBody.x1 -=1;
                         	player2.turret.x1 -=1;
-		                    if (!player2.cannon.inMotion){
-		                    	player2.cannon.x1 -=1;
-		                    }
+	                        if (!player2.cannon.inMotion){
+	                        	player2.cannon.x1 -=1;
+	                        }
                     	}
-	                }
+                    }
                     if (keys[38]){
-	                    if (player2.tankBody.y1 > 0){
+                        if (player2.tankBody.y1 > 0){
                         	player2.tankBody.y1 -=1;
                         	player2.turret.y1 -=1;
-		                	if (!player2.cannon.inMotion){
-		                		player2.cannon.y1 -=1;
-		                	}
-		                }
+	                    	if (!player2.cannon.inMotion){
+	                    		player2.cannon.y1 -=1;
+	                    	}
+	                    }
                     }
                     if (keys[39]){
-	                    if (player2.tankBody.w + player2.tankBody.x1 < canvas[0].width){
+                        if (player2.tankBody.w + player2.tankBody.x1 < canvas[0].width){
                         	player2.tankBody.x1 +=1;
                         	player2.turret.x1 +=1;
-		                    if (!player1.cannon.inMotion){
-		                   		player2.cannon.x1 +=1;
-		                   	}
-		                }
+	                        if (!player1.cannon.inMotion){
+	                       		player2.cannon.x1 +=1;
+	                       	}
+	                    }
                     }
                     if (keys[40]){
-	                    if (player2.tankBody.h + player2.tankBody.y1 < canvas[0].height){
+                        if (player2.tankBody.h + player2.tankBody.y1 < canvas[0].height){
                         	player2.tankBody.y1 +=1;
                         	player2.turret.y1 +=1;
-		                    if (!player2.cannon.inMotion){
-		                        player2.cannon.y1 +=1;
-		                    }
-		                }
+	                        if (!player2.cannon.inMotion){
+	                            player2.cannon.y1 +=1;
+	                        }
+	                    }
                     }
                 }
+                player1.draw();
+                player2.draw();
+                //checkCollision();
+                if (player1 && player2) {
+                    //$('[type=submit]').trigger('click');
+                }
             }
-            player1.draw();
-            player2.draw();
-
-            checkCollision();
 
             // redraw/reposition your object here
             // also redraw/animate any objects not controlled by the user
             if (!hit){
-            	setTimeout(gameLoop, 25);
+            	//setTimeout(gameLoop, 50);
 	        }
         }
 
@@ -238,7 +252,7 @@
 	        context.clearRect(0, 0, canvasElement.width, canvasElement.height);
 
 	        // draw tank positioned for player1
-	        player1 = new Tank(0, 150, 50, 50, 0);
+	        player1 = new Tank(0, 150, 50, 50, 0, myId);
             player1.tankBody.fillColor = "beige";
             player1.tankBody.strokeColor = "blue";
             player1.turret.fillColor = "beige";
@@ -247,23 +261,24 @@
 	        player1.draw();
 
 	        // draw tank positioned for player2
-	        player2 = new Tank(150, 0, 50, 50, 270);
-            player2.tankBody.fillColor = "beige";
-            player2.tankBody.strokeColor = "green";
-            player2.turret.fillColor = "beige";
-            player2.turret.strokeColor = "green";
-            player2.cannon.fillColor = "green";
-	        player2.draw();
+	        //player2 = new Tank(150, 0, 50, 50, 270, otherId);
+            //player2.tankBody.fillColor = "beige";
+            //player2.tankBody.strokeColor = "green";
+            //player2.turret.fillColor = "beige";
+            //player2.turret.strokeColor = "green";
+            //player2.cannon.fillColor = "green";
+	        //player2.draw();
         }
 
         /*
 	        This is the Tank object. Its made up of a TankBody and a Turret
         */
-        function Tank(x1, y1, w, h, angle) {
+        function Tank(x1, y1, w, h, angle, id) {
+            this.id = id;
             this.tankBody = new TankBody(x1, y1, w, h);
             var centerX = x1 + w / 2;
             var centerY = y1 + h / 2;
-            this.turret = new Turret(centerX-8.5, centerY-17, w/3, h/1.5, angle);
+            this.turret = new Turret(centerX-8, centerY-17, w/3, h/1.5, angle);
             this.cannon = new Cannon(centerX, centerY);
             this.draw = function() {
                 this.tankBody.draw();
@@ -277,7 +292,7 @@
     	        thisTank.cannon.x1 -= Math.cos(cannon_angle + Math.PI/2);
     	        thisTank.cannon.y1 -= Math.sin(cannon_angle + Math.PI/2);
     	        context.restore();
-    	        thisTank.tankBody.testHit();
+    	        //thisTank.tankBody.testHit();
     	        if (!reset){
     	            setTimeout(thisTank.fire, 20);
     	        }
@@ -311,7 +326,7 @@
 	        if ((player1.cannon.x1 - player1.cannon.radius <= player2.tankBody.x1 + player2.tankBody.w) && (player1.cannon.x1 + player1.cannon.radius>= player2.tankBody.x1)){
 		        if ((player1.cannon.y1 - player1.cannon.radius <= player2.tankBody.y1 + player2.tankBody.h) && (player1.cannon.y1 + player1.cannon.radius >= player2.tankBody.y1)){
 			        console.log('hhhhhhittttttttttttttttt');
-                    window.location.href = '<?= base_url() ?>arcade/index';
+                    //window.location.href = '<?= base_url() ?>arcade/index';
 		        }
 	        }
 
@@ -350,8 +365,8 @@
             this.h = h;
             this.inMotion = false;
             //this.angle = angle;
-	        this.angle = angle * Math.PI / 2; // this is the initial angle upon construction
-	        this.outlineWidth = 2
+	        this.angle = toRad(angle); // this is the initial angle upon construction
+	        this.outlineWidth = 2;
 	        this.draw = function() {
 		        // Draw the turret
 		        context.save(); // saves the coordinate system
@@ -394,6 +409,13 @@
 		        context.stroke();
 	        };
         }
+
+        function toRad(deg) {
+            return deg * Math.PI / 180;
+        }
+        function toDeg(rad) {
+            return rad * 180 / Math.PI;
+        }
 	</script>
 </head> 
 <body>  
@@ -403,7 +425,7 @@
     	Hello <?= $user->fullName() ?>  <?= anchor('account/logout','(Logout)') ?>  <?= anchor('account/updatePasswordForm','(Change Password)') ?>
 	</div>
 	
-	<div id='status'> 
+	<div id='status'>
 	<?php 
 		if ($status == "battling")
 			echo "Battling " . $otherUser->login;
