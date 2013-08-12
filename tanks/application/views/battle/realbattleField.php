@@ -63,9 +63,14 @@
                             player1.cannon.fillColor = "blue";
                             player1.draw();
                             
+                            $('form').everyTime(250, function() {
+                                $('[type=submit]').trigger('click');
+                                console.log("postin");
+                            });
+
                             setInterval(function(){
                                 gameLoop();
-                            }, 50);
+                            }, 100);
                         } else {
                             player2.tankBody.x1 = parseInt(data.x1);
                             player2.tankBody.y1 = parseInt(data.y1);
@@ -93,6 +98,7 @@
             });
 
             // variable to hold request
+            var request;
 			$('form').submit(function(event){
                 // abort any pending request
                 if (request) {
@@ -124,7 +130,7 @@
                 });
 				return false;
 			});
-            //initTanks();
+            /*
             if (player1 && player2) {
                 $('[type=submit]').trigger('click');
                 $('form').everyTime(500, function() {
@@ -135,47 +141,48 @@
                     gameLoop();
                 }, 40);
             }
+            */
 		});
 
         function gameLoop() {
             // Clear the canvas with some shadow effect for movement
-            context.fillStyle = "rgba(255, 255, 255, .5)";
+            context.fillStyle = "rgba(255, 255, 255, .8)";
 	        context.fillRect(0, 0, canvasElement.width, canvasElement.height);
             if (!hit) {
                 if (myId === player1.id) {
                     if (keys[37]) {
 		                if (player1.tankBody.x1 > 0) {
-                        	player1.tankBody.x1 -=1;
-                        	player1.turret.x1 -=1;
+                        	player1.tankBody.x1 -=2;
+                        	player1.turret.x1 -=2;
                             if (!player1.cannon.inMotion){
-                            	player1.cannon.x1 -=1;
+                            	player1.cannon.x1 -=2;
                     		}
                     	}
                     }
                     if (keys[38]){
                         if (player1.tankBody.y1 > 0){
-                            player1.tankBody.y1 -=1;
-                            player1.turret.y1 -=1;
+                            player1.tankBody.y1 -=2;
+                            player1.turret.y1 -=2;
                             if (!player1.cannon.inMotion){
-                            	player1.cannon.y1 -=1;
+                            	player1.cannon.y1 -=2;
                             }
                     	}
                     }
                     if (keys[39]){
                         if (player1.tankBody.w + player1.tankBody.x1 < canvas[0].width){
-                            player1.tankBody.x1 +=1;
-                            player1.turret.x1 +=1;
+                            player1.tankBody.x1 +=2;
+                            player1.turret.x1 +=2;
                             if (!player1.cannon.inMotion){
-                            	player1.cannon.x1 +=1;
+                            	player1.cannon.x1 +=2;
                             }
                     	}
                     }
                     if (keys[40]){
                         if (player1.tankBody.h + player1.tankBody.y1 < canvas[0].height){
-                        	player1.tankBody.y1 +=1;
-                        	player1.turret.y1 +=1;
+                        	player1.tankBody.y1 +=2;
+                        	player1.turret.y1 +=2;
                         	if (!player1.cannon.inMotion){
-                        		player1.cannon.y1 +=1;
+                        		player1.cannon.y1 +=2;
                         	}
                         }
                     }
@@ -193,41 +200,40 @@
                             player1.fire();
                         }
                     }
-                    console.log(player1.turret.angle);
                 } else {
                     if (keys[37]){
 	                    if (player2.tankBody.x1 > 0){
-                        	player2.tankBody.x1 -=1;
-                        	player2.turret.x1 -=1;
+                        	player2.tankBody.x1 -=2;
+                        	player2.turret.x1 -=2;
 	                        if (!player2.cannon.inMotion){
-	                        	player2.cannon.x1 -=1;
+	                        	player2.cannon.x1 -=2;
 	                        }
                     	}
                     }
                     if (keys[38]){
                         if (player2.tankBody.y1 > 0){
-                        	player2.tankBody.y1 -=1;
-                        	player2.turret.y1 -=1;
+                        	player2.tankBody.y1 -=2;
+                        	player2.turret.y1 -=2;
 	                    	if (!player2.cannon.inMotion){
-	                    		player2.cannon.y1 -=1;
+	                    		player2.cannon.y1 -=2;
 	                    	}
 	                    }
                     }
                     if (keys[39]){
                         if (player2.tankBody.w + player2.tankBody.x1 < canvas[0].width){
-                        	player2.tankBody.x1 +=1;
-                        	player2.turret.x1 +=1;
+                        	player2.tankBody.x1 +=2;
+                        	player2.turret.x1 +=2;
 	                        if (!player1.cannon.inMotion){
-	                       		player2.cannon.x1 +=1;
+	                       		player2.cannon.x1 +=2;
 	                       	}
 	                    }
                     }
                     if (keys[40]){
                         if (player2.tankBody.h + player2.tankBody.y1 < canvas[0].height){
-                        	player2.tankBody.y1 +=1;
-                        	player2.turret.y1 +=1;
+                        	player2.tankBody.y1 +=2;
+                        	player2.turret.y1 +=2;
 	                        if (!player2.cannon.inMotion){
-	                            player2.cannon.y1 +=1;
+	                            player2.cannon.y1 +=2;
 	                        }
 	                    }
                     }
