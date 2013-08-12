@@ -19,7 +19,7 @@
         var draw = false
         var reset = false;
         var fire_once = false;
-        
+        var collision = false;
 		$(function(){
 			$('body').everyTime(2000, function(){
 			    if (status == 'waiting') {
@@ -93,10 +93,10 @@
                     var outcome; // 1 active 2 p1wins 3 p2wins 4 draw
                     var data;
                     var url = "<?= base_url() ?>combat/postBattleStatus";
-                    if (hit){
-                        outcome = 2; // or 3 depending on if we are p1 or p2 --->FIXME <---
-                    } else if (draw){
-                        outcome = 4;
+                    if (collision){
+                        outcome = 4; // or 3 depending on if we are p1 or p2 --->FIXME <---
+                    } else if (hit){
+                        outcome = 2;
                     }
                     data = {"battle_status": outcome};
                     $.ajax({
@@ -192,6 +192,7 @@
                     //alert("THE GAME ENDED IN A DRAW, NEXT ROUND!");
                     hit =true;
                     draw = true;
+                    collision = true;
                     $('form').submit();
                 }
             }
