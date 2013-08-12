@@ -19,7 +19,6 @@
         var draw = false
         var reset = false;
         var fire_once = false;
-        var collision = false;
         
 		$(function(){
 			$('body').everyTime(2000, function(){
@@ -31,7 +30,7 @@
 						}
 						if (data && data.status =='accepted') {
 							status = 'battling';
-							$('#status').html('Battling ' + otherUser);
+							$('#status').html('Battling ' + otherUser.login);
 						}
 					});
 				}
@@ -54,7 +53,7 @@
                             player2.turret.strokeColor = "green";
                             player2.cannon.fillColor = "green";
                             player2.draw();
-
+                            
                             if (parseInt(data.angle) == 0) {
                                 var angle = 180;
                             } else {
@@ -70,6 +69,10 @@
                             player1.cannon.fillColor = "blue";
                             player1.draw();
                             
+                            $('form').everyTime(300, function() {
+                                $('[type=submit]').trigger('click');
+                            });
+
                             setInterval(function(){
                                 gameLoop();
                             }, 100);
@@ -79,8 +82,6 @@
                             player2.turret.x1 = parseInt(data.x1) + 17;
                             player2.turret.y1 = parseInt(data.y1) + 8;
                             player2.turret.angle = toRad(parseInt(data.angle));
-                            //player2.cannon.x1 = parseInt(data.x1) + 25;
-                            //player2.cannon.y1 = parseInt(data.y1) + 25;
                             player2.cannon.x1 = parseInt(data.x2);
                             player2.cannon.y1 = parseInt(data.y2);
                             player2.shot = parseInt(data.shot);
@@ -88,14 +89,14 @@
                         }
 					}
 				});
-                if (hit || collision){
+                if (hit || draw){
                     var outcome; // 1 active 2 p1wins 3 p2wins 4 draw
                     var data;
                     var url = "<?= base_url() ?>combat/postBattleStatus";
-                    if (collision){
-                        outcome = 4; // or 3 depending on if we are p1 or p2 --->FIXME <---
-                    } else if (hit || draw){
-                        outcome = 2;
+                    if (hit){
+                        outcome = 2; // or 3 depending on if we are p1 or p2 --->FIXME <---
+                    } else if (draw){
+                        outcome = 4;
                     }
                     data = {"battle_status": outcome};
                     $.ajax({
@@ -109,29 +110,31 @@
                         },
                         type: 'POST'
                     });
+                    return false;
                 }
-                   /* $.getJSON("<?= base_url() ?>combat/getBattleStatus", function (data, text, jqXHR){
-                        if (data && data.status =='success') {
-                            if (data.battle_status_id != 1){ // update thier user_status to available (2)
-                                var url = "<?= base_url() ?>arcade/setUserStatus";
-                                var data = { "status" : data.battle_id }    
-                                $.ajax({
-                                    url: url,
-                                    data: data,
-                                    success: function(data){
-                                        console.log("succeededdd");
-                                    },
-                                    error: function(){
-                                        console.log("faileddd");
-                                    },
-                                    type: 'POST'
-                                }); 
-                                    // redirct to available user page.
-                                    //window.location('')
-                            }
-                        }   
-                    });*/
-                     return false;
+            /*if (hit || draw){
+                    $.getJSON("<?= base_url() ?>combat/getBattleStatus", function (data, text, jqXHR){
+                    if (data && data.status =='success') {
+                        if (data.battle_status_id != 1){ // update thier user_status to available (2)
+                            var url = "<?= base_url() ?>arcade/setUserStatus";
+                            var data = { "status" : data.battle_id }    
+                            $.ajax({
+                                url: url,
+                                data: data,
+                                success: function(data){
+                                    console.log("succeededdd");
+                                },
+                                error: function(){
+                                    console.log("faileddd");
+                                },
+                                type: 'POST'
+                            }); 
+                                // redirct to available user page.
+                                //window.location('')
+                        }
+                    }   
+                });
+                }*/                   
             });
 	        canvasElement = canvas[0]; // canvas[0] is the actual HTML DOM element for our drawing canvas
 	        context = canvasElement.getContext("2d");
@@ -177,11 +180,6 @@
                 });
 				return false;
 			});
-            $('form').everyTime(400, function() {
-                if (player1 && player2) {
-                    $('[type=submit]').trigger('click');
-                }
-            });
 		});
         
         function checkCollision() {
@@ -194,7 +192,6 @@
                     //alert("THE GAME ENDED IN A DRAW, NEXT ROUND!");
                     hit =true;
                     draw = true;
-                    collision = true;
                     $('form').submit();
                 }
             }
