@@ -155,7 +155,6 @@ class Combat extends CI_Controller {
 		
 		$battle = $this->battle_model->get($user->battle_id);			
 
-
         // get fields
         $x1 = intval($this->input->post('x1'));
         $y1 = intval($this->input->post('y1'));
