@@ -16,6 +16,7 @@
         var myId = parseInt("<?= $user->id ?>"); // for testing right now
         var otherId = parseInt("<?= $otherUser->id ?>"); // for testing right now
         var hit = false;
+        var draw = false
         var reset = false;
         var fire_once = false;
         
@@ -84,6 +85,52 @@
                         }
 					}
 				});
+                if (hit || draw){
+                    var outcome; // 1 active 2 p1wins 3 p2wins 4 draw
+                    var data;
+                    var url = "<?= base_url() ?>combat/postBattleStatus";
+                    if (hit){
+                        outcome = 2; // or 3 depending on if we are p1 or p2 --->FIXME <---
+                    } else if (draw){
+                        outcome = 4;
+                    }
+                    data = {"battle_status": outcome};
+                    $.ajax({
+                        url: url,
+                        data: data,
+                        success: function(data){
+                            console.log("succeededdd");
+                        },
+                        error: function(){
+                            console.log("faileddd");
+                        },
+                        type: 'POST'
+                    });
+                    return false;
+                }
+            /*if (hit || draw){
+                    $.getJSON("<?= base_url() ?>combat/getBattleStatus", function (data, text, jqXHR){
+                    if (data && data.status =='success') {
+                        if (data.battle_status_id != 1){ // update thier user_status to available (2)
+                            var url = "<?= base_url() ?>arcade/setUserStatus";
+                            var data = { "status" : data.battle_id }    
+                            $.ajax({
+                                url: url,
+                                data: data,
+                                success: function(data){
+                                    console.log("succeededdd");
+                                },
+                                error: function(){
+                                    console.log("faileddd");
+                                },
+                                type: 'POST'
+                            }); 
+                                // redirct to available user page.
+                                //window.location('')
+                        }
+                    }   
+                });
+                }*/                   
             });
 	        canvasElement = canvas[0]; // canvas[0] is the actual HTML DOM element for our drawing canvas
 	        context = canvasElement.getContext("2d");
@@ -158,7 +205,7 @@
                 }
             }
         }
-        
+
         function gameLoop() {
             // Clear the canvas with some shadow effect for movement
             context.fillStyle = "rgba(255, 255, 255, .8)";
@@ -255,7 +302,7 @@
                 }
                 player1.draw();
                 player2.draw();
-                //checkCollision();
+                checkCollision();
                 if (player1 && player2) {
                     //$('[type=submit]').trigger('click');
                 }
