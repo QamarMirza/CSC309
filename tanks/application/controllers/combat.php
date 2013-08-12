@@ -234,7 +234,7 @@ class Combat extends CI_Controller {
  		// if all went well commit changes
  		$this->db->trans_commit();
  		
- 		echo json_encode(array('status'=>'success', 'battle_status_id'=>$battle_status ));
+ 		echo json_encode(array('status'=>'success', 'battle_status'=>$battle_status));
 		return;
 		
 		transactionerror:
@@ -290,6 +290,7 @@ class Combat extends CI_Controller {
  			goto transactionerror;
  		}
  		
+
  		// if all went well commit changes
  		$this->db->trans_commit();
  		

@@ -11,15 +11,16 @@
 		var status = "<?= $status ?>";
         player1 = null;
         player2 = null;
-        var keys = {};
-        var gameover = false;
         var myId = parseInt("<?= $user->id ?>"); // for testing right now
         var otherId = parseInt("<?= $otherUser->id ?>"); // for testing right now
+        var keys = {};
+        var gameover = false;
         var hit = false;
         var draw = false
         var reset = false;
         var fire_once = false;
         var collision = false;
+
 		$(function(){
 			$('body').everyTime(2000, function(){
 			    if (status == 'waiting') {
@@ -30,7 +31,7 @@
 						}
 						if (data && data.status =='accepted') {
 							status = 'battling';
-							$('#status').html('Battling ' + otherUser.login);
+							$('#status').html('Battling ' + otherUser);
 						}
 					});
 				}
@@ -89,52 +90,16 @@
                         }
 					}
 				});
-                if (hit || draw){
-                    var outcome; // 1 active 2 p1wins 3 p2wins 4 draw
-                    var data;
-                    var url = "<?= base_url() ?>combat/postBattleStatus";
-                    if (collision){
-                        outcome = 4; // or 3 depending on if we are p1 or p2 --->FIXME <---
-                    } else if (hit){
-                        outcome = 2;
-                    }
-                    data = {"battle_status": outcome};
-                    $.ajax({
-                        url: url,
-                        data: data,
-                        success: function(data){
-                            console.log("succeededdd");
-                        },
-                        error: function(){
-                            console.log("faileddd");
-                        },
-                        type: 'POST'
-                    });
-                    return false;
-                }
-            /*if (hit || draw){
-                    $.getJSON("<?= base_url() ?>combat/getBattleStatus", function (data, text, jqXHR){
+                $.getJSON("<?= base_url() ?>combat/getBattleStatus", function (data, text, jqXHR){
                     if (data && data.status =='success') {
-                        if (data.battle_status_id != 1){ // update thier user_status to available (2)
-                            var url = "<?= base_url() ?>arcade/setUserStatus";
-                            var data = { "status" : data.battle_id }    
-                            $.ajax({
-                                url: url,
-                                data: data,
-                                success: function(data){
-                                    console.log("succeededdd");
-                                },
-                                error: function(){
-                                    console.log("faileddd");
-                                },
-                                type: 'POST'
-                            }); 
-                                // redirct to available user page.
-                                //window.location('')
+                        console.log(data.battle_status);
+                        if (data.battle_status_id != 1) { // game is over
+
+                            // redirct to available user page.
+                            //window.location('')
                         }
-                    }   
+                    }
                 });
-                }*/                   
             });
 	        canvasElement = canvas[0]; // canvas[0] is the actual HTML DOM element for our drawing canvas
 	        context = canvasElement.getContext("2d");
@@ -150,23 +115,35 @@
 
             // keep track of request
             var request;
-			$('form').submit(function(event){
+			$('form').submit(function(event) {
                 // abort pending/ongoing request
                 if (request) {
                     request.abort();
                 }
-
-				var url = "<?= base_url() ?>combat/postCoordinates";
-				var data = {
-				    "x1": player1.tankBody.x1,
-		            "y1": player1.tankBody.y1,
-		            "x2": player1.cannon.x1,
-		            "y2": player1.cannon.y1,
-		            "angle": toDeg(player1.turret.angle),
-		            "shot": player1.shot,
-		            "hit": player1.hit
-		        }
-                
+                if (hit || collision) {
+                    var outcome; // 1 active 2 p1wins 3 p2wins 4 draw
+                    var url = "<?= base_url() ?>combat/postBattleStatus";
+                    if (collision) {
+                        outcome = 4; // or 3 depending on if we are p1 or p2 --->FIXME <---
+                        collsion = false;
+                    } else if (hit) {
+                        outcome = 2;
+                        hit = false;
+                    }
+                    var data = {"battle_status": outcome};
+                } else {
+                    var url = "<?= base_url() ?>combat/postCoordinates";
+			        var data = {
+			            "x1": player1.tankBody.x1,
+	                    "y1": player1.tankBody.y1,
+	                    "x2": player1.cannon.x1,
+	                    "y2": player1.cannon.y1,
+	                    "angle": toDeg(player1.turret.angle),
+	                    "shot": player1.shot,
+	                    "hit": player1.hit
+	                }
+                }
+				                
 				request = $.ajax({
                     url: url,
                     data: data,
@@ -190,10 +167,8 @@
                     
                     console.log('HHHHHHHIIIIITTT');
                     //alert("THE GAME ENDED IN A DRAW, NEXT ROUND!");
-                    hit =true;
-                    draw = true;
                     collision = true;
-                    $('form').submit();
+                    //$('form').submit();
                 }
             }
         }
@@ -315,7 +290,8 @@
 	        if ((player1.cannon.x1 - player1.cannon.radius <= player2.tankBody.x1 + player2.tankBody.w) && (player1.cannon.x1 + player1.cannon.radius>= player2.tankBody.x1)){
 		        if ((player1.cannon.y1 - player1.cannon.radius <= player2.tankBody.y1 + player2.tankBody.h) && (player1.cannon.y1 + player1.cannon.radius >= player2.tankBody.y1)){
 			        console.log('hhhhhhittttttttttttttttt');
-                    //window.location.href = '<?= base_url() ?>arcade/index';
+                    hit = true;
+                    //$('form').submit();
 		        }
 	        }
 
