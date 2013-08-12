@@ -4,10 +4,10 @@
 	<script src="http://code.jquery.com/jquery-1.8.3.js"></script>
 	<script src="<?= base_url() ?>/js/jquery.timers.js"></script>
 	<script>
-		var otherUser = <?php echo json_encode($otherUser); ?>;
-		var user = <?php echo json_encode($user); ?>;
-		//var otherUser = "<?= $otherUser->login ?>";
-		//var user = "<?= $user->login ?>";
+		//var otherUser = <?php echo json_encode($otherUser); ?>;
+		//var user = <?php echo json_encode($user); ?>;
+		var otherUser = "<?= $otherUser->login ?>";
+		var user = "<?= $user->login ?>";
 		var status = "<?= $status ?>";
         player1 = null;
         player2 = null;
@@ -20,6 +20,7 @@
         var reset = false;
         var fire_once = false;
         var collision = false;
+        
 		$(function(){
 			$('body').everyTime(2000, function(){
 			    if (status == 'waiting') {
@@ -30,7 +31,7 @@
 						}
 						if (data && data.status =='accepted') {
 							status = 'battling';
-							$('#status').html('Battling ' + otherUser.login);
+							$('#status').html('Battling ' + otherUser);
 						}
 					});
 				}
@@ -38,7 +39,7 @@
 
 	        // setup canvas
    	        canvas = $("#drawingCanvas"); // this returns a jQuery object
-            canvas.everyTime(1000, function() {
+            canvas.everyTime(500, function() {
                 var url = "<?= base_url() ?>combat/getCoordinates";
 				$.getJSON(url, function (data, text, jqXHR){
 					if (data && data.status =='success') {
@@ -54,7 +55,12 @@
                             player2.cannon.fillColor = "green";
                             player2.draw();
 
-                            player1 = new Tank(parseInt(data.y1), parseInt(data.x1), 50, 50, 360 - parseInt(data.angle), myId);
+                            if (parseInt(data.angle) == 0) {
+                                var angle = 180;
+                            } else {
+                                var angle = 0;
+                            }
+                            player1 = new Tank(parseInt(data.y1), parseInt(data.x1), 50, 50, angle, myId);
                             player1.shot = parseInt(data.shot);
                             player1.hit = parseInt(data.hit);
                             player1.tankBody.fillColor = "beige";
@@ -64,21 +70,19 @@
                             player1.cannon.fillColor = "blue";
                             player1.draw();
                             
-                            $('form').everyTime(300, function() {
-                                $('[type=submit]').trigger('click');
-                            });
-
                             setInterval(function(){
                                 gameLoop();
                             }, 100);
                         } else {
                             player2.tankBody.x1 = parseInt(data.x1);
                             player2.tankBody.y1 = parseInt(data.y1);
-                            player2.turret.x1 = parseInt(data.x2);
-                            player2.turret.y1 = parseInt(data.y2);
+                            player2.turret.x1 = parseInt(data.x1) + 17;
+                            player2.turret.y1 = parseInt(data.y1) + 8;
                             player2.turret.angle = toRad(parseInt(data.angle));
-                            player2.cannon.x1 = parseInt(data.x1) + 25;
-                            player2.cannon.y1 = parseInt(data.y1) + 25;
+                            //player2.cannon.x1 = parseInt(data.x1) + 25;
+                            //player2.cannon.y1 = parseInt(data.y1) + 25;
+                            player2.cannon.x1 = parseInt(data.x2);
+                            player2.cannon.y1 = parseInt(data.y2);
                             player2.shot = parseInt(data.shot);
                             player2.hit = parseInt(data.hit);
                         }
@@ -105,28 +109,29 @@
                         },
                         type: 'POST'
                     });
+                }
                    /* $.getJSON("<?= base_url() ?>combat/getBattleStatus", function (data, text, jqXHR){
-                    if (data && data.status =='success') {
-                        if (data.battle_status_id != 1){ // update thier user_status to available (2)
-                            var url = "<?= base_url() ?>arcade/setUserStatus";
-                            var data = { "status" : data.battle_id }    
-                            $.ajax({
-                                url: url,
-                                data: data,
-                                success: function(data){
-                                    console.log("succeededdd");
-                                },
-                                error: function(){
-                                    console.log("faileddd");
-                                },
-                                type: 'POST'
-                            }); 
-                                // redirct to available user page.
-                                //window.location('')
-                        }
-                    }   */
-                    return false;
-                }             
+                        if (data && data.status =='success') {
+                            if (data.battle_status_id != 1){ // update thier user_status to available (2)
+                                var url = "<?= base_url() ?>arcade/setUserStatus";
+                                var data = { "status" : data.battle_id }    
+                                $.ajax({
+                                    url: url,
+                                    data: data,
+                                    success: function(data){
+                                        console.log("succeededdd");
+                                    },
+                                    error: function(){
+                                        console.log("faileddd");
+                                    },
+                                    type: 'POST'
+                                }); 
+                                    // redirct to available user page.
+                                    //window.location('')
+                            }
+                        }   
+                    });*/
+                     return false;
             });
 	        canvasElement = canvas[0]; // canvas[0] is the actual HTML DOM element for our drawing canvas
 	        context = canvasElement.getContext("2d");
@@ -152,8 +157,8 @@
 				var data = {
 				    "x1": player1.tankBody.x1,
 		            "y1": player1.tankBody.y1,
-		            "x2": player1.turret.x1,
-		            "y2": player1.turret.y1,
+		            "x2": player1.cannon.x1,
+		            "y2": player1.cannon.y1,
 		            "angle": toDeg(player1.turret.angle),
 		            "shot": player1.shot,
 		            "hit": player1.hit
@@ -172,6 +177,11 @@
                 });
 				return false;
 			});
+            $('form').everyTime(400, function() {
+                if (player1 && player2) {
+                    $('[type=submit]').trigger('click');
+                }
+            });
 		});
         
         function checkCollision() {
