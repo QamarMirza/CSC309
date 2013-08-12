@@ -82,8 +82,8 @@ class Arcade extends CI_Controller {
 	    $battle->u1_x2 = 25;
 	    $battle->u1_y2 = 175;
 	    $battle->u1_angle = 0;
-	    $battle->u1_shot = 1;
-	    $battle->u1_hit = 1;
+	    $battle->u1_shot = 0;
+	    $battle->u1_hit = 0;
 
 	    $battle->user2_id = $hostUser->id;
         $battle->u2_x1 = 150;
@@ -91,8 +91,8 @@ class Arcade extends CI_Controller {
         $battle->u2_x2 = 175;
 	    $battle->u2_y2 = 25;
 	    $battle->u2_angle = 180;
-	    $battle->u2_shot = 1;
-	    $battle->u2_hit = 1;
+	    $battle->u2_shot = 0;
+	    $battle->u2_hit = 0;
 
 	    $this->battle_model->insert($battle);
 	    $battleId = mysql_insert_id();
