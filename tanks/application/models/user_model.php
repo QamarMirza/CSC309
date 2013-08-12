@@ -56,7 +56,6 @@ class User_model extends CI_Model {
 		return $this->db->update('user',array('battle_id'=>$battleId));
 	}
 	
-	
 	function getAvailableUsers() {
 		$this->db->where('user_status_id',User::AVAILABLE);
 		$query = $this->db->get('user');
@@ -66,14 +65,19 @@ class User_model extends CI_Model {
 			return null;
 	}
 	
-	function getExclusive($username)
-	{
+	function getExclusive($username) {
 		$sql = "select * from user where login=? for update";
 		$query = $this->db->query($sql,array($username));
 		if ($query && $query->num_rows() > 0)
 			return $query->row(0,'User');
 		else
 			return null;
+	}
+
+	function get_ID($battleid){
+		$sql = "select id from user where user.battle_id = ?";
+		$query = $this->db->query($sql, array($battleid));
+		return $query;
 	}
 	
 	
