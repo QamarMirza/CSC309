@@ -39,11 +39,10 @@
 
 	        // setup canvas
    	        canvas = $("#drawingCanvas"); // this returns a jQuery object
-            canvas.everyTime(500, function() {
+            canvas.everyTime(450, function() {
                 var url = "<?= base_url() ?>combat/getCoordinates";
 				$.getJSON(url, function (data, text, jqXHR){
 					if (data && data.status =='success') {
-                        //console.log(data);
                         if (!player2) {
                             player2 = new Tank(parseInt(data.x1), parseInt(data.y1), 50, 50, parseInt(data.angle), otherId);
                             player2.shot = parseInt(data.shot);
@@ -70,13 +69,13 @@
                             player1.cannon.fillColor = "blue";
                             player1.draw();
                             
-                            $('form').everyTime(300, function() {
-                                $('[type=submit]').trigger('click');
-                            });
+                            //$('form').everyTime(350, function() {
+                                //$('[type=submit]').trigger('click');
+                            //});
 
                             setInterval(function(){
                                 gameLoop();
-                            }, 100);
+                            }, 75);
                         } else {
                             player2.tankBody.x1 = parseInt(data.x1);
                             player2.tankBody.y1 = parseInt(data.y1);
@@ -87,16 +86,22 @@
                             player2.cannon.y1 = parseInt(data.y2);
                             player2.shot = parseInt(data.shot);
                             player2.hit = parseInt(data.hit);
+                            if (player2.hit == 1) {
+                                alert("You lost");
+                                /* STOP EVERYTHING, DO A REDIRECT HERE */
+                            }
                         }
 					}
 				});
+                if (player1 != null && player2 != null) {
+                    $('[type=submit]').trigger('click');
+                }
                 $.getJSON("<?= base_url() ?>combat/getBattleStatus", function (data, text, jqXHR){
                     if (data && data.status =='success') {
-                        console.log(data.battle_status);
-                        if (data.battle_status_id != 1) { // game is over
-
-                            // redirct to available user page.
-                            //window.location('')
+                        if (data.battle_status == 4) {
+                            // IS THIS EVEN NEEDED ANYMORE???
+                            //alert("Draw game");
+                            /* STOP EVERYTHING, DO A REDIRECT HERE?????????????????????????? */
                         }
                     }
                 });
@@ -120,17 +125,9 @@
                 if (request) {
                     request.abort();
                 }
-                if (hit || collision) {
-                    var outcome; // 1 active 2 p1wins 3 p2wins 4 draw
+                if (collision) {
                     var url = "<?= base_url() ?>combat/postBattleStatus";
-                    if (collision) {
-                        outcome = 4; // or 3 depending on if we are p1 or p2 --->FIXME <---
-                        collsion = false;
-                    } else if (hit) {
-                        outcome = 2;
-                        hit = false;
-                    }
-                    var data = {"battle_status": outcome};
+                    var data = {"battle_status": 4};
                 } else {
                     var url = "<?= base_url() ?>combat/postCoordinates";
 			        var data = {
@@ -147,12 +144,6 @@
 				request = $.ajax({
                     url: url,
                     data: data,
-                    success: function(data){
-                        console.log("succeededdd");
-                    },
-                    error: function(){
-                        console.log("faileddd");
-                    },
                     type: 'POST'
                 });
 				return false;
@@ -164,11 +155,9 @@
                 if (((player2.tankBody.x1<=player1.tankBody.x1 + player1.tankBody.w) && (player1.tankBody.x1 <=  player2.tankBody.x1 + player2.tankBody.w)) 
                     || 
                     ((player1.tankBody.x1<=player2.tankBody.x1 + player2.tankBody.w) && (player2.tankBody.x1 <=  player1.tankBody.x1 + player1.tankBody.w)) ){
-                    
-                    console.log('HHHHHHHIIIIITTT');
-                    //alert("THE GAME ENDED IN A DRAW, NEXT ROUND!");
-                    collision = true;
-                    //$('form').submit();
+                    collision = true;                    
+                    alert("Draw game");
+                    /* STOP EVERYTHING, DO A REDIRECT HERE?????????????????????????? */
                 }
             }
         }
@@ -180,37 +169,37 @@
             if (!hit) {
                 if (keys[37]) {
 	                if (player1.tankBody.x1 > 0) {
-                    	player1.tankBody.x1 -=2;
-                    	player1.turret.x1 -=2;
+                    	player1.tankBody.x1 -=1;
+                    	player1.turret.x1 -=1;
                         if (!player1.cannon.inMotion){
-                        	player1.cannon.x1 -=2;
+                        	player1.cannon.x1 -=1;
                 		}
                 	}
                 }
                 if (keys[38]){
                     if (player1.tankBody.y1 > 0){
-                        player1.tankBody.y1 -=2;
-                        player1.turret.y1 -=2;
+                        player1.tankBody.y1 -=1;
+                        player1.turret.y1 -=1;
                         if (!player1.cannon.inMotion){
-                        	player1.cannon.y1 -=2;
+                        	player1.cannon.y1 -=1;
                         }
                 	}
                 }
                 if (keys[39]){
                     if (player1.tankBody.w + player1.tankBody.x1 < canvas[0].width){
-                        player1.tankBody.x1 +=2;
-                        player1.turret.x1 +=2;
+                        player1.tankBody.x1 +=1;
+                        player1.turret.x1 +=1;
                         if (!player1.cannon.inMotion){
-                        	player1.cannon.x1 +=2;
+                        	player1.cannon.x1 +=1;
                         }
                 	}
                 }
                 if (keys[40]){
                     if (player1.tankBody.h + player1.tankBody.y1 < canvas[0].height){
-                    	player1.tankBody.y1 +=2;
-                    	player1.turret.y1 +=2;
+                    	player1.tankBody.y1 +=1;
+                    	player1.turret.y1 +=1;
                     	if (!player1.cannon.inMotion){
-                    		player1.cannon.y1 +=2;
+                    		player1.cannon.y1 +=1;
                     	}
                     }
                 }
@@ -257,8 +246,8 @@
     	        thisTank.cannon.y1 -= Math.sin(cannon_angle + Math.PI/2);
     	        context.restore();
     	        thisTank.tankBody.testHit();
-    	        if (!reset){
-    	            setTimeout(thisTank.fire, 20);
+    	        if (!reset && !thisTank.hit){
+    	            setTimeout(thisTank.fire, 25);
     	        }
             }
         }
@@ -289,9 +278,9 @@
             /* check if cannon hit tank */
 	        if ((player1.cannon.x1 - player1.cannon.radius <= player2.tankBody.x1 + player2.tankBody.w) && (player1.cannon.x1 + player1.cannon.radius>= player2.tankBody.x1)){
 		        if ((player1.cannon.y1 - player1.cannon.radius <= player2.tankBody.y1 + player2.tankBody.h) && (player1.cannon.y1 + player1.cannon.radius >= player2.tankBody.y1)){
-			        console.log('hhhhhhittttttttttttttttt');
-                    hit = true;
-                    //$('form').submit();
+                    player1.hit = 1;
+                    alert("You won");
+                    /* STOP EVERYTHING, DO A REDIRECT HERE?????????????????????????? */
 		        }
 	        }
 
